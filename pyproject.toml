@@ -1,0 +1,18 @@
+[project]
+name = "pnb-backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "beanie>=1.30.0",
+    "boto3>=1.39.2",
+    "fastapi[standard]>=0.115.14",
+    "langchain-community>=0.3.27",
+    "langchain-core>=0.3.67",
+    "langchain-openai>=0.3.27",
+    "langgraph>=0.5.1",
+    "pymupdf>=1.26.3",
+    "pymupdf4llm>=0.0.26",
+    "python-multipart>=0.0.20",
+]
