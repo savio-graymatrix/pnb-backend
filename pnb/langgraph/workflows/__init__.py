@@ -1,16 +1,16 @@
 from pnb import LOGGER
 import os
-from pnb.langgraph.workflows import setup_project_graph
+from pnb.langgraph.workflows.project_graph import setup_project_graph
 
 GRAPHS = dict()
 
 
 async def setup_graphs():
-    GRAPHS.update({
+    GRAPHS.update(
         {
             "project": await setup_project_graph(),
         }
-    })
+    )
     for key, graph in GRAPHS.items():
         os.makedirs(f"{os.getcwd()}/docs", exist_ok=True)
         os.makedirs(f"{os.getcwd()}/docs/images", exist_ok=True)
