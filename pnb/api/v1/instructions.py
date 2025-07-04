@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Body
+from fastapi import APIRouter, HTTPException, Body, Depends
 from typing import List
 from pnb.db.data_models import Instruction, UpdateInstruction, File
 from pnb.db.utils import (
@@ -25,7 +25,7 @@ async def create_instruction(instructions: List[Instruction]):
 
 # Get All Instructions
 @router.get("/")
-async def get_all_instructions(pagination: CursorPaginationRequest):
+async def get_all_instructions(pagination: CursorPaginationRequest = Depends()):
     query={}
     sort_field = pagination.sort_by or "created_at"
     sort_order = pagination.sort_order or -1
