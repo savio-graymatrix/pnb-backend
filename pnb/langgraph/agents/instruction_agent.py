@@ -8,6 +8,7 @@ from pnb.langgraph.utils import OPENAI_LLM
 from pnb.langgraph.structured_output import InstructionSet
 from pnb.db.data_models import Instruction
 from pnb.langgraph.tools.parser import extract_from_pdf
+from pnb.db.data_models import File
 
 class InstructionAgent:
     agent_name = "instruction_agent"

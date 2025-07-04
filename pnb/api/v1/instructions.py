@@ -116,5 +116,5 @@ async def generate_instructions(files: List[File] = Body(...)):
             for instruction in result.instruction_set
         ]
         master_instruction_list.extend(instruction_list)
-    await Instruction.insert_many(master_instruction_list)
+    mis_obj = await Instruction.insert_many(master_instruction_list)
     return master_instruction_list
