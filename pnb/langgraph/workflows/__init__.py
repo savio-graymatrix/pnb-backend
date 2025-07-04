@@ -1,6 +1,8 @@
 from pnb import LOGGER
 import os
 from pnb.langgraph.workflows import setup_project_graph
+from pnb.langgraph.workflows import setup_credit_graph
+from pnb.langgraph.workflows import setup_chatbot_graph
 
 GRAPHS = dict()
 
@@ -9,6 +11,8 @@ async def setup_graphs():
     GRAPHS.update({
         {
             "project": await setup_project_graph(),
+            "credit": await setup_credit_graph(),
+            "chatbot": await setup_chatbot_graph(),
         }
     })
     for key, graph in GRAPHS.items():

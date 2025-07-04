@@ -14,10 +14,10 @@ async def setup_credit_graph(checkpointer: Checkpointer = MemorySaver()) -> None
 
     cgraph_builder = StateGraph(MessagesState)
     cgraph_builder.add_node(
-        "credit", CreditAgent.credit_agent, metadata={"node_type": "credit"}
+        "chatbot", ChatbotAgent.chatbot, metadata={"node_type": "chatbot"}
     )
-    cgraph_builder.add_edge(START, "credit")
-    cgraph_builder.add_edge("credit", END)
+    cgraph_builder.add_edge(START, "chatbot")
+    cgraph_builder.add_edge("chatbot", END)
     return cgraph_builder.compile(
         checkpointer=checkpointer,
     )
