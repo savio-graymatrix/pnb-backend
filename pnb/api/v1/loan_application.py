@@ -11,13 +11,3 @@ from beanie.operators import Set
 from pnb.langgraph.agents.instruction_agent import InstructionAgent
 
 router = APIRouter(prefix="/loan_application")
-
-@router.get("/{application_id}")
-
-@router.post("/")
-
-@router.patch("/{application_id}")
-
-@router.delete("/{application_id}")
-
-@router.put("/{application_id}")
