@@ -1,5 +1,9 @@
 from pnb.db.data_models.Instruction import *
+from pnb.db.data_models.Review import *
 
 DOCUMENT_MODELS = [
-    Instruction
+    Instruction,
+    Review,
+    ReviewPoints,
+    ReviewSet
 ]

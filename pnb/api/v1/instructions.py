@@ -10,11 +10,7 @@ from typing import Optional
 from datetime import datetime, timezone
 from beanie.operators import Set
 
-# from bpcl.langgraph.agents.compliance_agent import ComplianceAgent
-
-
 router = APIRouter(prefix="/instructions", tags=["Instructions"])
-
 
 @router.post("/")
 async def create_instruction(instruction: CreateInstruction):
@@ -31,7 +27,7 @@ async def get_all_instructions():
 # Get Instruction by ID
 # @router.get("/{bid_id}", response_model=Instruction)
 @router.get("/{instruction_id}", response_model=Instruction)
-async def get_bid(instruction_id: str):
+async def get_instruction(instruction_id: str):
     instruction = await Instruction.get(instruction_id)
     if not instruction:
         raise HTTPException(status_code=404, detail="Instruction not found")
@@ -40,7 +36,7 @@ async def get_bid(instruction_id: str):
 
 # Update Instruction
 @router.put("/{instruction_id}", response_model=Instruction)
-async def update_bid(instruction_id: str, data: Instruction):
+async def update_instruction(instruction_id: str, data: Instruction):
     instruction = await Instruction.get(instruction_id)
     if not instruction:
         raise HTTPException(status_code=404, detail="Instruction not found")
@@ -56,7 +52,7 @@ async def update_bid(instruction_id: str, data: Instruction):
 
 # Delete Instruction
 @router.delete("/{instruction_id}")
-async def delete_bid(instruction_id: str):
+async def delete_instruction(instruction_id: str):
     instruction = await Instruction.get(instruction_id)
     if not instruction:
         raise HTTPException(status_code=404, detail="Instruction not found")
