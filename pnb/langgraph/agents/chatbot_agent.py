@@ -15,28 +15,28 @@ class ChatbotAgent:
     async def chatbot(
         state: MessagesState, config: RunnableConfig
     ):
-        project_id = config["configurable"]["project_id"]
-        bid_id = config["configurable"]["bid_id"]
+        # project_id = config["configurable"]["project_id"]
+        # bid_id = config["configurable"]["bid_id"]
         
-        instruction_set = await InstructionSet.find_one({"project_id": ObjectId(project_id)})
+        # instruction_set = await InstructionSet.find_one({"project_id": ObjectId(project_id)})
         
-        if instruction_set:
-            # Get all instructions for this instruction set
-            instructions = await Instruction.find({"instruction_set_id": instruction_set.id}).to_list()
-            #print(instructions.id)
-            instruction_contents = [instruction.content for instruction in instructions]
-        else:
-            instruction_contents = []
+        # if instruction_set:
+        #     # Get all instructions for this instruction set
+        #     instructions = await Instruction.find({"instruction_set_id": instruction_set.id}).to_list()
+        #     #print(instructions.id)
+        #     instruction_contents = [instruction.content for instruction in instructions]
+        # else:
+        #     instruction_contents = []
 
-        review_set = await ReviewSet.find_one({"application_id": ObjectId(bid_id)})
+        # review_set = await ReviewSet.find_one({"application_id": ObjectId(bid_id)})
         
-        if review_set:
-            # Get all reviews for this review set
-            reviews = await Review.find({"review_set_id": review_set.id}).to_list()
-            #print(reviews.id)
-            review_contents = [review.reason for review in reviews]
-        else:
-            review_contents = []
+        # if review_set:
+        #     # Get all reviews for this review set
+        #     reviews = await Review.find({"review_set_id": review_set.id}).to_list()
+        #     #print(reviews.id)
+        #     review_contents = [review.reason for review in reviews]
+        # else:
+        #     review_contents = []
 
         chatbot_agent = create_react_agent(
             OPENAI_LLM,
@@ -70,10 +70,7 @@ class ChatbotAgent:
    c. Formulate a clear and concise response based on this information.
    d. Double-check that your answer aligns with the provided instructions and credit review.
    e. Present your response to the user.
-            """.format(
-                INSTRUCTIONS="\n".join(instruction_contents),
-                CREDIT_DOCUMENT="\n".join(review_contents)
-            ),
+            """,
             tools=[]
         )
         result = await chatbot_agent.ainvoke(state)

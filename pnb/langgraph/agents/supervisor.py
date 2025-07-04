@@ -1,5 +1,6 @@
 from pnb.langgraph.agents.credit_assist_agent import CreditAssistAgent
 from pnb.langgraph.agents.pan_agent import PANAgent
+from langchain_core.runnables import RunnableConfig
 from pnb.langgraph.agents.aadhar_agent import AADHARAgent
 from langgraph.graph import StateGraph, START, MessagesState, END
 from langgraph.checkpoint.memory import MemorySaver
@@ -9,14 +10,15 @@ from pnb.langgraph.utils import OPENAI_LLM
 from pnb.langgraph.structured_output import Credit
 
 
-async def credit_supervisor(state: MessagesState, config: RunnableConfig):
+async def credit_supervisor():
     
     supervisor = create_supervisor(
-        [CreditAssistAgent.credit_assist_agent, PANAgent.pan_agent, AADHARAgent.aadhar_agent],
+        [await CreditAssistAgent.credit_assist_agent(state=MessagesState(), config=RunnableConfig()), await PANAgent.pan_agent(state=MessagesState(), config=RunnableConfig()), await AADHARAgent.aadhar_agent(state=MessagesState(), config=RunnableConfig())],
         model=OPENAI_LLM,
         tools=[],
         output_mode="last_message",
         response_format=(Credit),
+        parallel_tool_calls=True,
         prompt=f"""
         You are a Supervisor Agent responsible for processing loan applications and generating a Credit Analysis Memorandum (CAM) report. You have three specialized agents at your disposal:
 1. **pan_agent**: Verifies the applicant's PAN (Permanent Account Number) and returns verified or not verified.

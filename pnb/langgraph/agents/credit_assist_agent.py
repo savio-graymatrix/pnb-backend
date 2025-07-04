@@ -5,8 +5,8 @@ from langchain_core.messages import AIMessage
 from langgraph.types import Command
 from langgraph.prebuilt import create_react_agent
 from pnb.langgraph.utils import OPENAI_LLM
-from pnb.db.data_models import InstructionSet, Instruction
-from pnb.db.data_models import Bid
+# from pnb.db.data_models import InstructionSet, Instruction
+# from pnb.db.data_models import Bid
 from bson import ObjectId
 from pnb.langgraph.tools.parser import extract_from_pdf
 
@@ -17,23 +17,24 @@ class CreditAssistAgent():
     @staticmethod
     async def credit_assist_agent(state: MessagesState, config: RunnableConfig):
         
-        project_id = config["configurable"]["project_id"]
-        bid_id = config["configurable"]["bid_id"]
-        document = await Bid.find_one({"_id": bid_id})
-        document = document.bid_documents.url
-        # Find the instruction set for this project
-        instruction_set = await InstructionSet.find_one({"project_id": ObjectId(project_id)})
+        # project_id = config["configurable"]["project_id"]
+        # bid_id = config["configurable"]["bid_id"]
+        # document = await Bid.find_one({"_id": bid_id})
+        # document = document.bid_documents.url
+        # # Find the instruction set for this project
+        # instruction_set = await InstructionSet.find_one({"project_id": ObjectId(project_id)})
         
-        if instruction_set:
-            # Get all instructions for this instruction set
-            instructions = await Instruction.find({"instruction_set_id": instruction_set.id}).to_list()
-            #print(instructions.id)
-            instruction_contents = [instruction.content for instruction in instructions]
-        else:
-            instruction_contents = []
+        # if instruction_set:
+        #     # Get all instructions for this instruction set
+        #     instructions = await Instruction.find({"instruction_set_id": instruction_set.id}).to_list()
+        #     #print(instructions.id)
+        #     instruction_contents = [instruction.content for instruction in instructions]
+        # else:
+        #     instruction_contents = []
         
         credit_assist_agent = create_react_agent(
             OPENAI_LLM,
+            name=CreditAssistAgent.agent_name,
             tools=[extract_from_pdf],
             prompt=(
                 """
@@ -88,10 +89,7 @@ loan_type: "Individual" or "Corporate".
 risk_grade: "A+", "A", "B", or "C".
 recommendation: "Loan can be processed" or "Loan cannot be processed".
 justification: Brief explanation of the recommendation, referencing the {instruction_set}.
-Ensure the output is clear, concise, and free of errors""".format(
-                    instruction_set=instruction_contents,
-                    loan_application=document
-                )
+Ensure the output is clear, concise, and free of errors"""
             ),
         )
 
