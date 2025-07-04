@@ -49,17 +49,7 @@ Extract all relevant details necessary for loan application processing. Focus on
 Create your instruction set using the following format:
 
 <instruction_set>    
-[Category Name]
-1.1. [Specific Instruction]
-1.2. [Specific Instruction]
 ...
-
-[Category Name]
-2.1. [Specific Instruction]
-2.2. [Specific Instruction]
-...
-
-[Continue with additional categories as needed]
 </instruction_set>
 
 Ensure that your instructions are:
