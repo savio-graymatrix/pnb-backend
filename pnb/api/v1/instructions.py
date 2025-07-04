@@ -112,7 +112,7 @@ async def generate_instructions(files: List[File] = Body(...)):
             {"messages": []}, config=config
         )
         instruction_list = [
-            Instruction(content=instruction.instruction)
+            Instruction(content=instruction)
             for instruction in result.instruction_set
         ]
         master_instruction_list.extend(instruction_list)

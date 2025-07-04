@@ -55,4 +55,4 @@ async def upload_files(files: List[UploadFile] = FastAPIFile(...)):
         await file_doc.insert()
         uploaded_files.append(file_doc)
 
-    return Response(UploadFileResponse(files=uploaded_files), status_code=201)
+    return Response(UploadFileResponse(files=uploaded_files).model_dump_json(), status_code=201)

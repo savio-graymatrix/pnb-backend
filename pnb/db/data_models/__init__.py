@@ -6,5 +6,7 @@ DOCUMENT_MODELS = [
     Instruction,
     Review,
     ReviewPoints,
-    ReviewSet
+    ReviewSet,
+    File,
+    
 ]
