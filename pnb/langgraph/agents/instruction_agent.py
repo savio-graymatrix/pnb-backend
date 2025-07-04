@@ -6,8 +6,8 @@ from langgraph.types import Command
 from langgraph.prebuilt import create_react_agent
 from pnb.langgraph.utils import OPENAI_LLM
 from pnb.langgraph.structured_output import InstructionSet
-from pnb.db.data_models import instruction
-from pnb.langgraph.tools.parser import extract_from_pdf
+from pnb.db.data_models import Instruction
+# from pnb.langgraph.tools.parser import extract_from_pdf
 
 class InstructionAgent:
     agent_name = "instruction_agent"
@@ -22,7 +22,7 @@ class InstructionAgent:
         # document = document.rf_proposal.url
         instruction_agent = create_react_agent(
             OPENAI_LLM,
-            tools=[extract_from_pdf],
+            tools=[],
             response_format=(InstructionSet),
             prompt=(
                 """

@@ -2,7 +2,6 @@ from langgraph.types import Checkpointer
 from langgraph.graph import StateGraph, START, MessagesState, END
 from pnb.langgraph.agents.instruction_agent import InstructionAgent
 from langgraph.checkpoint.memory import MemorySaver
-from pnb.langgraph.workflows import *
 
 async def setup_project_graph(checkpointer: Checkpointer = MemorySaver()) -> None:
     project_graph_builder = StateGraph(MessagesState)
