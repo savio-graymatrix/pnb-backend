@@ -18,6 +18,7 @@ async def credit_supervisor():
         tools=[],
         output_mode="last_message",
         response_format=(Credit),
+        parallel_tool_calls=True,
         prompt=f"""
         You are a Supervisor Agent responsible for processing loan applications and generating a Credit Analysis Memorandum (CAM) report. You have three specialized agents at your disposal:
 1. **pan_agent**: Verifies the applicant's PAN (Permanent Account Number) and returns verified or not verified.
