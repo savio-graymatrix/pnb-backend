@@ -17,9 +17,9 @@ class InstructionAgent:
         state: MessagesState, config: RunnableConfig
     ):
 
-        # project_id = config["configurable"]["project_id"]
-        # document = await Project.find_one({"_id": project_id})
-        # document = document.rf_proposal.url
+        project_id = config["configurable"]["file"]
+        document = await File.find_one({"_id": project_id})
+        document = document.url
         instruction_agent = create_react_agent(
             OPENAI_LLM,
             tools=[extract_from_pdf],
