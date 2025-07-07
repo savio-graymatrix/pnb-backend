@@ -1,14 +1,9 @@
-from typing import Literal
 from langchain_core.runnables import RunnableConfig
-from langgraph.graph import MessagesState, END
-from langchain_core.messages import AIMessage
-from langgraph.types import Command
+from langgraph.graph import MessagesState
 from langgraph.prebuilt import create_react_agent
 from pnb.langgraph.utils import OPENAI_LLM
 from pnb.langgraph.structured_output import InstructionSet
-from pnb.db.data_models import Instruction
 from pnb.langgraph.tools.parser import extract_from_pdf
-from pnb.db.data_models import File
 
 class InstructionAgent:
     agent_name = "instruction_agent"
@@ -18,9 +13,7 @@ class InstructionAgent:
         state: MessagesState, config: RunnableConfig
     ):
 
-        project_id = config["configurable"]["file"]
-        document = await File.find_one({"_id": project_id})
-        document = document.url
+        document = config["configurable"]["file"]
         instruction_agent = create_react_agent(
             OPENAI_LLM,
             tools=[extract_from_pdf],
@@ -80,5 +73,4 @@ Output your final response in the following format:
         )
 
         result = await instruction_agent.ainvoke(state)
-        # print(result)
         return result['structured_response']

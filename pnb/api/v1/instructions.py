@@ -107,14 +107,15 @@ async def patch_instruction(instruction_id: str, data: UpdateInstruction = Body(
 async def generate_instructions(files: List[File] = Body(...)):
     master_instruction_list = list()
     for file in files:
-        config = {"configurable": {"thread_id": 1, "file": file.id}}
+        config = {"configurable": {"thread_id": 1, "file": file.url}}
         result = await InstructionAgent.instruction_agent(
             {"messages": []}, config=config
         )
         instruction_list = [
-            Instruction(content=instruction)
+            await Instruction(content=instruction).insert()
             for instruction in result.instruction_set
         ]
         master_instruction_list.extend(instruction_list)
-    mis_obj = await Instruction.insert_many(master_instruction_list)
+    # mis_obj = await Instruction.insert_many(master_instruction_list)
+    # print(mis_obj)
     return master_instruction_list
