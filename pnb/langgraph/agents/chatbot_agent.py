@@ -5,6 +5,7 @@ from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import AIMessage
 from langgraph.types import Command
 from pnb.langgraph.utils import OPENAI_LLM
+from pnb.db.data_models import Instruction
 from pnb import LOGGER
 
 
@@ -15,8 +16,10 @@ class ChatbotAgent:
     async def chatbot(
         state: MessagesState, config: RunnableConfig
     ):
-        # project_id = config["configurable"]["project_id"]
+        project_id = config["configurable"]["project_id"]
         # bid_id = config["configurable"]["bid_id"]
+        instructions = await Instruction.find({"_id": ObjectId(project_id)}).to_list()
+        instruction_set = [instruction.content for instruction in instructions]
         
         # instruction_set = await InstructionSet.find_one({"project_id": ObjectId(project_id)})
         
@@ -70,7 +73,10 @@ class ChatbotAgent:
    c. Formulate a clear and concise response based on this information.
    d. Double-check that your answer aligns with the provided instructions and credit review.
    e. Present your response to the user.
-            """,
+            """.format(
+                instruction_set=instruction_set,
+                credit_review=document
+            ),
             tools=[]
         )
         result = await chatbot_agent.ainvoke(state)

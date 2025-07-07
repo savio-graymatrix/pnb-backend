@@ -8,6 +8,7 @@ from pnb.langgraph.utils import OPENAI_LLM
 # from pnb.db.data_models import InstructionSet, Instruction
 # from pnb.db.data_models import Bid
 from bson import ObjectId
+from pnb.langgraph.tools.pan_tool import pan_tool
 
 
 class PANAgent():
@@ -16,7 +17,9 @@ class PANAgent():
     @staticmethod
     async def pan_agent(state: MessagesState, config: RunnableConfig):
         
-        # project_id = config["configurable"]["project_id"]
+        pan_no = config["configurable"]["pan_no"]
+        #project_id = config["configurable"]["project_id"]
+        #pan_document = await LoanApplication.find_one({"_id": ObjectId(project_id)})
         # bid_id = config["configurable"]["bid_id"]
         # document = await Bid.find_one({"_id": bid_id})
         # document = document.bid_documents.url
@@ -34,12 +37,15 @@ class PANAgent():
         pan_agent = create_react_agent(
             OPENAI_LLM,
             name=PANAgent.agent_name,
-            tools=[],
+            tools=[pan_tool],
             prompt=(
                 """
-                You are an efficient PAN reviewer agent. 
-                Your task is to check the {PAN_NUMBER} and check whether it is valid or not.
-                """
+                You are an efficient PAN reviewer agent. You have a tool to check the PAN number.
+                Your task is to check the {PAN_NUMBER} and check whether it is valid or not. If the tool returns true, then pan is verified.
+                If the tool returns false, then pan is not verified.
+                """.format(
+                    PAN_NUMBER=pan_no
+                )
             ),
         )
 
