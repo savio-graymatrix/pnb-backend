@@ -1,5 +1,5 @@
-from fastapi import APIRouter, HTTPException, Body, Depends
-from typing import List
+from fastapi import APIRouter, HTTPException, Body, Depends,Query
+from typing import List, Optional
 from pnb.db.data_models import Instruction, UpdateInstruction, File
 from pnb.db.utils import (
     CursorPaginationRequest,
@@ -25,8 +25,11 @@ async def create_instruction(instructions: List[Instruction]):
 
 # Get All Instructions
 @router.get("/")
-async def get_all_instructions(pagination: CursorPaginationRequest = Depends()):
-    query={}
+async def get_all_instructions(
+    pagination: CursorPaginationRequest = Depends(),
+    created_at: Optional[str] = Query(None),
+):
+    query = {}
     sort_field = pagination.sort_by or "created_at"
     sort_order = pagination.sort_order or -1
 
@@ -104,14 +107,15 @@ async def patch_instruction(instruction_id: str, data: UpdateInstruction = Body(
 async def generate_instructions(files: List[File] = Body(...)):
     master_instruction_list = list()
     for file in files:
-        config = {"configurable": {"thread_id": 1, "file": file.id}}
+        config = {"configurable": {"thread_id": 1, "file": file.url}}
         result = await InstructionAgent.instruction_agent(
             {"messages": []}, config=config
         )
         instruction_list = [
-            Instruction(content=instruction.instruction)
+            await Instruction(content=instruction).insert()
             for instruction in result.instruction_set
         ]
         master_instruction_list.extend(instruction_list)
-    await Instruction.insert_many(master_instruction_list)
+    # mis_obj = await Instruction.insert_many(master_instruction_list)
+    # print(mis_obj)
     return master_instruction_list
