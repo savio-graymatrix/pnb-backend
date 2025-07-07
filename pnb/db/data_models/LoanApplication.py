@@ -1,14 +1,49 @@
 from beanie import Document, PydanticObjectId
-from typing import Optional, List
-from pydantic import BaseModel
+from typing import Optional, List, Literal
+from pydantic import BaseModel, Field, HttpUrl
+from decimal import Decimal
+from bson.decimal128 import Decimal128
+from datetime import datetime, timezone
+from pnb.db.data_models import File
 
+class LoanApplicationDocuments(BaseModel):
+    aadhar_document: HttpUrl
+    loan_application_document: HttpUrl
+    pan_document:HttpUrl
 
 class LoanApplication(Document):
     applicant_name: str
     pan_no: str
     aadhar_no: str
-    pan_document: PydanticObjectId
-    aadhar_document: PydanticObjectId
+    gstin: str
+    business_name: str
+    business_type: str
+    business_address: str
+    loan_type: Literal["Retail","Business"]
+    loan_amount: Decimal = Field(...,gt=0.0,decimal_places=2)
+    loan_amount_applied: Decimal = Field(...,gt=0.0)
+    monthly_turnover: Decimal = Field(...,gt=0.0,decimal_places=2)
+    net_profit: Decimal = Field(...,gt=0.0,decimal_places=2)
+    established_year: str
+    loan_tenure: int
+    interest_rate: Decimal = Field(...,gt=0.0,decimal_places=3)
+    application_date: datetime = Field(default_factory=datetime.now().astimezone(timezone.utc))
+    updated_date: datetime = Field(default_factory=datetime.now().astimezone(timezone.utc))
+    documents: LoanApplicationDocuments
+    class Settings:
+        name = "loan-application"
+
+    class Config:
+        json_encoders = {
+            Decimal: lambda v: str(v)
+        }
+
+    def to_bson(self) -> dict:
+        doc = super().to_bson()
+        if "price" in doc and isinstance(doc["price"], Decimal):
+            doc["price"] = Decimal128(doc["price"])
+        return doc
+
 
 class UpdateLoanApplication(BaseModel):
     applicant_name: Optional[str]
@@ -16,3 +51,18 @@ class UpdateLoanApplication(BaseModel):
     aadhar_no: Optional[str]
     pan_document: Optional[PydanticObjectId]
     aadhar_document: Optional[PydanticObjectId]
+    business_name: Optional[str]
+    business_type: Optional[str]
+    gstin: Optional[str]
+    business_address: Optional[str]
+    loan_type: Optional[Literal["Retail","Business"]]
+    loan_amount: Optional[Decimal] = Field(...,gt=0.0,decimal_places=2)
+    loan_amount_applied: Optional[Decimal] = Field(...,gt=0.0)
+    monthly_turnover: Optional[Decimal] = Field(...,gt=0.0,decimal_places=2)
+    net_profit: Optional[Decimal] = Field(...,gt=0.0,decimal_places=2)
+    established_year: Optional[str]
+    loan_tenure: Optional[int]
+    interest_rate: Optional[Decimal] = Field(...,gt=0.0,decimal_places=3)
+    application_date: Optional[datetime] = Field(default_factory=datetime.now().astimezone(timezone.utc))
+    updated_date: Optional[datetime] = Field(default_factory=datetime.now().astimezone(timezone.utc))
+    gstin_document: Optional[PydanticObjectId]
