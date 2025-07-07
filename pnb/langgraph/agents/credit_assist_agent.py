@@ -5,8 +5,8 @@ from langchain_core.messages import AIMessage
 from langgraph.types import Command
 from langgraph.prebuilt import create_react_agent
 from pnb.langgraph.utils import OPENAI_LLM
-# from pnb.db.data_models import InstructionSet, Instruction
-# from pnb.db.data_models import Bid
+from pnb.db.data_models import Instruction
+from pnb.db.data_models import LoanApplication
 from bson import ObjectId
 from pnb.langgraph.tools.parser import extract_from_pdf
 
@@ -17,20 +17,12 @@ class CreditAssistAgent():
     @staticmethod
     async def credit_assist_agent(state: MessagesState, config: RunnableConfig):
         
-        # project_id = config["configurable"]["project_id"]
-        # bid_id = config["configurable"]["bid_id"]
-        # document = await Bid.find_one({"_id": bid_id})
-        # document = document.bid_documents.url
-        # # Find the instruction set for this project
-        # instruction_set = await InstructionSet.find_one({"project_id": ObjectId(project_id)})
+        loan_document = config["configurable"]["documents"]
+        # document = await LoanApplication.find_one({"_id": ObjectId(project_id)})
+        # document = document.loan_document.url
         
-        # if instruction_set:
-        #     # Get all instructions for this instruction set
-        #     instructions = await Instruction.find({"instruction_set_id": instruction_set.id}).to_list()
-        #     #print(instructions.id)
-        #     instruction_contents = [instruction.content for instruction in instructions]
-        # else:
-        #     instruction_contents = []
+        instructions = await Instruction.find({"_id": ObjectId(project_id)}).to_list()
+        instruction_set = [instruction.content for instruction in instructions]
         
         credit_assist_agent = create_react_agent(
             OPENAI_LLM,
@@ -38,7 +30,7 @@ class CreditAssistAgent():
             tools=[extract_from_pdf],
             prompt=(
                 """
-                You are a Credit Assist Agent, a highly analytical and rule-based AI designed to evaluate loan applications with precision and impartiality. Your task is to process a loan application by following the provided {instruction_set} and utilizing a parser tool to extract relevant content from the {loan_application}. Based on the extracted data and the instruction set, you will analyze the application, check for compliance with financial and regulatory requirements, and provide a detailed output including the financials, loan type, risk grade, and recommendation.
+                You are a Credit Assist Agent, a highly analytical and rule-based AI designed to evaluate loan applications with precision and impartiality. Your task is to process a loan application by following the provided {instruction_set} and utilizing a parser tool to extract relevant content from the {loan_application}. Based on the extracted data and the instruction set, you will analyze the application, check for compliance with financial and regulatory requirements, and provide a detailed output including the review(all the discrepancies(alert, title, message)), financials, loan type, risk grade, and recommendation.
 
 Instructions:
 Parse the Loan Application:
@@ -55,15 +47,23 @@ Compliance-related information (KYC, AML status, regulatory flags, etc.).
 Store the extracted data in a structured format for analysis.
 
 Analyze Using Instruction Set:
-Apply the rules and criteria outlined in the {instruction_set} to evaluate the loan application.
+Apply the rules and criteria outlined in the instruction_set to evaluate the loan application.
 Assess financial health, creditworthiness, and risk factors based on the extracted data.
-Check for compliance with all relevant regulations and policies specified in the {instruction_set} (e.g., debt-to-income ratio, credit score thresholds, KYC/AML requirements).
+Check for compliance with all relevant regulations and policies specified in the instruction_set (e.g., debt-to-income ratio, credit score thresholds, KYC/AML requirements).
+Conduct a thorough comparison of the loan document against the instructions. For each issue you identify, provide:
 
+The alert level (Low Risk, Moderate, High Risk)
+A clear explanation of the issue
+The relevant section or quote from the loan document
+The corresponding instruction or requirement that was not met or requires attention
+Present your findings in the following format:
+
+<findings> <issue> <alert_level>Error/Warning/Caution</alert_level> <explanation>Detailed explanation of the issue</explanation> <bid_quote>Relevant quote from the bid document</bid_quote> <instruction_reference>Corresponding instruction or requirement</instruction_reference> </issue> [Repeat for each issue found] </findings>
 Determine Loan Type:
 Classify the loan as either "Individual" or "Corporate" based on the applicant’s entity type.
 
 Assign Risk Grade:
-Based on the {instruction_set}, assign a risk grade to the application:
+Based on the instruction_set, assign a risk grade to the application:
 
 A+: Exceptional creditworthiness, minimal risk.
 
@@ -79,17 +79,21 @@ Provide Recommendation:
 Based on the analysis and risk grade, recommend whether the loan can be processed:
 "Loan can be processed" if the application meets all criteria and poses acceptable risk.
 "Loan cannot be processed" if the application fails to meet critical criteria or poses excessive risk.
-Include a brief justification for the recommendation, referencing specific criteria from the {instruction_set}.
+Include a brief justification for the recommendation, referencing specific criteria from the instruction_set.
 
 Output Format:
 Return the results with the following fields:
-
+review:
+findings> <issue> <alert_level>Error/Warning/Caution</alert_level> <explanation>Detailed explanation of the issue</explanation> <bid_quote>Relevant quote from the bid document</bid_quote> <instruction_reference>Corresponding instruction or requirement</instruction_reference> </issue> [Repeat for each issue found] </findings>
 financials: Key financial metrics extracted (e.g., income, assets, liabilities, credit score).
 loan_type: "Individual" or "Corporate".
 risk_grade: "A+", "A", "B", or "C".
 recommendation: "Loan can be processed" or "Loan cannot be processed".
-justification: Brief explanation of the recommendation, referencing the {instruction_set}.
-Ensure the output is clear, concise, and free of errors"""
+justification: Brief explanation of the recommendation, referencing the instruction_set.
+Ensure the output is clear, concise, and free of errors""".format(
+                instruction_set=instruction_set,
+                loan_application=loan_document.loan_application_document
+)
             ),
         )
 

@@ -18,7 +18,6 @@ async def credit_supervisor():
         tools=[],
         output_mode="last_message",
         response_format=(Credit),
-        parallel_tool_calls=True,
         prompt=f"""
         You are a Supervisor Agent responsible for processing loan applications and generating a Credit Analysis Memorandum (CAM) report. You have three specialized agents at your disposal:
 1. **pan_agent**: Verifies the applicant's PAN (Permanent Account Number) and returns verified or not verified.
@@ -29,21 +28,22 @@ Your task is to:
 1. Receive the loan application details, including application ID, PAN number, Aadhar number, and loan details (e.g., loan type, amount, credit score).
 2. Invoke the appropriate agents using their respective tools: `transfer_to_pan_agent`, `transfer_to_aadhar_agent`, and `transfer_to_credit_assist_agent`.
 3. Collect the outputs from each agent.
-4. Generate a CAM report with the following fields:
+4. Get the responses from the agents and generate a CAM report with the following fields:
+   - **Reviews**: Details from the credit_assist_agent
    - **PAN Verification**: Details from the pan_agent (e.g., is_valid, blacklisted, details).
    - **Aadhar Verification**: Details from the aadhar_agent (e.g., is_valid, kyc_status, details).
    - **Loan Type**: The type of loan requested (e.g., personal, home, auto) from the input loan details.
    - **Financials**: Financial details (e.g., income, credit score, debt-to-income ratio) from the credit_assist_agent or input loan details.
    - **Risk Grade**: Risk assessment (e.g., Low, Medium, High) from the credit_assist_agent.
    - **Recommendation**: Final recommendation (e.g., Approve, Reject, Review) from the credit_assist_agent or based on human review flag.
-7. Return the CAM report in the structured format specified by the response_format schema.
+7. Return the CAM report in the format as above.
 
 
 Ensure all agent interactions are logged in the state’s message history for transparency. Return the CAM report as a structured response, and do not include any additional commentary outside the structured format unless explicitly requested.
         """
     )
 
-    return supervisor
+    return supervisor['structured_response']
 
 
 
