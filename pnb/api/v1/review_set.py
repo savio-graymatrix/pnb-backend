@@ -24,9 +24,28 @@ async def get_reviews_by_set_id(review_set_id: PydanticObjectId):
     return ReviewSetResponse(**review_set.model_dump(),reviews=reviews)
 
 @router.get("/")
-async def get_review_sets():
-    
-    pass
+async def get_review_sets(
+    pagination: CursorPaginationRequest = Depends(),
+    created_at: Optional[str] = Query(None),
+):
+    query = {}
+    sort_field = pagination.sort_by or "created_at"
+    sort_order = pagination.sort_order or -1
+
+    cursor = ReviewSet.find(query).sort((sort_field, sort_order))
+
+    if pagination.after_id:
+        after_bid = await ReviewSet.get(pagination.after_id)
+        if after_bid:
+            after_value = getattr(after_bid, sort_field)
+            query[sort_field] = {"$lt" if sort_order == -1 else "$gt": after_value}
+            cursor = ReviewSet.find(query).sort((sort_field, sort_order))
+
+    items = await cursor.limit(pagination.limit).to_list()
+
+    next_cursor = items[-1].id if len(items) == pagination.limit else None
+
+    return CursorPaginationResponse[ReviewSet](items=items, next_cursor=next_cursor)
 
 @router.post("/generate/{bid_id}")
 async def generate_reviews(bid_id: PydanticObjectId):
