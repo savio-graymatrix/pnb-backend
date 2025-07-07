@@ -47,9 +47,9 @@ async def get_review_sets(
 
     return CursorPaginationResponse[ReviewSet](items=items, next_cursor=next_cursor)
 
-@router.post("/generate/{bid_id}")
-async def generate_reviews(bid_id: PydanticObjectId):
-    pass
+# @router.post("/generate/{bid_id}")
+# async def generate_reviews(bid_id: PydanticObjectId):
+#     pass
 
 @router.delete("/{review_set_id}")
 async def delete_review_set(review_set_id: PydanticObjectId):
