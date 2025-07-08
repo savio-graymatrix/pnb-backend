@@ -100,8 +100,11 @@ async def patch_application(application_id: str, data: UpdateLoanApplication = B
     )
     return loan_application
 
-@router.get("/review")
+@router.post("/review")
 async def review_loan_application(application: LoanApplication = Body(...)):
-    config = {"configurable":{"thread_id": application.id,"metadata": application.model_dump()}}
-    result = GRAPHS['credit'].invoke({"messages":[]},config=config)
-    print(result)
+    #print(application)
+    #config = {"configurable":{"thread_id": application.id,"metadata": application.model_dump()}}
+    #result = GRAPHS['credit'].invoke({"messages":[]},config=config)
+    result = GRAPHS['credit'].invoke({"messages":[]})
+    #print(result["structured_response"])
+    return result["structured_response"]
