@@ -15,9 +15,9 @@ class AADHARAgent():
     agent_name = "aadhar_agent"
 
     @staticmethod
-    async def aadhar_agent(state: MessagesState, config: RunnableConfig):
+    async def aadhar_agent():
         
-        aadhar_no = config["configurable"]["aadhar_no"]
+        # aadhar_no = config["configurable"]["aadhar_no"]
         #aadhar_document = await LoanApplication.find_one({"_id": ObjectId(project_id)})
         # bid_id = config["configurable"]["bid_id"]
         # document = await Bid.find_one({"_id": bid_id})
@@ -42,9 +42,7 @@ class AADHARAgent():
                 You are an efficient AADHAR reviewer agent. You have a tool to check the AADHAR number.
                 Your task is to check the {AADHAR_NUMBER} and check whether it is valid or not. If the tool returns true, then aadhar is verified.
                 If the tool returns false, then aadhar is not verified.
-                """.format(
-                    AADHAR_NUMBER=aadhar_no
-                )
+                """
             ),
         )
 

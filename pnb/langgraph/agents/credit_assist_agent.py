@@ -15,14 +15,14 @@ class CreditAssistAgent():
     agent_name = "credit_assist_agent"
 
     @staticmethod
-    async def credit_assist_agent(state: MessagesState, config: RunnableConfig):
+    async def credit_assist_agent():
         
-        loan_document = config["configurable"]["documents"]
+        # loan_document = config["configurable"]["documents"]
         # document = await LoanApplication.find_one({"_id": ObjectId(project_id)})
         # document = document.loan_document.url
         
-        instructions = await Instruction.find({"_id": ObjectId(project_id)}).to_list()
-        instruction_set = [instruction.content for instruction in instructions]
+        # instructions = await Instruction.find({"_id": ObjectId(project_id)}).to_list()
+        # instruction_set = [instruction.content for instruction in instructions]
         credit_assist_agent = create_react_agent(
             OPENAI_LLM,
             name=CreditAssistAgent.agent_name,
@@ -89,10 +89,7 @@ loan_type: "Individual" or "Corporate".
 risk_grade: "A+", "A", "B", or "C".
 recommendation: "Loan can be processed" or "Loan cannot be processed".
 justification: Brief explanation of the recommendation, referencing the instruction_set.
-Ensure the output is clear, concise, and free of errors""".format(
-                instruction_set=instruction_set,
-                loan_application=loan_document.loan_application_document
-)
+Ensure the output is clear, concise, and free of errors"""
             ),
         )
 
