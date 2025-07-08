@@ -17,23 +17,18 @@ class CreditAssistAgent():
     @staticmethod
     async def credit_assist_agent():
         
-        # loan_document = config["configurable"]["documents"]
-        # document = await LoanApplication.find_one({"_id": ObjectId(project_id)})
-        # document = document.loan_document.url
-        
-        # instructions = await Instruction.find({"_id": ObjectId(project_id)}).to_list()
-        # instruction_set = [instruction.content for instruction in instructions]
-        credit_assist_agent = create_react_agent(
+        return  create_react_agent(
             OPENAI_LLM,
-            name=CreditAssistAgent.agent_name,
+            name="credit_expert",
             tools=[extract_from_pdf],
             prompt=(
                 """
-                You are a Credit Assist Agent, a highly analytical and rule-based AI designed to evaluate loan applications with precision and impartiality. Your task is to process a loan application by following the provided {instruction_set} and utilizing a parser tool to extract relevant content from the {loan_application}. Based on the extracted data and the instruction set, you will analyze the application, check for compliance with financial and regulatory requirements, and provide a detailed output including the review(all the discrepancies(alert, title, message)), financials, loan type, risk grade, and recommendation.
+                You are a Credit Assist Agent, a highly analytical and rule-based AI designed to evaluate loan applications with precision and impartiality. Your task is to process a loan application by following the provided instruction_set and utilizing a parser tool to extract relevant content from the loan_application. You will get the loan application from the supervisor. Based on the extracted data and the instruction set, you will analyze the application, check for compliance with financial and regulatory requirements, and provide a detailed output including the review(all the discrepancies(alert, title, message)), financials, loan type, risk grade, and recommendation.
 
-Instructions:
+**Return your response to the supervisor.**
+                Instructions:
 Parse the Loan Application:
-Use the parser tool to extract key details from the {loan_application}, including but not limited to:
+Use the parser tool to extract key details from the loan_application, including but not limited to:
 
 Applicant details (name, entity type: individual or corporate).
 
@@ -93,7 +88,7 @@ Ensure the output is clear, concise, and free of errors"""
             ),
         )
 
-        return credit_assist_agent
+        return credit_assist_agent_obj
 
         #result = await pan_agent.ainvoke(state)
         # return result['structured_response']

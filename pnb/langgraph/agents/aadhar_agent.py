@@ -9,6 +9,7 @@ from pnb.langgraph.utils import OPENAI_LLM
 # from pnb.db.data_models import Bid
 from bson import ObjectId
 from pnb.langgraph.tools.aadhar_tool import aadhar_tool
+from langchain_core.runnables import RunnableConfig
 
 
 class AADHARAgent():
@@ -17,7 +18,7 @@ class AADHARAgent():
     @staticmethod
     async def aadhar_agent():
         
-        # aadhar_no = config["configurable"]["aadhar_no"]
+        
         #aadhar_document = await LoanApplication.find_one({"_id": ObjectId(project_id)})
         # bid_id = config["configurable"]["bid_id"]
         # document = await Bid.find_one({"_id": bid_id})
@@ -33,15 +34,15 @@ class AADHARAgent():
         # else:
         #     instruction_contents = []
         
-        aadhar_agent = create_react_agent(
+        return create_react_agent(
             OPENAI_LLM,
-            name=AADHARAgent.agent_name,
+            name="aadhar_expert",
             tools=[aadhar_tool],
             prompt=(
                 """
-                You are an efficient AADHAR reviewer agent. You have a tool to check the AADHAR number.
-                Your task is to check the {AADHAR_NUMBER} and check whether it is valid or not. If the tool returns true, then aadhar is verified.
-                If the tool returns false, then aadhar is not verified.
+                You are an efficient AADHAR reviewer agent. You have a tool to check the AADHAR number. You will get the aadhar number from the supervisor.
+                Your task is to check the AADHAR_NUMBER and check whether it is valid or not. If the tool returns true, then aadhar is verified.
+                If the tool returns false, then aadhar is not verified. Return your response to the supervisor.
                 """
             ),
         )

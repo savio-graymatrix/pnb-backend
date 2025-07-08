@@ -17,7 +17,7 @@ class PANAgent():
     @staticmethod
     async def pan_agent():
         
-        # pan_no = config["configurable"]["pan_no"]
+        
         #project_id = config["configurable"]["project_id"]
         #pan_document = await LoanApplication.find_one({"_id": ObjectId(project_id)})
         # bid_id = config["configurable"]["bid_id"]
@@ -34,15 +34,17 @@ class PANAgent():
         # else:
         #     instruction_contents = []
         
-        pan_agent = create_react_agent(
+        return create_react_agent(
             OPENAI_LLM,
-            name=PANAgent.agent_name,
+            name="pan_expert",
             tools=[pan_tool],
             prompt=(
                 """
-                You are an efficient PAN reviewer agent. You have a tool to check the PAN number.
-                Your task is to check the {PAN_NUMBER} and check whether it is valid or not. If the tool returns true, then pan is verified.
-                If the tool returns false, then pan is not verified.
+                You are an efficient PAN reviewer agent. You have a tool to check the PAN number. You will get the pan number from the supervisor.
+                Your task is to check the PAN_NUMBER and check whether it is valid or not. If the tool returns true, then pan is verified.
+                If the tool returns false, then pan is not verified. 
+                Return your response to the supervisor.
+                In any scenario, Please return to supervisor.
                 """
             ),
         )
