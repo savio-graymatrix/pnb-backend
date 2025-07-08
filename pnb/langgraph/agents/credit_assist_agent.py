@@ -23,7 +23,6 @@ class CreditAssistAgent():
         
         instructions = await Instruction.find({"_id": ObjectId(project_id)}).to_list()
         instruction_set = [instruction.content for instruction in instructions]
-        
         credit_assist_agent = create_react_agent(
             OPENAI_LLM,
             name=CreditAssistAgent.agent_name,
