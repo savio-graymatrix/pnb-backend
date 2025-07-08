@@ -17,7 +17,7 @@ router = APIRouter(prefix="/loan_application",tags=["Loan Application"])
 async def create_application(applications: List[LoanApplication]):
     created_applications = list()
     for application in applications:
-        application_obj = LoanApplication(**application.model.dump())
+        application_obj = LoanApplication(**application.model_dump())
         await application_obj.insert()
         created_applications.append(application_obj)
     return created_applications

@@ -1,6 +1,6 @@
 from beanie import Document, PydanticObjectId
 from typing import Optional, List, Literal
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl, field_validator
 from decimal import Decimal
 from bson.decimal128 import Decimal128
 from datetime import datetime, timezone
@@ -32,17 +32,21 @@ class LoanApplication(Document):
     documents: LoanApplicationDocuments
     class Settings:
         name = "loan-application"
-
-    class Config:
-        json_encoders = {
-            Decimal: lambda v: str(v)
-        }
-
-    def to_bson(self) -> dict:
-        doc = super().to_bson()
-        if "price" in doc and isinstance(doc["price"], Decimal):
-            doc["price"] = Decimal128(doc["price"])
-        return doc
+    
+    # # ✅ Validator for Decimal128 values coming from MongoDB
+    @field_validator(
+        "loan_amount",
+        "loan_amount_applied",
+        "monthly_turnover",
+        "net_profit",
+        "interest_rate",
+        mode="before"
+    )
+    @classmethod
+    def convert_decimal128(cls, v):
+        if isinstance(v, Decimal128):
+            return v.to_decimal()
+        return v
 
 
 class UpdateLoanApplication(BaseModel):
