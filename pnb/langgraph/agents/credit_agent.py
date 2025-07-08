@@ -14,7 +14,7 @@ from pnb.langgraph.tools.aadhar_tool import aadhar_tool
 from pnb.langgraph.tools.pan_tool import pan_tool
 from pnb.langgraph.tools.parser import extract_from_pdf
 from pnb.langgraph.structured_output import Credit
-
+from pnb import LOGGER
 
 class CreditAgent():
     agent_name = "credit_agent"
@@ -26,8 +26,8 @@ class CreditAgent():
         loan_details = config["configurable"]["metadata"]["documents"]["loan_application_document"]
 
 
-        # instruction_set = await Instruction.find({"id": ObjectId(config["configurable"]["thread_id"])})
-        
+        instruction_set = await Instruction.find_all().to_list()
+        LOGGER.debug(instruction_set)
         # if instruction_set:
         #     # Get all instructions for this instruction set
         #     instructions = await Instruction.find({"id": ObjectId(config["configurable"]["thread_id"])})
@@ -43,7 +43,10 @@ class CreditAgent():
             prompt=(
                 """
                 You are a credit assistant agent. Your task is to analyze a credit document and provide a structured response based on the instructions provided.
-                
+                Use the instruction set below as guidelines to perform your analysis on the loan document.
+                {instruction_set}
+
+
                 You will have {aadhar_no} which you will use the aadhar_tool to verify the aadhar number. If the tool returns true then it is verified.
                 You will have {pan_no} which you will use the pan_tool to verify the pan number. If the tool returns true then it is verified.
                 You will have {loan_details} you will use the extract_from_pdf tool to extract the loan document and you will use to analyze the loan application and provide a structured response based on the instructions provided.
@@ -108,8 +111,8 @@ Ensure the output is clear, concise, and free of errors
                 """.format(
                     loan_details=loan_details,
                     pan_no=pan_no,
-                    aadhar_no=aadhar_no
-                    
+                    aadhar_no=aadhar_no,
+                    instruction_set="\n".join([instruction.content for instruction in instruction_set])
                 )
             ),
         )
