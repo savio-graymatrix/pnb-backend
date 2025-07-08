@@ -13,7 +13,7 @@ from pnb.langgraph.structured_output import Credit
 async def credit_supervisor():
     
     supervisor = create_supervisor(
-        [CreditAssistAgent.credit_assist_agent,PANAgent.agent_name, AADHARAgent.agent_name],
+        [await CreditAssistAgent.credit_assist_agent(), await PANAgent.pan_agent(), await AADHARAgent.aadhar_agent()],
         model=OPENAI_LLM,
         tools=[],
         output_mode="last_message",
@@ -43,7 +43,7 @@ Ensure all agent interactions are logged in the state’s message history for tr
         """
     )
 
-    return supervisor['structured_response']
+    return supervisor
 
 
 
