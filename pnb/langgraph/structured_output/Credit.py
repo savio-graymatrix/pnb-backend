@@ -3,9 +3,6 @@ from pydantic import BaseModel, Field
 from typing import List, Literal
 
 
-# class Credit(BaseModel):
-#     instruction: s
-
 class Review(BaseModel):
     alert: Literal["low_risk", "medium_risk", "high_risk"] = Field(description="The alert as per the 'credit_assist_agent'")
     title: str = Field(description="The title of the review as in the response by the 'credit_assist_agent'")
