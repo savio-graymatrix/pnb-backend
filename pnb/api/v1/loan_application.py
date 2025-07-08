@@ -8,7 +8,7 @@ from pnb.db.utils import (
 )
 from datetime import datetime, timezone
 from beanie.operators import Set
-from pnb.langgraph.agents.instruction_agent import InstructionAgent
+from pnb.langgraph.workflows import GRAPHS
 
 router = APIRouter(prefix="/loan_application",tags=["Loan Application"])
 
@@ -48,22 +48,21 @@ async def get_all_applications(
 
     return CursorPaginationResponse[LoanApplication](items=items, next_cursor=next_cursor)
 
-
 # Get Loan Application by ID
 @router.get("/{application_id}", response_model=LoanApplication)
 async def get_application(application_id: str):
     loan_application = await LoanApplication.get(application_id)
     if not loan_application:
-        raise HTTPException(status_code=404, detail="Instruction not found")
+        raise HTTPException(status_code=404, detail="Loan Application not found")
     return loan_application
 
 
 # Update Loan Application
 @router.put("/{application_id}", response_model=LoanApplication)
-async def update_instruction(application_id: str, data: LoanApplication):
+async def update_application(application_id: str, data: LoanApplication):
     loan_application = await LoanApplication.get(application_id)
     if not loan_application:
-        raise HTTPException(status_code=404, detail="Instruction not found")
+        raise HTTPException(status_code=404, detail="Loan Application not found")
 
     update_data = data.model_dump(exclude_unset=True)
     for field, value in update_data.items():
@@ -76,20 +75,20 @@ async def update_instruction(application_id: str, data: LoanApplication):
 
 # Delete Loan Application
 @router.delete("/{application_id}")
-async def delete_instruction(application_id: str):
+async def delete_application(application_id: str):
     loan_application = await LoanApplication.get(application_id)
     if not loan_application:
-        raise HTTPException(status_code=404, detail="Instruction not found")
+        raise HTTPException(status_code=404, detail="Loan Application not found")
     await loan_application.delete()
     return {"detail": "Instruction deleted"}
 
 
 # Patch Loan Application
 @router.patch("/{application_id}", response_model=LoanApplication)
-async def patch_instruction(application_id: str, data: UpdateLoanApplication = Body(...)):
+async def patch_application(application_id: str, data: UpdateLoanApplication = Body(...)):
     loan_application = await LoanApplication.get(application_id)
     if not loan_application:
-        raise HTTPException(status_code=404, detail="Instruction not found")
+        raise HTTPException(status_code=404, detail="Loan Application not found")
     loan_application.updated_at = datetime.now(timezone.utc)
     await loan_application.update(
         Set(
@@ -100,3 +99,9 @@ async def patch_instruction(application_id: str, data: UpdateLoanApplication = B
         )
     )
     return loan_application
+
+@router.get("/review")
+async def review_loan_application(application: LoanApplication = Body(...)):
+    config = {"configurable":{"thread_id": application.id,"metadata": application.model_dump()}}
+    result = GRAPHS['credit'].invoke({"messages":[]},config=config)
+    print(result)

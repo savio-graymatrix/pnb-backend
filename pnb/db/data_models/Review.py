@@ -7,10 +7,13 @@ class ReviewPoints(Document):
     statement: str
 
 class Review(Document):
-    action: str
+    alert: str
     title: str
+    message: str
     review_points: List[ReviewPoints]
     review_set_id: PydanticObjectId
+    review_comment: str
+    review_status: Literal["pending","resolved","issue"]
 
 class ReviewSet(Document):
     application_id: PydanticObjectId
