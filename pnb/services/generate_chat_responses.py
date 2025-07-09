@@ -372,8 +372,13 @@ async def generate_chat_responses(message: str, checkpoint_id: Optional[str] = N
         event_type = event["event"]
         print(event)
         if event_type in ["on_chat_model_stream","on_chat_model_end"]:
+            if "chunk" not in event['data']:
+                continue
+            
             chunk_content = serialise_ai_message_chunk(event["data"]["chunk"])
             safe_content = chunk_content.replace("'", "\\'").replace("\n", "\\n")
+            if safe_content == "":
+                continue
             yield f"data: {{\"type\": \"content\", \"content\": \"{safe_content}\"}}\n\n"
     # Send an end event
     yield f"data: {{\"type\": \"end\"}}\n\n"
