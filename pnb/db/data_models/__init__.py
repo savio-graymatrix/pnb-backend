@@ -6,7 +6,6 @@ from pnb.db.data_models.LoanApplication import *
 DOCUMENT_MODELS = [
     Instruction,
     Review,
-    ReviewPoints,
     ReviewSet,
     File,
     LoanApplication
