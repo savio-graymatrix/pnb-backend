@@ -10,6 +10,7 @@ dependencies = [
     "fastapi[standard]>=0.115.14",
     "langchain-community>=0.3.27",
     "langchain-core>=0.3.67",
+    "langchain-mongodb>=0.6.2",
     "langchain-openai>=0.3.27",
     "langgraph>=0.5.1",
     "langgraph-supervisor>=0.0.27",
