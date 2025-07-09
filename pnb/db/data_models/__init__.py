@@ -8,6 +8,8 @@ DOCUMENT_MODELS = [
     Review,
     ReviewSet,
     File,
-    LoanApplication
+    LoanApplication,
+    AgentLifeCycle,
+    DocumentChecklist
 
 ]

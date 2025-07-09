@@ -1,18 +1,24 @@
 from fastapi import APIRouter, HTTPException, Body, Query, Depends
 from typing import List, Optional
-from pnb.db.data_models import LoanApplication, UpdateLoanApplication 
-from pnb.db.utils import (
-    CursorPaginationRequest,
-    CursorPaginationResponse
+from pnb.db.data_models import (
+    LoanApplication,
+    UpdateLoanApplication,
+    Review,
+    ReviewSet,
+    CreditResponse,
+    AgentLifeCycle,
+    DocumentChecklist
 )
+from pnb.db.utils import CursorPaginationRequest, CursorPaginationResponse
 from datetime import datetime, timezone
 from beanie.operators import Set
 from pnb.langgraph.workflows import GRAPHS
 from pnb.langgraph.agents.credit_agent import CreditAgent
-from pnb.langgraph.structured_output.Credit import Credit
+from pnb import LOGGER
 
 
-router = APIRouter(prefix="/loan_application",tags=["Loan Application"])
+router = APIRouter(prefix="/loan_application", tags=["Loan Application"])
+
 
 # Create Loan Applications
 @router.post("/")
@@ -48,7 +54,10 @@ async def get_all_applications(
 
     next_cursor = items[-1].id if len(items) == pagination.limit else None
 
-    return CursorPaginationResponse[LoanApplication](items=items, next_cursor=next_cursor)
+    return CursorPaginationResponse[LoanApplication](
+        items=items, next_cursor=next_cursor
+    )
+
 
 # Get Loan Application by ID
 @router.get("/{application_id}", response_model=LoanApplication)
@@ -87,7 +96,9 @@ async def delete_application(application_id: str):
 
 # Patch Loan Application
 @router.patch("/{application_id}", response_model=LoanApplication)
-async def patch_application(application_id: str, data: UpdateLoanApplication = Body(...)):
+async def patch_application(
+    application_id: str, data: UpdateLoanApplication = Body(...)
+):
     loan_application = await LoanApplication.get(application_id)
     if not loan_application:
         raise HTTPException(status_code=404, detail="Loan Application not found")
@@ -102,11 +113,39 @@ async def patch_application(application_id: str, data: UpdateLoanApplication = B
     )
     return loan_application
 
-@router.post("/review", response_model=Credit)
+
+@router.post("/review")
 async def review_loan_application(application: LoanApplication = Body(...)):
-    #print(application)
-    config = {"configurable":{"thread_id": application.id,"metadata": application.model_dump()}}
-    result = await CreditAgent.credit_agent({
+    # print(application)
+    config = {
+        "configurable": {
+            "thread_id": application.id,
+            "metadata": application.model_dump(),
+        }
+    }
+    result = await CreditAgent.credit_agent(
+        {
             "messages": [],  # Initialize with empty messages # Pass loan details directly
-        },config=config)
-    return result
+        },
+        config=config,
+    )
+    review_set = ReviewSet(application_id=application.id)
+    await review_set.insert()
+    credit_response = CreditResponse(
+        review_set=[],
+        agent_lifecycle=[],
+        documents_checklist=[]
+    )
+    for review in result.review_set:
+        review_obj = Review(**review.model_dump(),review_set_id=review_set.id)
+        await review_obj.insert()
+        credit_response.review_set.append(review_obj)
+    for agent in result.agent_lifecycle:
+        agent_obj = AgentLifeCycle(**agent.model_dump(),review_set_id=review_set.id)
+        await agent_obj.insert()
+        credit_response.agent_lifecycle.append(agent_obj)
+    for document in result.documents_checklist:
+        doc_obj = DocumentChecklist(**document.model_dump(),review_set_id=review_set.id)
+        await doc_obj.insert()
+        credit_response.documents_checklist.append(doc_obj)
+    return credit_response
