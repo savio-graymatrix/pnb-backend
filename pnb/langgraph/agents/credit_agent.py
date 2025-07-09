@@ -14,36 +14,38 @@ from pnb.langgraph.tools.aadhar_tool import aadhar_tool
 from pnb.langgraph.tools.pan_tool import pan_tool
 from pnb.langgraph.tools.parser import extract_from_pdf
 from pnb.langgraph.structured_output import Credit
+from pnb import LOGGER
 
 
-class CreditAgent():
+class CreditAgent:
     agent_name = "credit_agent"
 
     @staticmethod
-    async def credit_agent(state: MessagesState, config: RunnableConfig) -> Command[Literal["__end__"]]:
+    async def credit_agent(
+        state: MessagesState, config: RunnableConfig
+    ) -> Command[Literal["__end__"]]:
         aadhar_no = config["configurable"]["metadata"]["aadhar_no"]
         pan_no = config["configurable"]["metadata"]["pan_no"]
-        loan_details = config["configurable"]["metadata"]["documents"]["loan_application_document"]
+        loan_details = config["configurable"]["metadata"]["documents"][
+            "loan_application_document"
+        ]
 
+        instruction_set = await Instruction.find_all().to_list()
+        instruction_set = "\n".join(
+            [instruction.content for instruction in instruction_set]
+        )
 
-        # instruction_set = await Instruction.find({"id": ObjectId(config["configurable"]["thread_id"])})
-        
-        # if instruction_set:
-        #     # Get all instructions for this instruction set
-        #     instructions = await Instruction.find({"id": ObjectId(config["configurable"]["thread_id"])})
-        #     #print(instructions.id)
-        #     instruction_contents = await [instruction.content for instruction in instructions]
-
-
-        
         credit_agent = create_react_agent(
-            OPENAI_LLM,
-            tools=[extract_from_pdf, aadhar_tool, pan_tool],
-            response_format=(Credit),
-            prompt=(
-                """
+                OPENAI_LLM,
+                tools=[extract_from_pdf, aadhar_tool, pan_tool],
+                response_format=(Credit),
+                prompt=(
+                    """
                 You are a credit assistant agent. Your task is to analyze a credit document and provide a structured response based on the instructions provided.
-                
+                Use the instruction set below as guidelines to perform your analysis on the loan document.
+                {instruction_set}
+
+
                 You will have {aadhar_no} which you will use the aadhar_tool to verify the aadhar number. If the tool returns true then it is verified.
                 You will have {pan_no} which you will use the pan_tool to verify the pan number. If the tool returns true then it is verified.
                 You will have {loan_details} you will use the extract_from_pdf tool to extract the loan document and you will use to analyze the loan application and provide a structured response based on the instructions provided.
@@ -106,23 +108,13 @@ recommendation: "Loan can be processed" or "Loan cannot be processed".
 justification: Brief explanation of the recommendation, referencing the instruction_set.
 Ensure the output is clear, concise, and free of errors
                 """.format(
-                    loan_details=loan_details,
-                    pan_no=pan_no,
-                    aadhar_no=aadhar_no
-                    
-                )
-            ),
-        )
+                        loan_details=loan_details,
+                        pan_no=pan_no,
+                        aadhar_no=aadhar_no,
+                        instruction_set=instruction_set,
+                    )
+                ),
+            )
 
         result = await credit_agent.ainvoke(state)
-        return result['structured_response']
-        # return Command(
-        #     update={
-        #         "messages": [
-        #             AIMessage(
-        #                 content=result["messages"][-1].content, name=ComplianceAgent.agent_name
-        #             )
-        #         ]
-        #     },
-        #     goto=END,
-        # )
+        return result["structured_response"]

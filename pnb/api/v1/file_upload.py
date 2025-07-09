@@ -11,7 +11,7 @@ from pnb.services.upload_to_s3 import upload_to_s3
 from uuid import uuid4
 
 ALLOWED_MIME_TYPES = {"image/png", "image/jpeg", "application/pdf"}
-MAX_FILE_SIZE = 5 * 1024 * 1024
+MAX_FILE_SIZE = 20 * 1024 * 1024
 
 router = APIRouter(prefix="/upload", tags=["File Upload"])
 
@@ -35,7 +35,7 @@ async def upload_files(files: List[UploadFile] = FastAPIFile(...)):
             )
 
     if exceptions:
-        return Response(UploadFileExceptionResponse(errors=exceptions), status_code=400)
+        return UploadFileExceptionResponse(errors=exceptions)
     uploaded_files = []
     for file in files:
         ext = file.filename.split(".")[-1]

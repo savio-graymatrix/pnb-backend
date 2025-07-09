@@ -16,10 +16,10 @@ class ChatbotAgent:
     async def chatbot(
         state: MessagesState, config: RunnableConfig
     ):
-        project_id = config["configurable"]["project_id"]
+        project_id = config["configurable"]["thread_id"]
         # bid_id = config["configurable"]["bid_id"]
-        instructions = await Instruction.find({"_id": ObjectId(project_id)}).to_list()
-        instruction_set = [instruction.content for instruction in instructions]
+        instructions = await Instruction.find({"id": project_id}).to_list()
+        # instruction_set = [instruction.content for instruction in instructions]
         
         # instruction_set = await InstructionSet.find_one({"project_id": ObjectId(project_id)})
         
@@ -51,31 +51,27 @@ class ChatbotAgent:
 {INSTRUCTIONS}
 </instructions>
 
-2. Next, review the credit document analysis:
-<credit_review>
-{CREDIT_DOCUMENT}
-</credit_review>
 
-3. When handling user queries, adhere to these guidelines:
+2. When handling user queries, adhere to these guidelines:
    a. Always base your responses on the information provided in the instruction set and credit review.
    b. If a query falls outside the scope of the provided information, politely inform the user that you cannot answer that specific question.
    c. Maintain a professional and helpful tone throughout the interaction.
    d. If clarification is needed, ask the user for more details before providing an answer.
 
-4. Format your responses as follows:
+3. Format your responses as follows:
    a. Begin with a brief acknowledgment of the user's query.
    b. Provide your answer, clearly referencing relevant parts of the instruction set or credit review when applicable.
    c. If appropriate, offer additional context or suggest related information that might be helpful.
 
-5. To address a user query, follow this procedure:
+4. To address a user query, follow this procedure:
    a. Carefully read and understand the user's question.
    b. Identify relevant information from the instruction set and credit review.
    c. Formulate a clear and concise response based on this information.
    d. Double-check that your answer aligns with the provided instructions and credit review.
    e. Present your response to the user.
             """.format(
-                instruction_set=instruction_set,
-                credit_review=document
+                INSTRUCTIONS="\n".join([instruction['content'] for instruction in instructions])
+                # credit_review=document
             ),
             tools=[]
         )
