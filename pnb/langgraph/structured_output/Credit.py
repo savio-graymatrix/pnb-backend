@@ -9,12 +9,12 @@ class Review(BaseModel):
     message: str = Field(description="The reason of the alert by the 'credit_assist_agent'")
 
 class AgentLifeCycle(BaseModel):
-    agent_name: str = Field(description="")
-    action: str = Field(description="")
+    agent_name: str = Field(description="The name of the agent. Please append 'agent' tag to the names and humanise it")
+    reasoning: str = Field(description="The action performed by the agent for their tasks")
 
 class DocumentChecklist(BaseModel):
     document_name: str
-    file_url : HttpUrl
+    file_url : str
     isVerified : bool
 
 class Credit(BaseModel):
