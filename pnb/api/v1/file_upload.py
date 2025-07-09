@@ -21,6 +21,7 @@ async def upload_files(files: List[UploadFile] = FastAPIFile(...)):
     exceptions = []
     for file in files:
         content = await file.read()
+        await file.seek(0)
         if file.content_type not in ALLOWED_MIME_TYPES:
             exceptions.append(
                 FileException(file=file.filename, exception="Unsupported file type")
@@ -37,20 +38,22 @@ async def upload_files(files: List[UploadFile] = FastAPIFile(...)):
     if exceptions:
         return UploadFileExceptionResponse(errors=exceptions)
     uploaded_files = []
-    for file in files:
+    for upload_file in files:
+        upload_content = await upload_file.read()
+        await upload_file.seek(0)
         ext = file.filename.split(".")[-1]
         unique_filename = f"{uuid4().hex}.{ext}"
 
         try:
-            public_url = upload_to_s3(content, unique_filename, file.content_type)
+            public_url = upload_to_s3(upload_content, unique_filename, upload_file.content_type)
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
         file_doc = File(
-            name=file.filename,
+            name=upload_file.filename,
             url=public_url,
-            content_type=file.content_type,
-            size=len(content),
+            content_type=upload_file.content_type,
+            size=len(upload_content),
         )
         await file_doc.insert()
         uploaded_files.append(file_doc)
