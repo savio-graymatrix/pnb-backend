@@ -27,9 +27,10 @@ class LoanApplication(Document):
     established_year: str
     loan_tenure: int
     interest_rate: Decimal = Field(...,gt=0.0,decimal_places=3)
-    application_date: datetime = Field(default_factory=datetime.now().astimezone(timezone.utc))
-    updated_date: datetime = Field(default_factory=datetime.now().astimezone(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda : datetime.now().astimezone(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda : datetime.now().astimezone(timezone.utc))
     documents: LoanApplicationDocuments
+    
     class Settings:
         name = "loan-application"
     
@@ -67,6 +68,6 @@ class UpdateLoanApplication(BaseModel):
     established_year: Optional[str]
     loan_tenure: Optional[int]
     interest_rate: Optional[Decimal] = Field(...,gt=0.0,decimal_places=3)
-    application_date: Optional[datetime] = Field(default_factory=datetime.now().astimezone(timezone.utc))
-    updated_date: Optional[datetime] = Field(default_factory=datetime.now().astimezone(timezone.utc))
+    created_at: Optional[datetime] = Field(default_factory=datetime.now().astimezone(timezone.utc))
+    updated_at: Optional[datetime] = Field(default_factory=datetime.now().astimezone(timezone.utc))
     gstin_document: Optional[PydanticObjectId]
