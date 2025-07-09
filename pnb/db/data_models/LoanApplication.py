@@ -4,7 +4,6 @@ from pydantic import BaseModel, Field, HttpUrl, field_validator
 from decimal import Decimal
 from bson.decimal128 import Decimal128
 from datetime import datetime, timezone
-from pnb.db.data_models import File
 
 class LoanApplicationDocuments(BaseModel):
     aadhar_document: HttpUrl
@@ -31,10 +30,6 @@ class LoanApplication(Document):
     updated_at: datetime = Field(default_factory=lambda : datetime.now().astimezone(timezone.utc))
     documents: LoanApplicationDocuments
     
-    class Settings:
-        name = "loan-application"
-    
-    # # ✅ Validator for Decimal128 values coming from MongoDB
     @field_validator(
         "loan_amount",
         "loan_amount_applied",
@@ -43,6 +38,7 @@ class LoanApplication(Document):
         "interest_rate",
         mode="before"
     )
+    
     @classmethod
     def convert_decimal128(cls, v):
         if isinstance(v, Decimal128):
