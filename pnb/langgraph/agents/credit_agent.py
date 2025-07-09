@@ -5,7 +5,7 @@ from langchain_core.messages import AIMessage
 from langgraph.types import Command
 from langgraph.prebuilt import create_react_agent
 from pnb.langgraph.utils import OPENAI_LLM
-from pnb.langgraph.structured_output import Review, ReviewSet
+from pnb.langgraph.structured_output import Review
 from pnb.langgraph.tools.parser import extract_from_pdf
 from pnb.db.data_models import Instruction
 from pnb.db.data_models import LoanApplication
