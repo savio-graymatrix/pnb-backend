@@ -35,8 +35,7 @@ class CreditAgent:
             [instruction.content for instruction in instruction_set]
         )
 
-        credit_agent = (
-            create_react_agent(
+        credit_agent = create_react_agent(
                 OPENAI_LLM,
                 tools=[extract_from_pdf, aadhar_tool, pan_tool],
                 response_format=(Credit),
@@ -115,8 +114,7 @@ Ensure the output is clear, concise, and free of errors
                         instruction_set=instruction_set,
                     )
                 ),
-            ),
-        )
+            )
 
         result = await credit_agent.ainvoke(state)
         return result["structured_response"]
