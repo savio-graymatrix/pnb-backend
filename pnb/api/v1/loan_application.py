@@ -3,13 +3,14 @@ from typing import List, Optional
 from pnb.db.data_models import LoanApplication, UpdateLoanApplication 
 from pnb.db.utils import (
     CursorPaginationRequest,
-    CursorPaginationResponse,
-    parse_operator_filter,
+    CursorPaginationResponse
 )
 from datetime import datetime, timezone
 from beanie.operators import Set
 from pnb.langgraph.workflows import GRAPHS
 from pnb.langgraph.agents.credit_agent import CreditAgent
+from pnb.langgraph.structured_output.Credit import Credit
+
 
 router = APIRouter(prefix="/loan_application",tags=["Loan Application"])
 
@@ -101,27 +102,11 @@ async def patch_application(application_id: str, data: UpdateLoanApplication = B
     )
     return loan_application
 
-# @router.post("/review")
-# async def review_loan_application(application: LoanApplication = Body(...)):
-#     #print(application)
-#     config = {"configurable":{"thread_id": application.id,"metadata": application.model_dump()}}
-#     result = GRAPHS['credit'].invoke({
-#             "messages": [],  # Initialize with empty messages
-#             "pan_no": application.pan_no,  # Optional: Initialize state directly
-#             "aadhar_no": application.aadhar_no,
-#             "loan_details": application.documents.loan_application_document,  # Pass loan details directly
-#         },config=config)
-#     # result = GRAPHS['credit'].invoke({"messages":[]})
-#     #print(result["structured_response"])
-#     return result["structured_response"]
-
-@router.post("/review")
+@router.post("/review", response_model=Credit)
 async def review_loan_application(application: LoanApplication = Body(...)):
     #print(application)
     config = {"configurable":{"thread_id": application.id,"metadata": application.model_dump()}}
     result = await CreditAgent.credit_agent({
             "messages": [],  # Initialize with empty messages # Pass loan details directly
         },config=config)
-    # result = GRAPHS['credit'].invoke({"messages":[]})
-    #print(result["structured_response"])
     return result
