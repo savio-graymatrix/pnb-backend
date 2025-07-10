@@ -16,8 +16,36 @@ router = APIRouter(prefix="/review", tags=["Reviews"])
 
 
 @router.get("/")
-async def get_all_reviews():
-    pass
+async def get_all_reviews(
+    pagination: CursorPaginationRequest = Depends(),
+    created_at: Optional[str] = Query(None),
+    review_set_id: Optional[str] = Query(None),
+    review_status: Optional[str] = Query(None)
+):
+    query = {}
+    if review_set_id:
+        query["review_set_id"] = PydanticObjectId(review_set_id)    
+    if review_status:
+        query.update(parse_operator_filter("review_status",review_status))
+    sort_field = pagination.sort_by or "created_at"
+    sort_order = pagination.sort_order or -1
+
+    cursor = Review.find(query).sort((sort_field, sort_order))
+
+    if pagination.after_id:
+        after_bid = await Review.get(pagination.after_id)
+        if after_bid:
+            after_value = getattr(after_bid, sort_field)
+            query[sort_field] = {"$lt" if sort_order == -1 else "$gt": after_value}
+            cursor = Review.find(query).sort((sort_field, sort_order))
+
+    items = await cursor.limit(pagination.limit).to_list()
+
+    next_cursor = items[-1].id if len(items) == pagination.limit else None
+
+    return CursorPaginationResponse[Review](
+        items=items, next_cursor=next_cursor
+    )
 
 
 @router.get("/{review_id}", response_model=Review)

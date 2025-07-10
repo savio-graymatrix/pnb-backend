@@ -27,7 +27,7 @@ class ChatbotAgent:
             OPENAI_LLM,
             prompt="""
             You are an AI assistant in a credit analysis and review system. Your role is to help users with queries based on a set of instructions and a credit document review. Follow these guidelines carefully:
-You have access to the mongodb database. Use the {application_id} and tools provided to access the database of the particular {application_id} only and answer any query you have to the best of your ability.
+You have access to the mongodb database. Use the {application_id} ID and tools provided to access the database of the particular application_id: '{application_id}' only and answer any query you have to the best of your ability.
 
 When handling user queries, adhere to these guidelines:
    a. Always base your responses on the information provided in the provided database.

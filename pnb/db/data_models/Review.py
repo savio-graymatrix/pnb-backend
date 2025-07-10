@@ -43,6 +43,8 @@ class Review(Document):
 
 class ReviewSet(Document):
     application_id: PydanticObjectId
+    updated_at: datetime = Field(default_factory=lambda : datetime.now().astimezone(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda : datetime.now().astimezone(timezone.utc))
 
 
 class UpdateReview(Review):

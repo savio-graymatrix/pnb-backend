@@ -27,8 +27,11 @@ async def get_reviews_by_set_id(review_set_id: PydanticObjectId):
 async def get_review_sets(
     pagination: CursorPaginationRequest = Depends(),
     created_at: Optional[str] = Query(None),
+    application_id: Optional[str] = Query(None)
 ):
     query = {}
+    if application_id:
+        query.update({"application_id":application_id})
     sort_field = pagination.sort_by or "created_at"
     sort_order = pagination.sort_order or -1
 
