@@ -1,20 +1,21 @@
 from beanie import Document, PydanticObjectId, before_event, Save
 from typing import Optional, Literal, List
 from pydantic import Field, BaseModel
-
+from datetime import datetime, timezone
 
 
 REVIEW_STATUSES = ["resolved", "rejected"]
 
 
 class Review(Document):
-    alert: str
-    title: str
-    message: str
+    alert: str = None
+    title: str = None
+    message: str = None
     review_set_id: PydanticObjectId
     review_comment: Optional[str] = None
     review_status: Literal["pending", "resolved", "rejected"] = "pending"
-
+    updated_at: datetime = Field(default_factory=lambda : datetime.now().astimezone(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda : datetime.now().astimezone(timezone.utc))
     @before_event(Save)
     async def prevent_status_change(self):
         if self.id is not None:
@@ -45,9 +46,15 @@ class ReviewSet(Document):
 
 
 class UpdateReview(Review):
-    action: Optional[str]
-    title: Optional[str]
-    review_set_id: Optional[PydanticObjectId]
+    alert: Optional[str] = None
+    title: Optional[str] = None
+    message: Optional[str] = None
+    review_comment: Optional[str] = None
+    review_status: Optional[Literal["pending", "resolved", "rejected"]] = None
+    review_set_id: Optional[PydanticObjectId] = None
+
+    class Config:
+        extra = "forbid"
 
 class ReviewSetResponse(ReviewSet):
     reviews: List[Review]
