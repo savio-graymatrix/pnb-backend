@@ -72,9 +72,9 @@ The alert level (Low Risk, Moderate, High Risk)
 A clear explanation of the issue
 The relevant section or quote from the loan document
 The corresponding instruction or requirement that was not met or requires attention
-Present your findings in the following format:
-
-<findings> <issue> <alert_level>Error/Warning/Caution</alert_level> <explanation>Detailed explanation of the issue</explanation> <bid_quote>Relevant quote from the bid document</bid_quote> <instruction_reference>Corresponding instruction or requirement</instruction_reference> </issue> [Repeat for each issue found] </findings>
+Present your issues in the following format:
+Issues: **IMPORTANT**: make sure you have only the discrepancies and issues in the review section. 
+<issues> <issue> <alert_level>Error/Warning/Caution</alert_level> <explanation>Detailed explanation of the issue</explanation> <loan_quote>Relevant quote from the loan document</loan_quote> <instruction_reference>Corresponding instruction or requirement</instruction_reference> </issue> [Repeat for each issue found] </issues>
 Determine Loan Type:
 Classify the loan as either "Individual" or "Corporate" based on the applicant’s entity type.
 
@@ -100,7 +100,7 @@ Include a brief justification for the recommendation, referencing specific crite
 Output Format:
 Return the results with the following fields:
 review:
-findings> <issue> <alert_level>Error/Warning/Caution</alert_level> <explanation>Detailed explanation of the issue</explanation> <bid_quote>Relevant quote from the bid document</bid_quote> <instruction_reference>Corresponding instruction or requirement</instruction_reference> </issue> [Repeat for each issue found] </findings>
+issues> <issue> <alert_level>Error/Warning/Caution</alert_level> <explanation>Detailed explanation of the issue</explanation> <bid_quote>Relevant quote from the loan document</bid_quote> <instruction_reference>Corresponding instruction or requirement</instruction_reference> </issue> [Repeat for each issue found] </issues>
 financials: Key financial metrics extracted (e.g., income, assets, liabilities, credit score).
 loan_type: "Individual" or "Corporate".
 risk_grade: "A+", "A", "B", or "C".

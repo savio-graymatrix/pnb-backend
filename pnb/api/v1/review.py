@@ -55,15 +55,17 @@ async def delete_review(review_id: PydanticObjectId):
 @router.patch("/{review_id}")
 async def patch_review(review_id: PydanticObjectId, data: UpdateReview = Body(...)):
     review = await Review.get(review_id)
+    update_data = data.dict(exclude_unset=True)
     if not review:
         raise HTTPException(status_code=404, detail="Instruction not found")
     review.updated_at = datetime.now(timezone.utc)
-    await review.update(
-        Set(
-            {
-                getattr(Review, f): v
-                for f, v in data.model_dump(exclude_unset=True).items()
-            }
-        )
-    )
+    # await review.set(
+    #     Set(
+    #         {
+    #             getattr(Review, f): v
+    #             for f, v in data.model_dump(exclude_unset=True).items()
+    #         }
+    #     )
+    # )
+    await review.update(Set(update_data))
     return review
