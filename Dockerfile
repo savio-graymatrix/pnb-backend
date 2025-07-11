@@ -11,7 +11,7 @@ COPY pyproject.toml uv.lock ./
 RUN pip install --upgrade pip && pip install pdm
 
 # Install project dependencies (production only)
-RUN PDM_VENV_IN_PROJECT=1 pdm config python.use_venv false && pdm install --prod
+#RUN PDM_VENV_IN_PROJECT=1 pdm config python.use_venv false && pdm install --prod
 
 # Copy the rest of the application code
 COPY . .
