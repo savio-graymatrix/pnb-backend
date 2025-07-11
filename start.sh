@@ -3,4 +3,6 @@
 # Optionally run migrations or other setup steps here
 
 # Run the app
+exec source .venv/bin/activate
+exec uv sync
 exec uvicorn pnb.main:app --host 0.0.0.0 --port 8000 --workers 2
