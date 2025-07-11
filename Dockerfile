@@ -8,7 +8,7 @@ WORKDIR /app
 COPY pyproject.toml uv.lock ./
 
 # Install pip and PDM
-RUN pip install --upgrade pip && pip install pdm
+RUN pip install --upgrade pip && pip install pdm && pip install uv
 
 # Install project dependencies (production only)
 #RUN PDM_VENV_IN_PROJECT=1 pdm config python.use_venv false && pdm install --prod
