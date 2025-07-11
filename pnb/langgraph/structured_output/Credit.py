@@ -21,5 +21,6 @@ class Credit(BaseModel):
     review_set: List[Review] = Field(description="The review set in as in the response by the 'credit_assist_agent'")
     agent_lifecycle: List[AgentLifeCycle] = Field(description="")
     documents_checklist: List[DocumentChecklist] = Field(description="")
+    
 
  

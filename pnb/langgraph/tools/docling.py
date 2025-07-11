@@ -103,3 +103,6 @@ def extract_from_docling(file_url: str) -> str:
     except Exception as e:
         _log.error(f"Docling: Error processing document: {str(e)}")
         return f"Error processing document: {str(e)}"
+
+
+print(extract_from_docling("https://ssm-talkk-dev.pocs.tech/3b9fefd95c2b46c09f60c285dd76b217.pdf"))
