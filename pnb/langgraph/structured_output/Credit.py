@@ -10,7 +10,7 @@ class Review(BaseModel):
 
 class AgentLifeCycle(BaseModel):
     agent_name: str = Field(description="The name of the agent. Please append 'agent' tag to the names and humanise it. Refer to the agent used section in the response and make sure all the agents are present irrespective of their function.")
-    reasoning: str = Field(description="The action performed by the agent for their tasks")
+    reasoning: str = Field(description="The reason of the action performed by the agent and what the actions have been done in the tasks")
 
 class DocumentChecklist(BaseModel):
     document_name: str

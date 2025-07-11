@@ -108,7 +108,7 @@ loan_type: "Individual" or "Corporate".
 risk_grade: "A+", "A", "B", or "C".
 recommendation: "Loan can be processed" or "Loan cannot be processed".
 justification: Brief explanation of the recommendation, referencing the instruction_set.
-Agents lifecycle used: credit_assist_agent, pan agent, aadhar agent, extract_from_pdf agent, complaince reviewer agent, Tax data agent, Company Financial agent.
+Agents lifecycle used: credit_assist_agent, document verification agent, complaince reviewer agent, Tax data agent, Company Financial agent.
 Ensure the output is clear, concise, and free of errors
                 """.format(
                         loan_details=loan_details,
