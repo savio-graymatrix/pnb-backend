@@ -29,6 +29,9 @@ class LoanApplication(Document):
     created_at: datetime = Field(default_factory=lambda : datetime.now().astimezone(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda : datetime.now().astimezone(timezone.utc))
     documents: LoanApplicationDocuments
+
+    class Settings:
+        name = "loan-application"
     
     @field_validator(
         "loan_amount",

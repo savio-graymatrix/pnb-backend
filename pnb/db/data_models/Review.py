@@ -16,6 +16,10 @@ class Review(Document):
     review_status: Literal["pending", "resolved", "rejected"] = "pending"
     updated_at: datetime = Field(default_factory=lambda : datetime.now().astimezone(timezone.utc))
     created_at: datetime = Field(default_factory=lambda : datetime.now().astimezone(timezone.utc))
+
+    class Settings:
+        name = "review"
+
     @before_event(Save)
     async def prevent_status_change(self):
         if self.id is not None:
@@ -45,6 +49,8 @@ class ReviewSet(Document):
     application_id: PydanticObjectId
     updated_at: datetime = Field(default_factory=lambda : datetime.now().astimezone(timezone.utc))
     created_at: datetime = Field(default_factory=lambda : datetime.now().astimezone(timezone.utc))
+    class Settings:
+        name = "review-set"
 
 
 class UpdateReview(Review):
@@ -65,12 +71,17 @@ class AgentLifeCycle(Document):
     review_set_id : PydanticObjectId = Field(description="Parent Review Set ID")
     agent_name: str = Field(description="The name of the agent. Please append 'agent' tag to the names and humanise it")
     reasoning: str = Field(description="The action performed by the agent for their tasks")
+    class Settings:
+        name = "agent-lifecycle"
 
 class DocumentChecklist(Document):
     review_set_id : PydanticObjectId = Field(description="Parent Review Set ID")
     document_name: str
     file_url : str
     isVerified : bool
+
+    class Settings:
+        name = "document-checklist"
 
 class CreditResponse(BaseModel):
     review_set: List[Review] = Field(description="The review set in as in the response by the 'credit_assist_agent'")
