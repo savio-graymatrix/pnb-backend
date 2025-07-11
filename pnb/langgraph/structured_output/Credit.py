@@ -9,7 +9,7 @@ class Review(BaseModel):
     message: str = Field(description="The reason of the alert by the 'credit_assist_agent'. Make sure it is an issue or a discrepancy explicitly.")
 
 class AgentLifeCycle(BaseModel):
-    agent_name: str = Field(description="The name of the agent. Please append 'agent' tag to the names and humanise it. You should use the tool names as agents and remove the word 'tool'.")
+    agent_name: str = Field(description="The name of the agent. Please append 'agent' tag to the names and humanise it. Refer to the agent used section in the response and make sure all the agents are present irrespective of their function.")
     reasoning: str = Field(description="The action performed by the agent for their tasks")
 
 class DocumentChecklist(BaseModel):
@@ -21,6 +21,6 @@ class Credit(BaseModel):
     review_set: List[Review] = Field(description="The review set in as in the response by the 'credit_assist_agent'")
     agent_lifecycle: List[AgentLifeCycle] = Field(description="")
     documents_checklist: List[DocumentChecklist] = Field(description="")
-    
+
 
  

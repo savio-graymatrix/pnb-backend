@@ -15,7 +15,7 @@ from pnb.langgraph.tools.pan_tool import pan_tool
 from pnb.langgraph.tools.parser import extract_from_pdf
 from pnb.langgraph.structured_output import Credit
 from pnb import LOGGER
-from pnb.langgraph.tools.docling import extract_from_docling
+
 
 
 class CreditAgent:
@@ -30,12 +30,6 @@ class CreditAgent:
         loan_details = config["configurable"]["metadata"]["documents"][
             "loan_application_document"
         ]
-        aadhar_doc = config["configurable"]["metadata"]["documents"][
-            "aadhar_document"
-        ]
-        pan_doc = config["configurable"]["metadata"]["documents"][
-            "pan_document"
-        ]
 
         instruction_set = await Instruction.find_all().to_list()
         instruction_set = "\n".join(
@@ -44,7 +38,7 @@ class CreditAgent:
 
         credit_agent = create_react_agent(
                 OPENAI_LLM,
-                tools=[extract_from_pdf, aadhar_tool, pan_tool, extract_from_docling],
+                tools=[extract_from_pdf, aadhar_tool, pan_tool],
                 response_format=(Credit),
                 prompt=(
                     """
@@ -56,8 +50,7 @@ class CreditAgent:
                 You will have {aadhar_no} which you will use the aadhar_tool to verify the aadhar number. If the tool returns true then it is verified.
                 You will have {pan_no} which you will use the pan_tool to verify the pan number. If the tool returns true then it is verified.
                 You will have {loan_details} you will use the extract_from_pdf tool to extract the loan document and you will use to analyze the loan application and provide a structured response based on the instructions provided.
-                You will have {aadhar_doc} which you will use the extract_from_docling tool to extract the aadhar document and you will use to analyze the aadhar document and provide a structured response based on the instructions provided.
-                You will have {pan_doc} which you will use the extract_from_docling tool to extract the pan document and you will use to analyze the pan document and provide a structured response based on the instructions provided.
+            
                 Parse the Loan Application:
 Use the parser tool to extract key details from the loan_application, including but not limited to:
 
@@ -115,14 +108,14 @@ loan_type: "Individual" or "Corporate".
 risk_grade: "A+", "A", "B", or "C".
 recommendation: "Loan can be processed" or "Loan cannot be processed".
 justification: Brief explanation of the recommendation, referencing the instruction_set.
+Agents lifecycle used: credit_assist_agent, pan agent, aadhar agent, extract_from_pdf agent, complaince reviewer agent, Tax data agent, Company Financial agent.
 Ensure the output is clear, concise, and free of errors
                 """.format(
                         loan_details=loan_details,
                         pan_no=pan_no,
                         aadhar_no=aadhar_no,
                         instruction_set=instruction_set,
-                        aadhar_doc=aadhar_doc,
-                        pan_doc=pan_doc,
+                        
                     )
                 ),
             )
