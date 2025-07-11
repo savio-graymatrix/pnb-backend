@@ -15,7 +15,7 @@ pipelines:
                     - unzip awscliv2.zip
                     - ./aws/install
                     - export IMAGE_NAME="moris/${BITBUCKET_BRANCH}-rasa-${BITBUCKET_REPO_SLUG}"
-                    # Build the docker image and push to Dockerhub.
+                    # Build the docker image and push to . Dockerhub.
                     - docker build -t demo-pnb-backend .
                     - docker images
                     - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 912708290344.dkr.ecr.us-east-1.amazonaws.com
