@@ -3,6 +3,7 @@ from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage
 from typing import Optional
 from pnb.langgraph.workflows import GRAPHS
 import json
+from pnb import LOGGER
 
 def serialise_ai_message_chunk(chunk): 
     if(isinstance(chunk, AIMessageChunk)):
@@ -50,6 +51,7 @@ async def generate_chat_responses(message: str, checkpoint_id: Optional[str] = N
 
     async for event in events:
         event_type = event["event"]
+        LOGGER.debug(event)
         if event_type in ["on_tool_end","on_tool_start"]:
             continue
         if event_type in ["on_chat_model_stream","on_chat_model_end"]:
