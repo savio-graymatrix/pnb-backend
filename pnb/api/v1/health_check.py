@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query, Depends, Body
 
-router = APIRouter(prefix="/health-check", tags=["Health Check"])
+router = APIRouter(prefix="/health_check", tags=["Health Check"])
 
 @router.get("/")
 async def health_check():
