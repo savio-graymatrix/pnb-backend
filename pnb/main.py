@@ -15,7 +15,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:5173", "https://798ef4034ebe.ngrok-free.app", "http://localhost:8000"],  
+        allow_origins=["https://genapp.pocs.tech"],  
         allow_credentials=True,
         allow_methods=["*"],  
         allow_headers=["*"],
