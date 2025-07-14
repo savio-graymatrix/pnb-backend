@@ -46,7 +46,7 @@ Assess financial health, creditworthiness, and risk factors based on the extract
 Check for compliance with all relevant regulations and policies specified in the instruction_set (e.g., debt-to-income ratio, credit score thresholds, KYC/AML requirements).
 Conduct a thorough comparison of the loan document against the instructions. For each issue you identify, provide:
 
-The alert level (Low Risk, Moderate, High Risk)
+The alert level (No Risk, Low Risk, Moderate Risk, High Risk)
 A clear explanation of the issue
 The relevant section or quote from the loan document
 The corresponding instruction or requirement that was not met or requires attention
@@ -59,11 +59,11 @@ Classify the loan as either "Individual" or "Corporate" based on the applicantâ€
 Assign Risk Grade:
 Based on the instruction_set, assign a risk grade to the application:
 
-A+: Exceptional creditworthiness, minimal risk.
+A+: Exceptional creditworthiness, no risk.
 
 A: Strong creditworthiness, low risk.
 
-B: Moderate creditworthiness, acceptable risk.
+B: Moderate creditworthiness, moderate risk.
 
 C: High risk, potential concerns.
 

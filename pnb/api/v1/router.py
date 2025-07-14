@@ -5,6 +5,7 @@ from .review import router as review_router
 from .file_upload import router as file_upload_router
 from .loan_application import router as loan_application_router
 from fastapi.routing import APIRouter
+from .health_check import router as health_check_router
 
 router = APIRouter(prefix="/v1")
 router.include_router(instruction_router)
@@ -13,3 +14,4 @@ router.include_router(review_set_router)
 router.include_router(review_router)
 router.include_router(file_upload_router)
 router.include_router(loan_application_router)
+router.include_router(health_check_router)

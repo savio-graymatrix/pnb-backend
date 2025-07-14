@@ -15,6 +15,9 @@ class File(Document):
         default_factory=datetime.now().astimezone(timezone.utc).isoformat
     )
 
+    class Settings:
+        name = "file"
+
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
