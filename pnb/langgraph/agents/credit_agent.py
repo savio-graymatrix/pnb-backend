@@ -27,6 +27,7 @@ class CreditAgent:
     ) -> Command[Literal["__end__"]]:
         aadhar_no = config["configurable"]["metadata"]["aadhar_no"]
         pan_no = config["configurable"]["metadata"]["pan_no"]
+        gstin = config["configurable"]["metadata"]["gstin"]
         loan_details = config["configurable"]["metadata"]["documents"][
             "loan_application_document"
         ]
@@ -56,7 +57,7 @@ class CreditAgent:
 
         credit_agent = create_react_agent(
             OPENAI_LLM,
-            tools=[aadhar_tool, pan_tool],
+            tools=[aadhar_tool, pan_tool, gst_tool],
             response_format=(Credit),
             prompt=(
                 """
@@ -67,6 +68,7 @@ class CreditAgent:
 
                 You will have {aadhar_no} which you will use the aadhar_tool to verify the aadhar number. If the tool returns true then it is verified.
                 You will have {pan_no} which you will use the pan_tool to verify the pan number. If the tool returns true then it is verified.
+                You will have {gstin} which you will use the gst_tool to verify the gst number. If the tool returns true then it is verified.
                 You will have content available below which you will use to analyze the loan application and provide a structured response based on the instructions provided.
                 Extracted Content:\n{combined_content}
                 
@@ -96,7 +98,7 @@ Present your issues in the following format:
 Issues: **IMPORTANT**: make sure you have only the discrepancies and issues in the review section. 
 <issues> <issue> <alert_level>Error/Warning/Caution</alert_level> <explanation>Detailed explanation of the issue</explanation> <loan_quote>Relevant quote from the loan document</loan_quote> <instruction_reference>Corresponding instruction or requirement</instruction_reference> </issue> [Repeat for each issue found] </issues>
 Determine Loan Type:
-Classify the loan as either "Individual" or "Corporate" based on the applicant’s entity type.
+Classify the loan as either "Individual" or "Corporate" based on the applicant's entity type.
 
 Assign Risk Grade:
 Based on the instruction_set, assign a risk grade to the application:
@@ -136,6 +138,7 @@ Ensure the output is clear, concise, and free of errors
                     combined_content=combined_content,
                     aadhar=aadhar_application,
                     pan=pan_application,
+                    gstin=gstin,
                 )
             ),
         )
