@@ -8,7 +8,6 @@ WORKDIR /app
 COPY pyproject.toml uv.lock ./
 
 # Install pip and PDM
-RUN sudo apt install tesseract-ocr poppler-utils -y
 RUN pip install --upgrade pip && pip install pdm && pip install uv
 
 # Install project dependencies (production only)
