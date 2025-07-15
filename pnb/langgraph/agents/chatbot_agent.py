@@ -13,6 +13,7 @@ from langchain_mongodb.agent_toolkit.toolkit import MongoDBDatabaseToolkit
 from langchain_mongodb.agent_toolkit.database import MongoDBDatabase
 from pnb import SETTINGS
 from langchain_mongodb.agent_toolkit.prompt import MONGODB_AGENT_SYSTEM_PROMPT
+from bson.objectid import ObjectId
 
 
 class ChatbotAgent:
@@ -28,15 +29,15 @@ class ChatbotAgent:
             [instruction.content for instruction in instruction_set]
         )
 
-        review_set = await ReviewSet.find_one({"application_id": id})
+        review_set = await ReviewSet.find_one({"application_id": ObjectId(id)})
         review_set_info = ""
         if review_set:
             review_set_info = (
                 f"Review Set Details:\n"
-                f"  Review Set ID: {review_set['_id']}\n"
-                f"  Application ID: {review_set['application_id']}\n"
-                f"  Created At: {review_set['created_at']}\n"
-                f"  Updated At: {review_set['updated_at']}\n"
+                f"  Review Set ID: {review_set.id}\n"
+                f"  Application ID: {review_set.application_id}\n"
+                f"  Created At: {review_set.created_at}\n"
+                f"  Updated At: {review_set.updated_at}\n"
             )
         else:
             review_set_info = "No Review Set found for this application.\n"
@@ -50,11 +51,11 @@ class ChatbotAgent:
         if reviews:
             reviews_info += "\n".join(
                 [
-                    f"  - Title: {review['title']}\n"
-                    f"    Alert: {review['alert']}\n"
-                    f"    Message: {review['message']}\n"
-                    f"    Status: {review['review_status']}\n"
-                    f"    Created At: {review['created_at']}\n"
+                    f"  - Title: {review.title}\n"
+                    f"    Alert: {review.alert}\n"
+                    f"    Message: {review.message}\n"
+                    f"    Status: {review.review_status}\n"
+                    f"    Created At: {review.created_at}\n"
                     for review in reviews
                 ]
             )
@@ -69,8 +70,8 @@ class ChatbotAgent:
         if agent_lifecycles:
             agent_lifecycle_info += "\n".join(
                 [
-                    f"  - Agent: {alc['agent_name']}\n"
-                    f"    Reasoning: {alc['reasoning']}\n"
+                    f"  - Agent: {alc.agent_name}\n"
+                    f"    Reasoning: {alc.reasoning}\n"
                     for alc in agent_lifecycles
                 ]
             )
@@ -85,8 +86,8 @@ class ChatbotAgent:
         if document_checklists:
             document_checklist_info += "\n".join(
                 [
-                    f"  - Document: {dc['document_name']}\n"
-                    f"    Verified: {dc['isVerified']}\n"
+                    f"  - Document: {dc.document_name}\n"
+                    f"    Verified: {dc.isVerified}\n"
                     for dc in document_checklists
                 ]
             )
