@@ -6,11 +6,15 @@ from langchain_core.messages import AIMessage
 from langgraph.types import Command
 from pnb.langgraph.utils import OPENAI_LLM
 from pnb.db.data_models import Instruction
+from pnb.db.data_models.Review import Review, DocumentChecklist, AgentLifeCycle, ReviewSet
+from pnb.db.data_models.LoanApplication import LoanApplication
 from pnb import LOGGER
 from langchain_mongodb.agent_toolkit.toolkit import MongoDBDatabaseToolkit
 from langchain_mongodb.agent_toolkit.database import MongoDBDatabase
 from pnb import SETTINGS
-from langchain_mongodb.agent_toolkit import MONGODB_AGENT_SYSTEM_PROMPT
+from langchain_mongodb.agent_toolkit.prompt import MONGODB_AGENT_SYSTEM_PROMPT
+from bson.objectid import ObjectId
+
 
 class ChatbotAgent:
     agent_name = "chatbot_agent"
@@ -20,37 +24,106 @@ class ChatbotAgent:
         state: MessagesState, config: RunnableConfig
     ):
         id = config["configurable"]["thread_id"]
+        instruction_set = await Instruction.find_all().to_list()
+        instruction_set = "\n".join(
+            [instruction.content for instruction in instruction_set]
+        )
+
+        review_set = await ReviewSet.find_one({"application_id": ObjectId(id)})
+        review_set_info = ""
+        if review_set:
+            review_set_info = (
+                f"Review Set Details:\n"
+                f"  Review Set ID: {review_set.id}\n"
+                f"  Application ID: {review_set.application_id}\n"
+                f"  Created At: {review_set.created_at}\n"
+                f"  Updated At: {review_set.updated_at}\n"
+            )
+        else:
+            review_set_info = "No Review Set found for this application.\n"
+
+        # Fetch reviews linked to review_set_id
+        review_set_id = review_set.id if review_set else None
+        reviews = []
+        if review_set_id:
+            reviews = await Review.find({"review_set_id": review_set_id}).to_list()
+        reviews_info = "Reviews:\n"
+        if reviews:
+            reviews_info += "\n".join(
+                [
+                    f"  - Title: {review.title}\n"
+                    f"    Alert: {review.alert}\n"
+                    f"    Message: {review.message}\n"
+                    f"    Status: {review.review_status}\n"
+                    f"    Created At: {review.created_at}\n"
+                    for review in reviews
+                ]
+            )
+        else:
+            reviews_info += "  No reviews found.\n"
+
+        # Fetch agent-lifecycle linked to review_set_id
+        agent_lifecycles = []
+        if review_set_id:
+            agent_lifecycles = await AgentLifeCycle.find({"review_set_id": review_set_id}).to_list()
+        agent_lifecycle_info = "Agent Lifecycle Events:\n"
+        if agent_lifecycles:
+            agent_lifecycle_info += "\n".join(
+                [
+                    f"  - Agent: {alc.agent_name}\n"
+                    f"    Reasoning: {alc.reasoning}\n"
+                    for alc in agent_lifecycles
+                ]
+            )
+        else:
+            agent_lifecycle_info += "  No agent lifecycle events found.\n"
+
+        # Fetch document-checklist linked to review_set_id
+        document_checklists = []
+        if review_set_id:
+            document_checklists = await DocumentChecklist.find({"review_set_id": review_set_id}).to_list()
+        document_checklist_info = "Document Checklist:\n"
+        if document_checklists:
+            document_checklist_info += "\n".join(
+                [
+                    f"  - Document: {dc.document_name}\n"
+                    f"    Verified: {dc.isVerified}\n"
+                    for dc in document_checklists
+                ]
+            )
+        else:
+            document_checklist_info += "  No documents found.\n"
+
+        # Combine all context
+        context = (
+            f"{instruction_set}\n\n"
+            f"{review_set_info}\n"
+            f"{reviews_info}\n"
+            f"{agent_lifecycle_info}\n"
+            f"{document_checklist_info}"
+        )
+
         db = MongoDBDatabase.from_connection_string(SETTINGS.MONGO_URI, database=SETTINGS.DB_NAME)
         toolkit = MongoDBDatabaseToolkit(db=db, llm=OPENAI_LLM)
 
-        system_message = MONGODB_AGENT_SYSTEM_PROMPT.format(top_k=5)
+        system_message = MONGODB_AGENT_SYSTEM_PROMPT
 
 
         chatbot_agent = create_react_agent(
             OPENAI_LLM,
             prompt="""
-            You are an AI assistant in a credit analysis and review system. Your role is to help users with queries based on a set of instructions and a credit document review. Follow these guidelines carefully:
-You have access to the mongodb database.These are information regarding mongodb: {mongodb}\n\n Use this {id} to find the data. Your job is to only answer any query regarding this id you have to the best of your ability.
+id: {id}            
+You are an assistant handled to help with queries based on the generated context. You are in a loan application review and analysis process.
+Below is the context based on the {id}:
+generated reviews and analysis: {context}
 
-When handling user queries, adhere to these guidelines:
-   a. Always base your responses on the information provided in the provided database.
-   b. Maintain a professional and helpful tone throughout the interaction.
+Analyze the user inputs and answer them according to the context provided.
+Make sure you answe accurately based on the data and do not hallucinate.
 
-**IMPORTANT**: if you are asked to create a CAM report, generate a report based on the details you find in the db using the {id} given to you.
-
-Format your responses as follows:
-   a. Provide your answer, clearly referencing relevant parts of the database when applicable.
-   b. If appropriate, offer additional context or suggest related information that might be helpful.
-
-To address a user query, follow this procedure:
-   a. Carefully read and understand the user's question.
-   b. Use all of your tools to understand the schema of the collection
-   b. Identify relevant information from the database.
-   c. Formulate a clear and concise response based on this information.
-   d. Double-check that your answer aligns with the provided database.
-   e. Present your response to the user.
-            """.format(id=id, mongodb=system_message),
+**IMPORTANT**: if you are asked to create a CAM report, generate a report based on the details you find in the context given to you.
+""".format(id=id, top_k=5, context=context),
             tools=toolkit.get_tools(),
+
         )
         result = await chatbot_agent.ainvoke(state)
         LOGGER.debug(result)
@@ -62,6 +135,26 @@ To address a user query, follow this procedure:
             },
             goto=END,
         )
+
+#prompt:
+# When handling user queries, adhere to these guidelines:
+#    a. Always base your responses on the information provided in the provided database.
+#    b. Maintain a professional and helpful tone throughout the interaction.
+
+# **IMPORTANT**: if you are asked to create a CAM report, generate a report based on the details you find in the db using the {id} given to you.
+
+# Format your responses as follows:
+#    a. Provide your answer, clearly referencing relevant parts of the database when applicable.
+#    b. If appropriate, offer additional context or suggest related information that might be helpful.
+
+# To address a user query, follow this procedure:
+#    a. Carefully read and understand the user's question.
+#    b. Use all of your tools to understand the schema of the collection
+#    b. Identify relevant information from the database.
+#    c. Formulate a clear and concise response based on this information.
+#    d. Double-check that your answer aligns with the provided database.
+#    e. Present your response to the user.
+
 
 # class UpdateReviewInput(BaseModel):
 #     review_id: str = Field(..., description="The ID of the review to update")
