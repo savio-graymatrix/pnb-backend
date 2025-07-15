@@ -2,12 +2,12 @@ from langchain_core.tools import tool
 import re
 
 @tool
-def verify_gst_number(gst_number: Optional[str]) -> bool:
+def verify_gst_number(gst_number: str) -> bool:
     """
     Mock function to verify a GST number.
     
     Args:
-        gst_number (Optional[str]): The GST number to verify (e.g., '22AAAAA0000A1Z5').
+        gst_number (str): The GST number to verify (e.g., '22AAAAA0000A1Z5').
         
     Returns:
         bool: True if the GST number is valid, False otherwise.

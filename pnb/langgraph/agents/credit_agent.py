@@ -16,7 +16,7 @@ from pnb.langgraph.tools.parser import extract_from_pdf
 from pnb.langgraph.structured_output import Credit
 from pnb import LOGGER
 from pnb.db.data_models.ExtractedFile import ExtractedDocument
-from pnb.langgraph.tools.gst_tool import gst_tool
+from pnb.langgraph.tools.gst_tool import verify_gst_number
 
 
 class CreditAgent:
@@ -58,7 +58,7 @@ class CreditAgent:
 
         credit_agent = create_react_agent(
             OPENAI_LLM,
-            tools=[aadhar_tool, pan_tool, gst_tool],
+            tools=[aadhar_tool, pan_tool, verify_gst_number],
             response_format=(Credit),
             prompt=(
                 """
