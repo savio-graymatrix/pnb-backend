@@ -16,6 +16,7 @@ from pnb.langgraph.tools.parser import extract_from_pdf
 from pnb.langgraph.structured_output import Credit
 from pnb import LOGGER
 from pnb.db.data_models.ExtractedFile import ExtractedDocument
+from pnb.langgraph.tools.gst_tool import gst_tool
 
 
 class CreditAgent:
