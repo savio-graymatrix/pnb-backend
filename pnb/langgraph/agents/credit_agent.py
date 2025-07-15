@@ -15,7 +15,7 @@ from pnb.langgraph.tools.pan_tool import pan_tool
 from pnb.langgraph.tools.parser import extract_from_pdf
 from pnb.langgraph.structured_output import Credit
 from pnb import LOGGER
-
+from pnb.db.data_models.ExtractedFile import ExtractedDocument
 
 
 class CreditAgent:
@@ -30,6 +30,24 @@ class CreditAgent:
         loan_details = config["configurable"]["metadata"]["documents"][
             "loan_application_document"
         ]
+        aadhar_application = config["configurable"]["metadata"]["documents"][
+            "aadhar_document"
+        ]
+        pan_application = config["configurable"]["metadata"]["documents"][
+            "pan_document"
+        ]
+
+        link_to_id = config["configurable"]["thread_id"]
+        collection = ExtractedDocument.find({"link_to.$id": ObjectId(link_to_id)})
+        cursor = await collection.to_list()
+
+        # Extract content from each document
+        # contents = [doc["content"]  for doc in cursor.to_list()]
+
+        # Concatenate contents with newlines
+        combined_content = "\n".join(
+            f"{doc.content}\nMetadata for above chunk{doc.metadata}" for doc in cursor
+        )
 
         instruction_set = await Instruction.find_all().to_list()
         instruction_set = "\n".join(
@@ -37,11 +55,11 @@ class CreditAgent:
         )
 
         credit_agent = create_react_agent(
-                OPENAI_LLM,
-                tools=[extract_from_pdf, aadhar_tool, pan_tool],
-                response_format=(Credit),
-                prompt=(
-                    """
+            OPENAI_LLM,
+            tools=[aadhar_tool, pan_tool],
+            response_format=(Credit),
+            prompt=(
+                """
                 You are a credit assistant agent. Your task is to analyze a credit document and provide a structured response based on the instructions provided.
                 Use the instruction set below as guidelines to perform your analysis on the loan document.
                 {instruction_set}
@@ -49,10 +67,11 @@ class CreditAgent:
 
                 You will have {aadhar_no} which you will use the aadhar_tool to verify the aadhar number. If the tool returns true then it is verified.
                 You will have {pan_no} which you will use the pan_tool to verify the pan number. If the tool returns true then it is verified.
-                You will have {loan_details} you will use the extract_from_pdf tool to extract the loan document and you will use to analyze the loan application and provide a structured response based on the instructions provided.
-            
-                Parse the Loan Application:
-Use the parser tool to extract key details from the loan_application, including but not limited to:
+                You will have content available below which you will use to analyze the loan application and provide a structured response based on the instructions provided.
+                Extracted Content:\n{combined_content}
+                
+                Analyze the Loan Application:
+Extract key details from the loan_application, including but not limited to:
 
 Applicant details (name, entity type: individual or corporate).
 
@@ -62,11 +81,10 @@ Loan details (amount, purpose, term, collateral, etc.).
 
 Compliance-related information (KYC, AML status, regulatory flags, etc.).
 
-Store the extracted data in a structured format for analysis.
 
 Analyze Using Instruction Set:
 Apply the rules and criteria outlined in the instruction_set to evaluate the loan application.
-Assess financial health, creditworthiness, and risk factors based on the extracted data.
+Assess financial health, creditworthiness, and risk factors based on the combined data.
 Check for compliance with all relevant regulations and policies specified in the instruction_set (e.g., debt-to-income ratio, credit score thresholds, KYC/AML requirements).
 Conduct a thorough comparison of the loan document against the instructions. For each issue you identify, provide:
 
@@ -111,14 +129,16 @@ justification: Brief explanation of the recommendation, referencing the instruct
 Agents lifecycle used: credit_assist_agent, document verification agent, complaince reviewer agent, Tax data agent, Company Financial agent.
 Ensure the output is clear, concise, and free of errors
                 """.format(
-                        loan_details=loan_details,
-                        pan_no=pan_no,
-                        aadhar_no=aadhar_no,
-                        instruction_set=instruction_set,
-                        
-                    )
-                ),
-            )
+                    loan_details=loan_details,
+                    pan_no=pan_no,
+                    aadhar_no=aadhar_no,
+                    instruction_set=instruction_set,
+                    combined_content=combined_content,
+                    aadhar=aadhar_application,
+                    pan=pan_application,
+                )
+            ),
+        )
 
         result = await credit_agent.ainvoke(state)
         return result["structured_response"]

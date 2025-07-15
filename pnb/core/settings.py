@@ -14,5 +14,7 @@ class Settings(BaseModel):
     AWS_BUCKET: str = os.getenv("AWS_BUCKET_NAME","").strip()
     S3_CDN_URL: str = os.getenv("AWS_BUCKET_URL","").strip()
     LOG_LEVEL: str = os.getenv("LOG_LEVEL","INFO").strip()
+    POPPLER_PATH: str = os.getenv("POPPLER_PATH","").strip()
+    TESSERACT_PATH: str = os.getenv("TESSERACT_PATH","").strip()
 
 SETTINGS = Settings()
