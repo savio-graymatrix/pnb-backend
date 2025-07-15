@@ -42,7 +42,7 @@ class ChatbotAgent:
             review_set_info = "No Review Set found for this application.\n"
 
         # Fetch reviews linked to review_set_id
-        review_set_id = review_set["_id"] if review_set else None
+        review_set_id = review_set.id if review_set else None
         reviews = []
         if review_set_id:
             reviews = await Review.find({"review_set_id": review_set_id}).to_list()
