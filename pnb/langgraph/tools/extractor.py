@@ -17,7 +17,7 @@ from pnb import SETTINGS
 kw_model = KeyBERT()
 
 
-async def store_text_embedding(parent_document_id: str, file_url: File) -> None:
+async def store_text_embedding(parent_document_id: str, file_url: str) -> None:
     """
     Store Text Embeddings for the file to the Vector Storage
 
