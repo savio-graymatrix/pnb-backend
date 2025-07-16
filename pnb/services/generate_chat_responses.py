@@ -4,6 +4,7 @@ from typing import Optional
 from pnb.langgraph.workflows import GRAPHS
 import json
 from pnb import LOGGER
+from fastapi import HTTPException
 
 def serialise_ai_message_chunk(chunk): 
     if(isinstance(chunk, AIMessageChunk)):
