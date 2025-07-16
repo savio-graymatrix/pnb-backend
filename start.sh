@@ -3,6 +3,7 @@
 # Optionally run migrations or other setup steps here
 
 # Run the app
+sudo apt install tesseract-ocr poppler-utils -y
 uv venv .venv
 . .venv/bin/activate
 uv sync
