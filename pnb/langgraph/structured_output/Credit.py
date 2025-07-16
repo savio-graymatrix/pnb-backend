@@ -33,7 +33,7 @@ class AgentLifeCycle(BaseModel):
 class DocumentChecklist(BaseModel):
     document_name: str
     file_url: str = Field(description="URL of the source file")
-    isVerified: bool
+    isVerified: bool = Field(description="True if the document is verified otherwise False")
 
 
 class Credit(BaseModel):
@@ -41,4 +41,4 @@ class Credit(BaseModel):
         description="The review set in as in the response by the 'credit_assist_agent'"
     )
     agent_lifecycle: List[AgentLifeCycle] = Field(description="")
-    documents_checklist: List[DocumentChecklist] = Field(description="")
+    documents_checklist: List[DocumentChecklist] = Field(description="The documents in the response")
