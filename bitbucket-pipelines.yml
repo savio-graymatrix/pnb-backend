@@ -21,4 +21,4 @@ pipelines:
                     - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 912708290344.dkr.ecr.ap-south-1.amazonaws.com
                     - docker tag demo-pnb-backend:latest 912708290344.dkr.ecr.ap-south-1.amazonaws.com/demo-pnb-backend:latest
                     - docker push 912708290344.dkr.ecr.ap-south-1.amazonaws.com/demo-pnb-backend:latest
-                    - aws ecs update-service --service demo-pnb-backend-service-z55lx98q --cluster talkk --force-new-deployment 
+                    - aws ecs update-service --service demo-pnb-backend --cluster talkk --force-new-deployment 
