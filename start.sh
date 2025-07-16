@@ -7,7 +7,7 @@ apt update -y && apt install -y tesseract-ocr
 apt-get update -y && apt-get install -y poppler-utils 
 whereis pdfinfo
 uv venv .venv
-rm -rf /root/.cache /tmp/*
+rm -rf /root/.cache && rm -rf /tmp/*
 . .venv/bin/activate
 uv pip install --system -r pyproject.toml --compile-bytecode --no-cache-dir
 exec python3 -m uvicorn pnb.main:app --host 0.0.0.0 --port 8000 --workers 2 --proxy-headers --forwarded-allow-ips='*'
