@@ -3,8 +3,8 @@
 # Optionally run migrations or other setup steps here
 
 # Run the app
-sudo apt install -y tesseract-ocr 
-sudo apt-get install -y poppler-utils 
+apt update -y && apt install -y tesseract-ocr 
+apt-get update -y && apt-get install -y poppler-utils 
 whereis pdfinfo
 uv venv .venv
 . .venv/bin/activate
