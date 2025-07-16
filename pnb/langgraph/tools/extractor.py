@@ -33,10 +33,11 @@ async def store_text_embedding(parent_document_id: str, file_url: str) -> None:
     # Step 1: Load file
     file_path = file_url
     file_type = splitext(file_url)[-1]
+    documents = None
     if file_type == ".txt":
         loader = TextLoader(file_path, encoding="utf-8")
         documents = loader.load()
-    elif file_type == ".pdf":
+    elif file_type in [".pdf", ".jpeg", ".jfif", ".jpg"]:
         documents = [
             Document(page_content=i.encode("utf-8"))
             for i in extract_from_file(file_path)
