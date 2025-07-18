@@ -43,9 +43,6 @@ async def store_text_embedding(parent_document_id: str, file_url: str) -> None:
             Document(page_content="".join(extract_from_file(file_path)))
         ]
 
-    # Step 2: Split into chunks
-    # splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
-    # chunks = splitter.split_documents(documents)
 
     # Step 3: Add metadata (e.g. file name, hash)
     file_hash = hashlib.sha256(
