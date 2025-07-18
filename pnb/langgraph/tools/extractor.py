@@ -106,7 +106,15 @@ def extract_from_file(file_url: str):
 
     def structured_pdf_parser(path: str):
         try:
-            chunks = pymupdf4llm.to_markdown(path, page_chunks=True)
+            response = requests.get(path)
+            response.raise_for_status()
+            tmp_path = None
+            texts = None
+            with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as tmp:
+                tmp.write(response.content)
+                tmp_path = tmp.name
+            os.remove(tmp_path)
+            chunks = pymupdf4llm.to_markdown(tmp_path, page_chunks=True)
             texts = [c["text"] for c in chunks if c.get("text", "").strip()]
             if texts:
                 return texts
