@@ -40,20 +40,19 @@ async def store_text_embedding(parent_document_id: str, file_url: str) -> None:
         documents = loader.load()
     elif file_type in [".pdf", ".jpeg", ".jfif", ".jpg"]:
         documents = [
-            Document(page_content=i.encode("utf-8"))
-            for i in extract_from_file(file_path)
+            Document(page_content="".join(extract_from_file(file_path)))
         ]
 
     # Step 2: Split into chunks
-    splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
-    chunks = splitter.split_documents(documents)
+    # splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+    # chunks = splitter.split_documents(documents)
 
     # Step 3: Add metadata (e.g. file name, hash)
     file_hash = hashlib.sha256(
         "".join([x.page_content for x in documents]).encode("utf-8")
     ).hexdigest()
     extracted_documents = list()
-    for i, doc in enumerate(chunks):
+    for i, doc in enumerate(documents):
         extracted_document_obj = ExtractedDocument(
             name=file_url,
             content=doc.page_content,
