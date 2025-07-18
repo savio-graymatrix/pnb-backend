@@ -12,7 +12,8 @@ from PIL import Image
 import pytesseract
 from langchain_core.documents import Document
 from pnb import SETTINGS
-
+import requests
+import tempfile
 
 kw_model = KeyBERT()
 
@@ -70,9 +71,7 @@ async def store_text_embedding(parent_document_id: str, file_url: str) -> None:
         extracted_documents.append(extracted_document_obj)
     await ExtractedDocument.insert_many(extracted_documents)
 
-
 pytesseract.pytesseract.tesseract_cmd = SETTINGS.TESSERACT_PATH
-
 
 @tool
 def extract_from_file(file_url: str):
@@ -86,6 +85,22 @@ def extract_from_file(file_url: str):
 
     def fallback_ocr(path: str):
         print("Falling back to OCR...")
+
+        if path.startswith("http"):
+            response = requests.get(path)
+            response.raise_for_status()  # fail if URL is invalid
+
+            # Step 2: Save to temp file
+            tmp_path = None
+            texts = None
+            
+            with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as tmp:
+                tmp.write(response.content)
+                tmp_path = tmp.name
+            pages = convert_from_path(tmp_path, dpi=300, poppler_path=SETTINGS.POPPLER_PATH)
+            texts = [pytesseract.image_to_string(img) for img in pages]
+            os.remove(tmp_path)
+            return texts
         pages = convert_from_path(path, dpi=300, poppler_path=SETTINGS.POPPLER_PATH)
         texts = [pytesseract.image_to_string(img) for img in pages]
         return texts
