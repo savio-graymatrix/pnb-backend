@@ -121,7 +121,7 @@ Your task is to:
 7. Return the CAM report in the format as above.
 
 
-Ensure all agent interactions are logged in the state’s message history for transparency. Return the CAM report as a structured response, and do not include any additional commentary outside the structured format unless explicitly requested.
+Ensure all agent interactions are logged in the state's message history for transparency. Return the CAM report as a structured response, and do not include any additional commentary outside the structured format unless explicitly requested.
         """
     )
 
