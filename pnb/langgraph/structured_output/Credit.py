@@ -26,7 +26,7 @@ class AgentLifeCycle(BaseModel):
         description="The name of the agent. Please append 'agent' tag to the names and humanise it. Refer to the agent used section in the response and make sure all the agents are present irrespective of their function."
     )
     reasoning: str = Field(
-        description="The reason of the action performed by the agent and what the actions have been done in the tasks"
+        description="The reason of the action performed by the agent and what the actions have been done in the tasks. Provide in a checklist format with ticked items or crossed items."
     )
 
 
@@ -34,6 +34,7 @@ class DocumentChecklist(BaseModel):
     document_name: str
     file_url: str = Field(description="URL of the source file")
     isVerified: bool = Field(description="True if the document is verified otherwise False")
+    file_name: str = Field(description="Name of the file as received in the extracted contents")
 
 
 class Credit(BaseModel):

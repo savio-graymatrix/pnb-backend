@@ -78,6 +78,7 @@ class DocumentChecklist(Document):
     review_set_id : PydanticObjectId = Field(description="Parent Review Set ID")
     document_name: str
     file_url : str
+    file_name : str
     isVerified : bool
 
     class Settings:

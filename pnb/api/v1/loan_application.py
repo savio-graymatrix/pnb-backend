@@ -151,3 +151,38 @@ async def review_loan_application(application: LoanApplication = Body(...)):
         await doc_obj.insert()
         credit_response.documents_checklist.append(doc_obj)
     return credit_response
+
+async def review_loan_application2(application: LoanApplication = Body(...)):
+    # print(application)
+    config = {
+        "configurable": {
+            "thread_id": application.id,
+            "metadata": application.model_dump(),
+        }
+    }
+    result = await CreditAgent.credit_agent(
+        {
+            "messages": [],  # Initialize with empty messages # Pass loan details directly
+        },
+        config=config,
+    )
+    review_set = ReviewSet(application_id=application.id)
+    await review_set.insert()
+    credit_response = CreditResponse(
+        review_set=[],
+        agent_lifecycle=[],
+        documents_checklist=[]
+    )
+    for review in result.review_set:
+        review_obj = Review(**review.model_dump(),review_set_id=review_set.id)
+        await review_obj.insert()
+        credit_response.review_set.append(review_obj)
+    for agent in result.agent_lifecycle:
+        agent_obj = AgentLifeCycle(**agent.model_dump(),review_set_id=review_set.id)
+        await agent_obj.insert()
+        credit_response.agent_lifecycle.append(agent_obj)
+    for document in result.documents_checklist:
+        doc_obj = DocumentChecklist(**document.model_dump(),review_set_id=review_set.id)
+        await doc_obj.insert()
+        credit_response.documents_checklist.append(doc_obj)
+    return credit_response
