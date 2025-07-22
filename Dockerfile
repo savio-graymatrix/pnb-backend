@@ -9,7 +9,7 @@ COPY pyproject.toml uv.lock ./
 
 # Install pip and PDM
 RUN pip install --upgrade pip && pip install pdm && pip install uv
-RUN uv pip install -r pyproject.toml --compile-bytecode --no-cache-dir
+RUN uv pip install --system -r pyproject.toml --compile-bytecode --no-cache-dir
 # Install project dependencies (production only)
 #RUN PDM_VENV_IN_PROJECT=1 pdm config python.use_venv false && pdm install --prod
 
