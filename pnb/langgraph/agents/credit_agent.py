@@ -105,11 +105,11 @@ Classify the loan as either "Individual" or "Corporate" based on the applicant's
 Assign Risk Grade:
 Based on the instruction_set, assign a risk grade to the application:
 
-A+: Exceptional creditworthiness, minimal risk.
+A+: Exceptional creditworthiness, no risk.
 
 A: Strong creditworthiness, low risk.
 
-B: Moderate creditworthiness, acceptable risk.
+B: Moderate creditworthiness, moderate risk.
 
 C: High risk, potential concerns.
 
