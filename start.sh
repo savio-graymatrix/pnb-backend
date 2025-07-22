@@ -1,6 +1,5 @@
 #!/bin/sh
 
-# Optionally run migrations or other setup steps here
 
 # Run the app
 apt update -y && apt install -y tesseract-ocr 
