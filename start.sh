@@ -1,6 +1,15 @@
 #!/bin/sh
 
+
+
 set -e
+rm -rf /tmp/* && rm -rf /root/.cache
+apt update && apt install -y \
+    tesseract-ocr \
+    poppler-utils \
+    build-essential \
+&& apt clean && rm -rf /var/lib/apt/lists/*
+
 uv venv .venv
 . .venv/bin/activate
 uv sync --no-cache-dir --compiled-bytecode
