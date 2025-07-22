@@ -7,16 +7,6 @@ WORKDIR /app
 # Copy only dependency files first to leverage Docker layer caching
 COPY pyproject.toml uv.lock ./
 
-# Install Linux Dependencies
-RUN apt update && apt install -y \
-    tesseract-ocr \
-    poppler-utils \
-    build-essential \
-    && apt clean && rm -rf /var/lib/apt/lists/*
-
-# Install pip and PDM
-RUN pip install --upgrade pip && pip install pdm && pip install uv
-RUN uv pip install --system --no-cache-dir -r pyproject.toml 
 # Install project dependencies (production only)
 #RUN PDM_VENV_IN_PROJECT=1 pdm config python.use_venv false && pdm install --prod
 
