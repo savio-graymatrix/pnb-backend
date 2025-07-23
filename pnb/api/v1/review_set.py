@@ -6,6 +6,7 @@ from pnb.db.data_models import (
     ReviewSetResponse,
     DocumentChecklist,
     AgentLifeCycle,
+    LoanApplication,
 )
 from beanie import DeleteRules
 
@@ -20,6 +21,39 @@ from datetime import datetime, timezone
 from beanie import PydanticObjectId
 
 router = APIRouter(prefix="/review-set", tags=["Review Set"])
+
+
+@router.get("/latest-review/{application_id}")
+async def get_reviews_by_application_id(application_id: PydanticObjectId):
+    review_set = (
+        await ReviewSet.find(
+            ReviewSet.application_id == PydanticObjectId(application_id)
+            )
+        .sort("-created_at")
+        .limit(1)
+        .to_list()
+    )
+    print(review_set)
+    if len(review_set) == 0:
+        raise HTTPException(
+            status_code=404, detail="Review Set for Loan Application not found"
+        )
+    review_set = await ReviewSet.get(review_set[0].id)
+    if not review_set:
+        raise HTTPException(status_code=404, detail="Instruction not found")
+    reviews = await Review.find({"review_set_id": review_set.id}).to_list()
+    agent_lifecycle = await AgentLifeCycle.find(
+        {"review_set_id": review_set.id}
+    ).to_list()
+    document_checklist = await DocumentChecklist.find(
+        {"review_set_id": review_set.id}
+    ).to_list()
+    return ReviewSetResponse(
+        application_id=review_set.application_id,
+        reviews=reviews,
+        agent_lifecycle=agent_lifecycle,
+        document_checklist=document_checklist,
+    )
 
 
 @router.get("/{review_set_id}/reviews")
@@ -38,7 +72,7 @@ async def get_reviews_by_set_id(review_set_id: PydanticObjectId):
         application_id=review_set.application_id,
         reviews=reviews,
         agent_lifecycle=agent_lifecycle,
-        document_checklist=document_checklist
+        document_checklist=document_checklist,
     )
 
 
