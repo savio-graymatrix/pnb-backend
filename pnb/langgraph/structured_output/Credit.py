@@ -18,9 +18,9 @@ class Review(BaseModel):
 class AgentLifeCycle(BaseModel):
     agent_name: Literal[
         "Document Verification Agent",
-        "Complaince Reviewer Agent",
         "Tax Data Agent",
         "Company Financial Agent",
+        "Complaince Reviewer Agent",
         "Credit Assist Agent"
     ] = Field(
         description="The name of the agent. Please append 'agent' tag to the names and humanise it. Refer to the agent used section in the response and make sure all the agents are present irrespective of their function."

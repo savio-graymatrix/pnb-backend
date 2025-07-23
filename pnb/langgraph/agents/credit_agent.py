@@ -73,6 +73,8 @@ class CreditAgent:
                 You will have {gstin} which you will use the gst_tool to verify the gst number. If the tool returns true then it is verified.
                 You will have content available below which you will use to analyze the loan application and provide a structured response based on the instructions provided.
                 Extracted Content:\n{combined_content}
+
+                **IMPORTANT**: The appropriate file names are present in the extracted content which you can refer and provide the file name in the document checklist.
                 
                 Analyze the Loan Application:
 Extract key details from the loan_application, including but not limited to:
@@ -92,13 +94,13 @@ Assess financial health, creditworthiness, and risk factors based on the combine
 Check for compliance with all relevant regulations and policies specified in the instruction_set (e.g., debt-to-income ratio, credit score thresholds, KYC/AML requirements).
 Conduct a thorough comparison of the loan document against the instructions. For each issue you identify, provide:
 
-The alert level (Low Risk, Moderate, High Risk)
+The alert level (No Risk, Low Risk, Moderate Risk, High Risk)
 A clear explanation of the issue
 The relevant section or quote from the loan document
 The corresponding instruction or requirement that was not met or requires attention
 Present your issues in the following format:
-Issues: **IMPORTANT**: make sure you have only the discrepancies and issues in the review section. 
-<issues> <issue> <alert_level>Error/Warning/Caution</alert_level> <explanation>Detailed explanation of the issue</explanation> <loan_quote>Relevant quote from the loan document</loan_quote> <instruction_reference>Corresponding instruction or requirement</instruction_reference> </issue> [Repeat for each issue found] </issues>
+Issues: **IMPORTANT**: Make sure the issues are properly categorized and the alert level is appropriate.
+<issues> <issue> <alert_level>No Risk/Low Risk/Moderate Risk/High Risk</alert_level> <explanation>Detailed explanation of the issue</explanation> <loan_quote>Relevant quote from the loan document</loan_quote> <instruction_reference>Corresponding instruction or requirement</instruction_reference> </issue> [Repeat for each issue found] </issues>
 Determine Loan Type:
 Classify the loan as either "Individual" or "Corporate" based on the applicant's entity type.
 
@@ -132,6 +134,7 @@ recommendation: "Loan can be processed" or "Loan cannot be processed".
 justification: Brief explanation of the recommendation, referencing the instruction_set.
 Agents lifecycle used: document verification agent,  Tax data agent, Company Financial agent, complaince reviewer agent, credit_assist_agent. 
 Documents used: Aadhar, Pan, GSTIN, MSME Udhyam Regitration, ITR records, Company Financial records, Profit and Loss records, Loan Application - whatever is received in the extracted contents and analyzed put as verified otherwise unverified if document data is not available (strictly). Provide the file name in the document checklist.
+Filenames: **The filenames present in the extracted content which you can refer**
 Ensure the output is clear, concise and free of errors
                 """.format(
                     loan_details=loan_details,
