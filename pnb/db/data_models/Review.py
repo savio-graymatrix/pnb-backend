@@ -64,8 +64,6 @@ class UpdateReview(Review):
     class Config:
         extra = "forbid"
 
-class ReviewSetResponse(ReviewSet):
-    reviews: List[Review]
 
 class AgentLifeCycle(Document):
     review_set_id : PydanticObjectId = Field(description="Parent Review Set ID")
@@ -78,7 +76,7 @@ class DocumentChecklist(Document):
     review_set_id : PydanticObjectId = Field(description="Parent Review Set ID")
     document_name: str
     file_url : str
-    file_name : str
+    # file_name : Optional[str]
     isVerified : bool
 
     class Settings:
@@ -88,3 +86,8 @@ class CreditResponse(BaseModel):
     review_set: List[Review] = Field(description="The review set in as in the response by the 'credit_assist_agent'")
     agent_lifecycle: List[AgentLifeCycle] = Field(default=[])
     documents_checklist: List[DocumentChecklist] = Field(default=[])
+
+class ReviewSetResponse(ReviewSet):
+    reviews: List[Review]
+    document_checklist: List[DocumentChecklist]
+    agent_lifecycle: List[AgentLifeCycle]
