@@ -3,7 +3,7 @@ from langchain_core.tools import tool
 
 
 @tool
-def get_system_time(format: str = "%Y-%m-%d %H:%M:%S"):
+async def get_system_time(format: str = "%Y-%m-%d %H:%M:%S"):
     """ Returns the current date and time in the specified format """
 
     current_time = datetime.datetime.now()
