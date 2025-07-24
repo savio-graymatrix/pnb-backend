@@ -8,6 +8,7 @@ apt update && apt install -y \
     tesseract-ocr \
     poppler-utils \
     build-essential \
+    wkhtmltopdf \
 && apt clean && rm -rf /var/lib/apt/lists/*
 
 uv venv .venv
