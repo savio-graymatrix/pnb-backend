@@ -7,6 +7,7 @@ from langgraph.types import Command
 from pnb.langgraph.utils import OPENAI_LLM
 from pnb.db.data_models import Instruction
 from pnb.langgraph.tools.patch_review_tool import patch_review_tool
+from pnb.langgraph.tools.web_search_tool import web_search_tool
 from pnb.db.data_models.Review import (
     Review,
     DocumentChecklist,
@@ -133,6 +134,8 @@ generated reviews and analysis: {context}
 
 Analyze the user inputs and answer them according to the context provided.
 Make sure you answe accurately based on the data and do not hallucinate.
+
+You have a tool to search the web for relevant information regarding credit assessment and loan application.
 You have a tool to update the review in the database to either 'resolved' or 'rejected'.
 The tool requires id and the status to update the review.
 
@@ -142,7 +145,7 @@ The tool requires id and the status to update the review.
 """.format(
                 id=id, top_k=5, context=context
             ),
-            tools=[patch_review_tool],
+            tools=[patch_review_tool, web_search_tool],
         )
         result = await chatbot_agent.ainvoke(state)
         LOGGER.debug(result)
