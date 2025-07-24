@@ -22,4 +22,4 @@ class ExtractedDocument(Document):
     )
 
     class Settings:
-        name = "extracted_document"
+        name = "extracted-document"
