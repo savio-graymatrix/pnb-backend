@@ -87,12 +87,7 @@ class DocumentChecklist(Document):
     class Settings:
         name = "document-checklist"
 
-class CreditResponse(BaseModel):
-    review_set: List[Review] = Field(description="The review set in as in the response by the 'credit_assist_agent'")
+class ReviewSetResponse(BaseModel):
+    review_set: List[Review] = Field(default=[])
     agent_lifecycle: List[AgentLifeCycle] = Field(default=[])
     documents_checklist: List[DocumentChecklist] = Field(default=[])
-
-class ReviewSetResponse(ReviewSet):
-    reviews: List[Review]
-    document_checklist: List[DocumentChecklist]
-    agent_lifecycle: List[AgentLifeCycle]

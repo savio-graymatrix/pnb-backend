@@ -3,10 +3,9 @@ from typing import List
 from pnb.db.data_models import (
     ReviewSet,
     Review,
-    ReviewSetResponse,
     DocumentChecklist,
     AgentLifeCycle,
-    LoanApplication,
+    ReviewSetResponse
 )
 from beanie import DeleteRules
 
@@ -33,10 +32,10 @@ async def get_reviews_by_application_id(application_id: PydanticObjectId):
         .limit(1)
         .to_list()
     )
-    print(review_set)
     if len(review_set) == 0:
+        # TODO: Workaround. Put appropriate status code: 404
         raise HTTPException(
-            status_code=404, detail="Review Set for Loan Application not found"
+            status_code=200, detail=dict()
         )
     review_set = await ReviewSet.get(review_set[0].id)
     if not review_set:
@@ -49,10 +48,9 @@ async def get_reviews_by_application_id(application_id: PydanticObjectId):
         {"review_set_id": review_set.id}
     ).to_list()
     return ReviewSetResponse(
-        application_id=review_set.application_id,
-        reviews=reviews,
+        review_set=reviews,
         agent_lifecycle=agent_lifecycle,
-        document_checklist=document_checklist,
+        documents_checklist=document_checklist,
     )
 
 
@@ -69,10 +67,9 @@ async def get_reviews_by_set_id(review_set_id: PydanticObjectId):
         {"review_set_id": review_set.id}
     ).to_list()
     return ReviewSetResponse(
-        application_id=review_set.application_id,
-        reviews=reviews,
+        review_set=reviews,
         agent_lifecycle=agent_lifecycle,
-        document_checklist=document_checklist,
+        documents_checklist=document_checklist,
     )
 
 
