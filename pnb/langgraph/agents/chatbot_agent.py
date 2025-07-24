@@ -9,6 +9,7 @@ from pnb.db.data_models import Instruction
 from pnb.langgraph.tools.patch_review_tool import patch_review_tool
 from pnb.langgraph.tools.web_search_tool import web_search_tool
 from pnb.langgraph.tools.real_time_tool import get_system_time
+from pnb.langgraph.tools.md_to_pdf_tool import md_to_pdf_tool
 from pnb.db.data_models.Review import (
     Review,
     DocumentChecklist,
@@ -138,16 +139,15 @@ Make sure you answer accurately based on the data and do not hallucinate.
 
 You have a tool to search the web for relevant information regarding credit assessment and loan application.
 You have a tool to get the current system time.
-You have a tool to update the review in the database to either 'resolved' or 'rejected'.
-The tool requires id and the status to update the review.
-
+You have a tool to update the review in the database to either 'resolved' or 'rejected'.The tool requires id and the status to update the review.
+You have a tool to create a pdf of the markdown texts you have generated. The tool requires the markdown text to create a pdf. It can be helpful in cases of Cam reports you have made.
 **IMPORTANT**: if you are asked to update a review, use the tool to update the review in the database to either 'resolved' or 'rejected' based on the user's input.
 
 **IMPORTANT**: if you are asked to create a CAM report, generate a report based on the details you find in the context given to you.
 """.format(
                 id=id, top_k=5, context=context
             ),
-            tools=[patch_review_tool, web_search_tool, get_system_time],
+            tools=[patch_review_tool, web_search_tool, get_system_time, md_to_pdf_tool],
         )
         result = await chatbot_agent.ainvoke(state)
         LOGGER.debug(result)
