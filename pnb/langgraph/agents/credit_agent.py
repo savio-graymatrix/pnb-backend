@@ -132,7 +132,7 @@ loan_type: "Individual" or "Corporate".
 risk_grade: "A+", "A", "B", or "C".
 recommendation: "Loan can be processed" or "Loan cannot be processed".
 justification: Brief explanation of the recommendation, referencing the instruction_set.
-Agents lifecycle used: document verification agent,  Tax data agent, Company Financial agent, complaince reviewer agent, credit_assist_agent. 
+Agents lifecycle used: Document Verification agent,  Tax data agent, Company Financial agent, complaince reviewer agent, credit_assist_agent. 
 Documents used: Aadhar, Pan, GSTIN, MSME Udhyam Regitration, ITR records, Company Financial records, Profit and Loss records, Loan Application - whatever is received in the extracted contents and analyzed put as verified otherwise unverified if document data is not available (strictly). Provide the file name in the document checklist.
 Filenames: **The filenames present in the extracted content which you can refer**
 Ensure the output is clear, concise and free of errors
