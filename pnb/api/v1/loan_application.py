@@ -5,7 +5,7 @@ from pnb.db.data_models import (
     UpdateLoanApplication,
     Review,
     ReviewSet,
-    CreditResponse,
+    ReviewSetResponse,
     AgentLifeCycle,
     DocumentChecklist
 )
@@ -168,7 +168,7 @@ async def review_loan_application2(application: LoanApplication = Body(...)):
     )
     review_set = ReviewSet(application_id=application.id)
     await review_set.insert()
-    credit_response = CreditResponse(
+    credit_response = ReviewSetResponse(
         review_set=[],
         agent_lifecycle=[],
         documents_checklist=[]
