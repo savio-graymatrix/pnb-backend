@@ -253,7 +253,7 @@ async def handle_loan_application(
                 loan_application_document=file_response[2]["url"],
             ),
         ).insert()
-        async for document in application_obj.documents.model_dump().values():
+        for document in application_obj.documents.model_dump().values():
             await store_text_embedding(application_obj.id, str(document))
         return HTMLResponse(success_html)
     except Exception as e:
