@@ -771,6 +771,21 @@ wheels = [
 ]
 
 [[package]]
+name = "langchain-tavily"
+version = "0.2.10"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "langchain" },
+    { name = "langchain-core" },
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/4d/89/41ed888866279c307397a795e015628e1a3d442bb99a0e23419bd89d3b53/langchain_tavily-0.2.10.tar.gz", hash = "sha256:34eb654c696ba5a8ab552c78d00d7cc06d51476af9c5d9a2ccbef980e71381ba", size = 22183, upload-time = "2025-07-17T20:54:12.12Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4b/26/5d4dfcf3c08878e8b88d18925b49e35f7ec97fd9c881ebf26da30e8ecfd5/langchain_tavily-0.2.10-py3-none-any.whl", hash = "sha256:87dab3824735bd98fa95c89979ef8df1002959d2e265c67de0e9249badaa3956", size = 25894, upload-time = "2025-07-17T20:54:11.289Z" },
+]
+
+[[package]]
 name = "langchain-text-splitters"
 version = "0.3.8"
 source = { registry = "https://pypi.org/simple" }
@@ -1468,6 +1483,7 @@ dependencies = [
     { name = "langchain-core" },
     { name = "langchain-mongodb" },
     { name = "langchain-openai" },
+    { name = "langchain-tavily" },
     { name = "langgraph" },
     { name = "langgraph-checkpoint-mongodb" },
     { name = "langgraph-supervisor" },
@@ -1490,6 +1506,7 @@ requires-dist = [
     { name = "langchain-core", specifier = ">=0.3.67" },
     { name = "langchain-mongodb", specifier = ">=0.6.2" },
     { name = "langchain-openai", specifier = ">=0.3.27" },
+    { name = "langchain-tavily", specifier = ">=0.2.10" },
     { name = "langgraph", specifier = ">=0.5.1" },
     { name = "langgraph-checkpoint-mongodb", specifier = ">=0.1.4" },
     { name = "langgraph-supervisor", specifier = ">=0.0.27" },
