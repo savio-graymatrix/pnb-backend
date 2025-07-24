@@ -16,5 +16,6 @@ class Settings(BaseModel):
     LOG_LEVEL: str = os.getenv("LOG_LEVEL","INFO").strip()
     POPPLER_PATH: str = os.getenv("POPPLER_PATH","").strip()
     TESSERACT_PATH: str = os.getenv("TESSERACT_PATH","").strip()
+    WKHTML_PATH: str = os.getenv("WKHTML_PATH","").strip()
 
 SETTINGS = Settings()
