@@ -119,7 +119,7 @@ loan_form_template = """
 <body>
     <div class="container">
         <h2>Loan Application Form</h2>
-        <form action="/api/v1/loan_application/create" method="post" enctype="multipart/form-data">
+        <form action="/api/v1/loan_application/upload/create" method="post" enctype="multipart/form-data">
             <label>Applicant Name:</label>
             <input type="text" name="applicant_name" required>
 
