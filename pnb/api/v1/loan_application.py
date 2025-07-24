@@ -193,18 +193,18 @@ success_html = """
 <head><title>Success</title></head>
 <body>
     <h3>Loan application submitted successfully!</h3>
-    <a href="https://genapp.pocs.tech/credit-assist/application-list/">View All Applications</a>
+    <a href="/api/v1/loan_application/upload/apply">Return to previous page</a>
 </body>
 </html>
 """
 
 
-@router.get("/apply", response_class=HTMLResponse)
+@router.get("/upload/apply", response_class=HTMLResponse)
 async def upload_page():
     return HTMLResponse(Template(loan_form_template).render())
 
 
-@router.post("/create")
+@router.post("/upload/create")
 async def handle_loan_application(
     applicant_name: str = Form(...),
     pan_no: str = Form(...),
