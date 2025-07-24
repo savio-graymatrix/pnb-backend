@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from tqdm import tqdm
 from pnb import SETTINGS
+from datetime import datetime
 
 load_dotenv()
 
@@ -38,6 +39,7 @@ def report_generator(state):
 
     for incident in tqdm(incidents, desc="Generating embeddings"):
         summary = {
+            "created_at": datetime.utcnow(),
             "incident_id": incident.get("incident_id"),
             "threat_type": incident.get("threat_type"),
             "affected_user": incident.get("affected_user"),
@@ -47,6 +49,7 @@ def report_generator(state):
             "detected_at": incident.get("detected_at"),
             "summary": incident.get("summary"),
             "impact": incident.get("impact"),
+            "risk_score": incident.get("risk_score"),
             "event_type": incident.get("event_type"),
             "recommended_actions": incident.get("recommended_actions", []),
             "why_these_recommendations": incident.get("why_these_recommendations", "")
