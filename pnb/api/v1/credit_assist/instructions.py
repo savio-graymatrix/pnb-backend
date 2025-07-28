@@ -8,7 +8,7 @@ from pnb.db.utils import (
 )
 from datetime import datetime, timezone
 from beanie.operators import Set
-from pnb.langgraph.agents.instruction_agent import InstructionAgent
+from pnb.langgraph.credit_assist.agents.instruction_agent import InstructionAgent
 
 router = APIRouter(prefix="/instructions", tags=["Credit Assist · Instructions"])
 

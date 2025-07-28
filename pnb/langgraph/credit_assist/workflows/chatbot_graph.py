@@ -5,7 +5,7 @@ from langgraph.graph import StateGraph, START, MessagesState, END
 # from pnb.langgraph.agents.AADHAR import AADHARAgent
 # from pnb.langgraph.agents.credit import CreditAgent
 from langgraph.checkpoint.memory import MemorySaver
-from pnb.langgraph.agents.chatbot_agent import ChatbotAgent
+from pnb.langgraph.credit_assist.agents.chatbot_agent import ChatbotAgent
 
 
 

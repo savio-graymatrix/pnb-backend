@@ -2,7 +2,7 @@ from langchain_core.runnables import RunnableConfig
 from langgraph.graph import MessagesState
 from langgraph.prebuilt import create_react_agent
 from pnb.langgraph.utils import OPENAI_LLM
-from pnb.langgraph.structured_output import InstructionSet
+from pnb.db.data_models import InstructionSet
 from pnb.langgraph.tools.parser import extract_from_pdf
 
 class InstructionAgent:

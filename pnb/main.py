@@ -3,13 +3,15 @@ from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from pnb.api import router as api_router
 from pnb.db.stores.MongoStore import MONGO_STORE
-from pnb.langgraph.workflows import setup_graphs
+from pnb.langgraph.credit_assist.workflows import compile_credit_assist_graphs
+from pnb.langgraph.procurement.workflows import compile_procurement_graphs
 from pnb import SETTINGS
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await MONGO_STORE.connect()
-    await setup_graphs()
+    await compile_credit_assist_graphs()
+    await compile_procurement_graphs()
     yield
     await MONGO_STORE.disconnect()
 
