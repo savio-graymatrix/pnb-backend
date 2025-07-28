@@ -1,7 +1,7 @@
 from uuid import uuid4
 from langchain_core.messages import AIMessageChunk, HumanMessage
 from typing import Optional
-from pnb.langgraph.agents.soc_chatbot_agent import ChatbotAgent
+from pnb.langgraph.credit_assist.agents.soc_chatbot_agent import ChatbotAgent
 from langgraph.graph import StateGraph
 from langgraph.graph.message import MessagesState
 from langgraph.graph import END

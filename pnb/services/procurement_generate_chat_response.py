@@ -1,7 +1,7 @@
 from uuid import uuid4
 from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage
 from typing import Optional
-from pnb.langgraph.credit_assist.workflows import CREDIT_ASSIST_GRAPHS
+from pnb.langgraph.procurement.workflows import PROCUREMENT_GRAPHS
 import json
 from pnb import LOGGER
 from fastapi import HTTPException
@@ -46,7 +46,7 @@ async def generate_chat_responses(message: str, checkpoint_id: Optional[str] = N
         }
     }
     # Continue existing conversation
-    events = CREDIT_ASSIST_GRAPHS['chatbot'].astream_events(
+    events = PROCUREMENT_GRAPHS['chatbot'].astream_events(
         {"messages": [HumanMessage(content=message)]},
         version="v2",
         config=config
