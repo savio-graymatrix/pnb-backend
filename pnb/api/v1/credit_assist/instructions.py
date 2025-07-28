@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from beanie.operators import Set
 from pnb.langgraph.agents.instruction_agent import InstructionAgent
 
-router = APIRouter(prefix="/instructions", tags=["Instructions"])
+router = APIRouter(prefix="/instructions", tags=["Credit Assist · Instructions"])
 
 
 @router.post("/")

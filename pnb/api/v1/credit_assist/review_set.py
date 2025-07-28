@@ -19,8 +19,7 @@ from typing import Optional
 from datetime import datetime, timezone
 from beanie import PydanticObjectId
 
-router = APIRouter(prefix="/review-set", tags=["Review Set"])
-
+router = APIRouter(prefix="/review-set", tags=["Credit Assist · Review Set"])
 
 @router.get("/latest-review/{application_id}")
 async def get_reviews_by_application_id(application_id: PydanticObjectId):

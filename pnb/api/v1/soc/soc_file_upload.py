@@ -5,7 +5,7 @@ import csv
 from io import StringIO
 from pnb.soc_analyst_ai_agent.main import main
 
-router = APIRouter(prefix="/soc_file_upload", tags=["SOC Upload"])
+router = APIRouter(prefix="/soc_file_upload", tags=["SOC · Upload"])
 
 @router.post("/upload")
 async def upload_files(files: list[UploadFile] = File(...)):

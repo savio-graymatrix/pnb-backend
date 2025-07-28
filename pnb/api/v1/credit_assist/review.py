@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from beanie.operators import Set
 
 
-router = APIRouter(prefix="/review", tags=["Reviews"])
+router = APIRouter(prefix="/review", tags=["Credit Assist · Reviews"])
 
 
 @router.get("/")

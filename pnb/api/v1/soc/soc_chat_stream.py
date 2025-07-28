@@ -2,7 +2,7 @@ from fastapi import APIRouter, Query
 from fastapi.responses import StreamingResponse
 from pnb.services.soc_generate_chat_responses import generate_chat_responses
 
-router = APIRouter(prefix="/soc_chat_stream", tags=["SOC Chat Stream"])
+router = APIRouter(prefix="/soc_chat_stream", tags=["SOC · Chat Stream"])
 
 @router.get("/{message}")
 async def soc_chat_stream(message: str, checkpoint_id: str = Query(None)):

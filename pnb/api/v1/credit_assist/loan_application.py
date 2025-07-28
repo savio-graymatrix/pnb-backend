@@ -33,7 +33,7 @@ from pnb.api.v1.file_upload import upload_files
 import json
 import traceback
 
-router = APIRouter(prefix="/loan_application", tags=["Loan Application"])
+router = APIRouter(prefix="/loan_application", tags=["Credit Assist · Loan Application"])
 
 loan_form_template = """
 <!DOCTYPE html>

@@ -8,7 +8,7 @@ from pnb import SETTINGS
 
 load_dotenv()
 
-router = APIRouter(prefix="/soc_all_incidents", tags=["SOC Incident Reports"])
+router = APIRouter(prefix="/soc_all_incidents", tags=["SOC · Incident Reports"])
 
 MONGO_URI = SETTINGS.MONGO_URI
 DB_NAME = "soc_incidents"  
