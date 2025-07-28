@@ -12,9 +12,13 @@ class Query(Document):
     tender: Link[Tender]
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    @before_event(Insert)
-    async def generate_id(self):
-        return await create_identifier(self)
+    
+    class Settings:
+        name = "query"
+    
+    # @before_event(Insert)
+    # async def generate_id(self):
+    #     return await create_identifier(self)
 
 class UpdateQuery(Query):
     question: Optional[str]

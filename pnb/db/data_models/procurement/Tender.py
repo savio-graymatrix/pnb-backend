@@ -1,6 +1,7 @@
-from beanie import Document, before_event, Insert
-from pydantic import BaseModel, Field
+from beanie import Document, before_event, Insert, PydanticObjectId
+from pydantic import BaseModel, Field, field_validator
 from decimal import Decimal
+from bson.decimal128 import Decimal128
 from typing import Literal, List
 from datetime import datetime, timezone
 from pnb.db.utils.events import create_identifier
@@ -12,7 +13,7 @@ class Tender(Document):
     department: str = Field()
     type: str = Literal["open_tender", "limited_tender"]
     requirement: str = Field()
-    budget: Decimal = Field()
+    budget: Decimal = Field(...,gt=0.0,decimal_places=2)
     mode_of_tender: Literal["online", "offline"] = Field()
     opening_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     description: str = Field(max_length=1024)
@@ -20,9 +21,23 @@ class Tender(Document):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-    @before_event(Insert)
-    async def generate_id(self):
-        return await create_identifier(self)
+    class Settings:
+        name = "tender"
+
+    # @before_event(Insert)
+    # async def generate_id(self):
+    #     return await create_identifier(self)
+    
+    @field_validator(
+        "budget",
+        mode="before"
+    )
+    
+    @classmethod
+    def convert_decimal128(cls, v):
+        if isinstance(v, Decimal128):
+            return v.to_decimal()
+        return v
 
 class UpdateTender(BaseModel):
     department: str = Field()

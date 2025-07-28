@@ -43,7 +43,7 @@ async def get_all_tenders(
 
 
 @router.get("/{tender_id}", response_model=Tender)
-async def get_tender(tender_id: PydanticObjectId):
+async def get_tender(tender_id: str):
     tender = await Tender.get(tender_id)
     if not tender:
         raise HTTPException(status_code=404, detail=f"{Tender.__class__.__name__} not found")
@@ -51,7 +51,7 @@ async def get_tender(tender_id: PydanticObjectId):
 
 
 @router.put("/{tender_id}")
-async def update_tender(tender_id: PydanticObjectId, data: UpdateTender):
+async def update_tender(tender_id: str, data: UpdateTender):
     tender = await Tender.get(tender_id)
     if not tender:
         raise HTTPException(status_code=404, detail=f"{Tender.__class__.__name__} not found")
@@ -66,7 +66,7 @@ async def update_tender(tender_id: PydanticObjectId, data: UpdateTender):
 
 
 @router.delete("/{tender_id}")
-async def delete_tender(tender_id: PydanticObjectId):
+async def delete_tender(tender_id: str):
     tender = await Tender.get(tender_id)
     if not tender:
         raise HTTPException(status_code=404, detail=f"{Tender.__class__.__name__} not found")
@@ -75,7 +75,7 @@ async def delete_tender(tender_id: PydanticObjectId):
 
 
 @router.patch("/{tender_id}")
-async def patch_tender(tender_id: PydanticObjectId, data: UpdateTender = Body(...)):
+async def patch_tender(tender_id: str, data: UpdateTender = Body(...)):
     tender = await Tender.get(tender_id)
     update_data = data.model_dump(exclude_unset=True)
     if not tender:
