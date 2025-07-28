@@ -17,5 +17,6 @@ class Settings(BaseModel):
     POPPLER_PATH: str = os.getenv("POPPLER_PATH","").strip()
     TESSERACT_PATH: str = os.getenv("TESSERACT_PATH","").strip()
     ALLOWED_HOSTS: list = os.getenv("ALLOWED_HOSTS","*").strip().split(",")
+    WKHTML_PATH: str = os.getenv("WKHTML_PATH","").strip()
 
 SETTINGS = Settings()

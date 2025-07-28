@@ -25,6 +25,6 @@ async def compile_procurement_graphs():
         os.makedirs(f"{os.getcwd()}/docs/images", exist_ok=True)
         graph.get_graph().draw_mermaid_png(output_file_path=f"docs/images/{key}.png")
     LOGGER.info(
-        f"Graphs initialized:\n{"\n".join([f"{key}:{graph}" for key,graph in GRAPHS.items()])}"
+        f"Procurement Graphs initialized:\n{"\n".join([f"{key}:{graph}" for key,graph in PROCUREMENT_GRAPHS.items()])}"
     )
  
