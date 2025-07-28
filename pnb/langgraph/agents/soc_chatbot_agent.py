@@ -13,6 +13,7 @@ load_dotenv()
 from pnb.langgraph.tools.vector_search_soc_tool import vector_search_across_collections
 from pnb.langgraph.tools.collection_list_soc_tool import get_collection_names
 from pnb.langgraph.tools.retrieve_soc_incident_report import retrieve_full_incident_reports
+from pnb.langgraph.tools.md_to_pdf_tool import md_to_pdf_tool
 
 # You can adjust temperature or other params here
 
@@ -56,22 +57,32 @@ class ChatbotAgent:
             func=retrieve_full_incident_reports,
             name="RetrieveIncidentReport",
             description="""
-        Use this tool to fetch the full contents of one or more entire incident report collections.
+         Use this tool to fetch the full contents of one or more entire incident report collections.
 
-        📌 Use this when the user:
-        - Requests a specific incident report (e.g. "Incident Report INC071524A5")
-        - Asks to 'see the full report', 'get the summary of a specific file'
-        - Dont pass the input data in string format.
+         📌 Use this when the user:
+         - Requests a specific incident report (e.g. "Incident Report INC071524A5")
+         - Asks to 'see the full report', 'get the summary of a specific file'
+         - Do NOT pass the input as a string. Use a dictionary with proper field.
 
-        Input format:
-        {
-          "collections": ["Incident Report INC071524A5"]
-        }
-        """
-        )
+         Input format:
+         {
+           "collections": ["Incident Report INC071524A5"]
+         }
+
+         Response format:
+         {
+           "Incident Report INC071524A5": {
+             "total_incidents": 16,
+             "incidents": [ {...}, {...}, ... ]
+           }
+         }
+
+         ✅ Use the `total_incidents` field to report the count. DO NOT compute or estimate it yourself.
+         """
+         )
 
 
-        tools_box = [mongo_report_fetch_tool, mongo_collection_list_tool, mongo_vector_search_tool]
+        tools_box = [mongo_report_fetch_tool, mongo_collection_list_tool, mongo_vector_search_tool, md_to_pdf_tool]
 
 
         chatbot_agent = create_react_agent(
@@ -98,7 +109,7 @@ Format your responses as follows:
 - DO NOT display all individual incidents unless explicitly requested.
 - Instead, return a concise **overview** of the entire report, including:
 
-  • Total number of incidents in the report - Give the accurate number of incidents in the report no more no less.
+  • Total number of incidents in the incident report – Do not compute, estimate, or infer this value under any circumstances. Instead, directly use the total_incidents value provided by the RetrieveIncidentReport tool response. Only include this count in your answer if the tool RetrieveIncidentReport is used successfully.
   • Number of high-risk or suspicious activities  
   • Count of incidents by threat type (e.g., brute force, phishing, privilege escalation)  
   • Most commonly affected systems or users  
@@ -122,6 +133,43 @@ You have access to two powerful tools:
 
 2. **VectorSearchIncidents**  
    Use this tool to semantically search inside specific incident report collections for relevant threat data, including summaries, impacts, and recommendations.
+
+3. **RetrieveIncidentReport**  
+   Use this to fetch the **full contents of one or more entire incident report collections**.
+   Input format:
+   {{
+     "collections": ["Incident Report INC44178872", "Incident Report INC983A12C"]
+   }}
+   Response format:
+   {{
+     "Incident Report INC44178872": {{
+       "total_incidents": 16,
+       "incidents": [ {{...}}, {{...}}, ... ]
+     }},
+     ...
+   }}
+
+✅ Always use the `total_incidents` field to report the incident count.  
+Do not infer it manually or from search results.
+
+4. **md_to_pdf_tool**
+
+Use this tool when the user asks to **download**, **export**, or **save** the summary of an incident report as a **PDF**.
+
+✅ Input: A markdown-formatted summary report (text).
+✅ Output: A URL to the downloadable PDF.
+
+Use this tool only when:
+- The user says "I want to download the report"
+- The user asks to export/save/share a summary in PDF format
+- The user requests a printable version of the summary
+- The user uses keywords like: `download`, `export to PDF`, `generate PDF`, `summary as file`, etc.
+
+⚠️ Make sure the markdown content you're passing contains:
+- Proper headings (e.g., **Threat Summary**, **Incident Stats**)
+- Bullet points or numbered lists
+- Tables (if relevant)
+- Only high-level information, not raw log data
 
 ---
 
@@ -161,14 +209,19 @@ You have access to two powerful tools:
    * Include important fields like `incident_id`, `threat_type`, `source_ip`, `detected_at`, `summary`, `impact`, and `recommended_actions`.
    * If nothing is found, respond clearly: **"No relevant data was found in the logs."**
 
----
+6. **Step 6 – Offer PDF Export if Relevant**
 
-3. **RetrieveIncidentReport**  
-   Use this to fetch the **full contents of one or more entire incident report collections**.
-   Input format:
-   {{
-     "collections": ["Incident Report INC44178872", "Incident Report INC983A12C"]
-   }}
+If the user asks to download or export the summary, or mentions PDF explicitly, call the `md_to_pdf_tool` with a well-structured markdown summary of the report.
+
+Example user prompts:
+
+* *"Can you export the summary to PDF?"*
+* *"I want to download this summary"*
+* *"Give me a report file for this incident"*
+
+✅ In these cases, pass the summary content to `md_to_pdf_tool`.
+
+---
 
 #### Use the `RetrieveIncidentReport` tool when the query includes phrases like:
 - Dont pass the input data in string format.
