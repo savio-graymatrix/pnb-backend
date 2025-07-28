@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Query, UploadFile, File as FastAPIFile, HTTPException
 from fastapi.responses import Response
 from typing import Union, List
-from pnb.db.data_models.File import (
+from pnb.db.data_models import (
     File,
     FileException,
     UploadFileExceptionResponse,

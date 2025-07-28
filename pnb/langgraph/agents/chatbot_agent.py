@@ -1,4 +1,3 @@
-from typing import Literal
 from langchain_core.runnables import RunnableConfig
 from langgraph.graph import MessagesState, END
 from langgraph.prebuilt import create_react_agent
@@ -7,18 +6,16 @@ from langgraph.types import Command
 from pnb.langgraph.utils import OPENAI_LLM
 from pnb.db.data_models import Instruction
 from pnb.langgraph.tools.patch_review_tool import patch_review_tool
-from pnb.db.data_models.Review import (
+from pnb.db.data_models import (
     Review,
     DocumentChecklist,
     AgentLifeCycle,
     ReviewSet,
+    LoanApplication
 )
-from pnb.db.data_models.LoanApplication import LoanApplication
 from pnb import LOGGER
-from langchain_mongodb.agent_toolkit.toolkit import MongoDBDatabaseToolkit
-from langchain_mongodb.agent_toolkit.database import MongoDBDatabase
-from pnb import SETTINGS
-from langchain_mongodb.agent_toolkit.prompt import MONGODB_AGENT_SYSTEM_PROMPT
+# from langchain_mongodb.agent_toolkit.toolkit import MongoDBDatabaseToolkit
+# from langchain_mongodb.agent_toolkit.database import MongoDBDatabase
 from bson.objectid import ObjectId
 
 

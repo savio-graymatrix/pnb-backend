@@ -15,7 +15,7 @@ from pnb.langgraph.tools.pan_tool import pan_tool
 from pnb.langgraph.tools.parser import extract_from_pdf
 from pnb.langgraph.structured_output import Credit
 from pnb import LOGGER
-from pnb.db.data_models.ExtractedFile import ExtractedDocument
+from pnb.db.data_models import ExtractedDocument
 from pnb.langgraph.tools.gst_tool import verify_gst_number
 
 

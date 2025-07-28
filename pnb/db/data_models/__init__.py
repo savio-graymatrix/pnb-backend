@@ -1,8 +1,8 @@
-from pnb.db.data_models.Instruction import *
-from pnb.db.data_models.Review import *
-from pnb.db.data_models.File import *
-from pnb.db.data_models.LoanApplication import *
-from pnb.db.data_models.ExtractedFile import *
+from pnb.db.data_models.credit_assist.Instruction import *
+from pnb.db.data_models.credit_assist.Review import *
+from pnb.db.data_models.credit_assist.File import *
+from pnb.db.data_models.credit_assist.LoanApplication import *
+from pnb.db.data_models.credit_assist.ExtractedDocument import *
 
 DOCUMENT_MODELS = [
     Instruction,
