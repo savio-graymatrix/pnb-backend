@@ -1,8 +1,9 @@
 from datetime import datetime, timezone
+from beanie import PydanticObjectId
 
 # Before Insert Event: Create Identifier
 async def create_identifier(self):
-    if not self.id:
+    if not self.series_id:
         entity = self.__class__.__name__.upper()
         year = datetime.now(timezone.utc).year
         # Count existing users for the year
@@ -13,4 +14,4 @@ async def create_identifier(self):
             self.__class__.created_at < year_end
         ).count()
         serial = str(count + 1).zfill(5)
-        self.id = f"{entity}-{year}-{serial}"
+        self.series_id = f"{entity}-{year}-{serial}"
