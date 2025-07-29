@@ -21,7 +21,7 @@ description:str,
 emd:Decimal,
 officer:str,
 closing_date:str,
-status:Literal["open", "closed", "live", "corrigendum", "draft"]):
+status:Literal["open", "closed", "Live", "corrigendum", "draft"]):
     """
     Tool to save the created Tender document to the database.
 
