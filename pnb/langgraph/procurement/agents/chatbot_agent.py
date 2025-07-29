@@ -137,8 +137,11 @@ id: {id}
 6) Mode of tender - online or offline
 7) Opening date
 8) Description - This you can fill as per analysing the fields.
+9) EMD
+10) Officer
+11) Closing date
+12) Status - Send live for now - Since when the document is to be created , the bid is live.
 
-To improve your interaction with the user, send markdown text and for asking inputs use markdown text and indicate buttons.
 
 """,
             tools=[md_to_pdf_tool, get_system_time, web_search_tool, save_to_db_tool],
