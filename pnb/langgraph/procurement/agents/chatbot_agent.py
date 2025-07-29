@@ -138,7 +138,7 @@ id: {id}
 7) Opening date
 8) Description - This you can fill as per analysing the fields.
 
-To improve your interaction with the user, send markdown text and for asking inputs use markdown text and indicate buttons.
+
 
 """,
             tools=[md_to_pdf_tool, get_system_time, web_search_tool, save_to_db_tool],
