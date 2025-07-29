@@ -1,10 +1,9 @@
-from beanie import Document, before_event, Insert, PydanticObjectId
+from beanie import Document
 from pydantic import BaseModel, Field, field_validator
 from decimal import Decimal
 from bson.decimal128 import Decimal128
 from typing import Literal, List
 from datetime import datetime, timezone
-from pnb.db.utils.events import create_identifier
 from pnb.db.data_models import File
 
 
@@ -23,10 +22,6 @@ class Tender(Document):
 
     class Settings:
         name = "tender"
-
-    # @before_event(Insert)
-    # async def generate_id(self):
-    #     return await create_identifier(self)
     
     @field_validator(
         "budget",

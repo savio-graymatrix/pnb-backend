@@ -1,7 +1,6 @@
-from beanie import Document, before_event, Insert, Link
+from beanie import Document, Link
 from pydantic import Field
 from datetime import datetime, timezone
-from pnb.db.utils.events import create_identifier
 from pnb.db.data_models import Tender
 from typing import Optional
 
@@ -16,9 +15,6 @@ class Query(Document):
     class Settings:
         name = "query"
     
-    # @before_event(Insert)
-    # async def generate_id(self):
-    #     return await create_identifier(self)
 
 class UpdateQuery(Query):
     question: Optional[str]
