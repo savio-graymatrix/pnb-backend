@@ -16,9 +16,9 @@ class TenderType(str, Enum):
 
 
 class TenderStatus(str, Enum):
-    IN_PROGRESS = "Evauation in Progress"
-    PROCESSING = "Query been handled"
-    BID_LIVE = "Live - Accepting Bids"
+    OPEN = "Open"
+    CLOSED = "Closed"
+    LIVE = "Live - Accepting Bids"
     CORRINGENDUM = "Corrigendum Issued"
     DRAFT = "Draft"
 
