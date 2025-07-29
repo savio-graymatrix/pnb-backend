@@ -10,16 +10,31 @@ from typing import Optional
 from datetime import datetime, timezone
 from beanie.operators import Set
 from pnb.db.data_models.procurement.Query import Query, UpdateQuery
-
+from pnb import LOGGER
+from pnb.langgraph.procurement.workflows import PROCUREMENT_GRAPHS
+from langchain_core.messages import HumanMessage
+from langgraph.graph import MessagesState
+from pnb.langgraph.procurement.agents.query_agent import QueryAgent
 
 router = APIRouter(prefix="/query", tags=["Procurement · Query"])
 
-router.post("/")
-async def create_queries(queries: List[Query]):
+
+@router.post("/")
+async def create_queries(queries: List[UpdateQuery]):
     created_query = list()
     for query in queries:
-        query_obj = Query(**query.model_dump())
+        query_obj = Query(**query.model_dump(exclude_unset=True))
+        if not query.response:
+            query_obj.response = ""
         await query_obj.insert()
+        result = await QueryAgent.query_agent(
+            {"messages": []},
+            config={
+                "configurable": {"thread_id": query.tender, "query_id": query_obj.id}
+            },
+        )
+        query_obj.response = result.answer
+        await query_obj.save()
         created_query.append(query_obj)
     return created_query
 
@@ -27,7 +42,7 @@ async def create_queries(queries: List[Query]):
 @router.get("/")
 async def get_all_queries(
     pagination: CursorPaginationRequest = Depends(),
-    tender_id: Optional[PydanticObjectId] = FastAPIQuery(None)
+    tender_id: Optional[PydanticObjectId] = FastAPIQuery(None),
 ):
     query = {}
     if tender_id:

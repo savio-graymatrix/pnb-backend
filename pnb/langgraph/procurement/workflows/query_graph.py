@@ -1,4 +1,3 @@
-from botocore.compat import set_socket_timeout
 from langgraph.types import Checkpointer
 from langgraph.graph import StateGraph, START, MessagesState, END
 from langgraph.checkpoint.memory import MemorySaver
