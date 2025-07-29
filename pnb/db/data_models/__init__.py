@@ -6,6 +6,8 @@ from pnb.db.data_models.credit_assist.ExtractedDocument import *
 from pnb.db.data_models.procurement.Tender import *
 from pnb.db.data_models.procurement.Query import *
 from pnb.db.data_models.procurement.Bid import *
+from pnb.db.data_models.procurement.TenderRule import *
+
 
 DOCUMENT_MODELS = [
     Instruction,
@@ -18,5 +20,6 @@ DOCUMENT_MODELS = [
     ExtractedDocument,
     Tender,
     Query,
-    Bid
+    Bid,
+    TenderRule
 ]
