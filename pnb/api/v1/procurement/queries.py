@@ -68,6 +68,13 @@ async def update_query(query_id: PydanticObjectId, data: UpdateQuery):
         raise HTTPException(
             status_code=404, detail=f"{Query.__class__.__name__} not found"
         )
+    # config = {
+    #     "configurable": {
+    #         "thread_id": query_id,
+    #     }
+    # }
+    # result = await QueryAgent.query_agent(query_id, config)
+    # updated_query = result["structured_response"]
 
     update_data = data.model_dump(exclude_unset=True)
     for field, value in update_data.items():
