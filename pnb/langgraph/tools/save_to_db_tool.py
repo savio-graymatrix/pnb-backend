@@ -17,7 +17,11 @@ budget:Decimal,
 mode_of_tender:Literal["online", "offline"], 
 document_url:str,
 opening_date:str,
-description:str):
+description:str,
+emd:Decimal,
+officer:str,
+closing_date:str,
+status:Literal["open", "closed", "live", "corrigendum", "draft"]):
     """
     Tool to save the created Tender document to the database.
 
@@ -31,6 +35,10 @@ description:str):
         document_url: The URL of the tender document.
         opening_date: The opening date of the tender document.
         description: The description of the tender procurement.
+        emd: The EMD of the tender document in decimal format.
+        officer: The officer of the tender document.
+        closing_date: The closing date of the tender document.
+        status: The status of the tender document - open, closed, live, corrigendum, draft - (Send live for now)
 
 
     Returns:
@@ -40,7 +48,7 @@ description:str):
         ValueError: If any of the required arguments are missing or invalid.
     
     """
-    if not title or not department or not type or not requirement or not budget or not mode_of_tender or not document_url or not opening_date or not description:
+    if not title or not department or not type or not requirement or not budget or not mode_of_tender or not document_url or not opening_date or not description or not emd or not officer or not closing_date or not status:
         raise ValueError("All arguments are required")
 
     file = File(name="Tender Document", url=document_url, uploaded_at=datetime.now().astimezone(timezone.utc).isoformat())
@@ -51,6 +59,10 @@ description:str):
             type=type,
             requirement=requirement,
             budget=budget,
+            emd=emd,
+            officer=officer,
+            closing_date=closing_date,
+            status=status,
             mode_of_tender=mode_of_tender,
             documents=[file],
             opening_date=opening_date,
