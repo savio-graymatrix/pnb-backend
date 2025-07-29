@@ -14,6 +14,15 @@ from pnb.db.data_models.procurement.Query import Query, UpdateQuery
 
 router = APIRouter(prefix="/query", tags=["Procurement · Query"])
 
+router.post("/")
+async def create_queries(queries: List[Query]):
+    created_query = list()
+    for query in queries:
+        query_obj = Query(**query.model_dump())
+        await query_obj.insert()
+        created_query.append(query_obj)
+    return created_query
+
 
 @router.get("/")
 async def get_all_queries(
