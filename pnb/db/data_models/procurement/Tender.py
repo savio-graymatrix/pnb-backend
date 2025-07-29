@@ -18,8 +18,8 @@ class TenderType(str, Enum):
 class TenderStatus(str, Enum):
     OPEN = "Open"
     CLOSED = "Closed"
-    LIVE = "Live - Accepting Bids"
-    CORRINGENDUM = "Corrigendum Issued"
+    LIVE = "Live"
+    CORRINGENDUM = "Corrigendum"
     DRAFT = "Draft"
 
 
