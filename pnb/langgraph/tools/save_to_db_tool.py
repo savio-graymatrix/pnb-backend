@@ -16,11 +16,11 @@ requirement:str,
 budget:Decimal, 
 mode_of_tender:Literal["online", "offline"], 
 document_url:str,
-opening_date:str,
+opening_date:datetime,
 description:str,
 emd:Decimal,
 officer:str,
-closing_date:str,
+closing_date:datetime,
 status:Literal["open", "closed", "Live", "corrigendum", "draft"]):
     """
     Tool to save the created Tender document to the database.
