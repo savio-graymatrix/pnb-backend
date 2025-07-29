@@ -6,6 +6,7 @@ from langgraph.types import Command
 from langgraph.prebuilt import create_react_agent
 from pnb.langgraph.utils import OPENAI_LLM
 from pnb.db.data_models.procurement.TenderRule import TenderRuleSetStructureedOutput
+from pnb.langgraph.tools.parser import extract_from_pdf
 #from bpcl.agentic.structured_outputs import InstructionSet
 # from bpcl.db.data_models import Project
 # from bpcl.langgraph.tools.parser import extract_from_pdf
@@ -23,7 +24,7 @@ class InstructionAgent:
         # document = document.rf_proposal.url
         instruction_agent = create_react_agent(
             OPENAI_LLM,
-            tools=[],
+            tools=[extract_from_pdf],
             response_format=(TenderRuleSetStructureedOutput),
             prompt=(
                 """
