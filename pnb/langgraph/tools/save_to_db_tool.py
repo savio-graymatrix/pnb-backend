@@ -1,27 +1,30 @@
 from langchain_core.tools import tool
-from pnb.db.data_models import Tender
+from pnb.db.data_models import Tender, TenderRule
 from pnb.db.data_models.generic.File import File
-import traceback
 from datetime import datetime, timezone
 from typing import Literal
 from pnb import LOGGER
+import traceback
 from decimal import Decimal
-from beanie import PydanticObjectId
+from pnb.langgraph.procurement.agents.instruction_agent import InstructionAgent
+
 
 @tool
-async def save_to_db_tool(title: str, 
-department:str, 
-type:Literal["open_tender", "limited_tender"], 
-requirement:str, 
-budget:Decimal, 
-mode_of_tender:Literal["online", "offline"], 
-document_url:str,
-opening_date:datetime,
-description:str,
-emd:Decimal,
-officer:str,
-closing_date:datetime,
-status:Literal["open", "closed", "Live", "corrigendum", "draft"]):
+async def save_to_db_tool(
+    title: str,
+    department: str,
+    type: Literal["open_tender", "limited_tender"],
+    requirement: str,
+    budget: Decimal,
+    mode_of_tender: Literal["online", "offline"],
+    document_url: str,
+    opening_date: datetime,
+    description: str,
+    emd: Decimal,
+    officer: str,
+    closing_date: datetime,
+    status: Literal["open", "closed", "Live", "corrigendum", "draft"],
+):
     """
     Tool to save the created Tender document to the database.
 
@@ -43,15 +46,33 @@ status:Literal["open", "closed", "Live", "corrigendum", "draft"]):
 
     Returns:
         True if the document is saved successfully, False otherwise.
-    
+
     Raises:
         ValueError: If any of the required arguments are missing or invalid.
-    
+
     """
-    if not title or not department or not type or not requirement or not budget or not mode_of_tender or not document_url or not opening_date or not description or not emd or not officer or not closing_date or not status:
+    if (
+        not title
+        or not department
+        or not type
+        or not requirement
+        or not budget
+        or not mode_of_tender
+        or not document_url
+        or not opening_date
+        or not description
+        or not emd
+        or not officer
+        or not closing_date
+        or not status
+    ):
         raise ValueError("All arguments are required")
 
-    file = File(name="Tender Document", url=document_url, uploaded_at=datetime.now().astimezone(timezone.utc).isoformat())
+    file = File(
+        name="Tender Document",
+        url=document_url,
+        uploaded_at=datetime.now().astimezone(timezone.utc).isoformat(),
+    )
     try:
         tender = Tender(
             title=title,
@@ -69,8 +90,21 @@ status:Literal["open", "closed", "Live", "corrigendum", "draft"]):
             description=description,
         )
         await tender.insert()
+        instruction_agent_config = {
+            "configurable": {"project_details": tender.model_dump()}
+        }
+        instruction_agent_config["configurable"]["project_details"]["documents"] = (
+            ",".join([str(document.url) for document in tender.documents])
+        )
+        instruction_set = await InstructionAgent.instruction_agent(
+            {"messages": []}, config=instruction_agent_config
+        )
+        tender_rules = []
+        for instruction in instruction_set.rules:
+            rule = TenderRule(content=instruction, tender=tender.id)
+            tender_rules.append(rule)
+        await TenderRule.insert_many(tender_rules)
         return True
     except Exception as e:
         print("Technical Error: ", e)
         return False
-
