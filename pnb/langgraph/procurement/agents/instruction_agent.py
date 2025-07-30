@@ -1,28 +1,21 @@
 from typing import Literal
 from langchain_core.runnables import RunnableConfig
-from langgraph.graph import MessagesState, END
-from langchain_core.messages import AIMessage
-from langgraph.types import Command
+from langgraph.graph import MessagesState
 from langgraph.prebuilt import create_react_agent
 from pnb.langgraph.utils import OPENAI_LLM
-from pnb.db.data_models.procurement.TenderRule import TenderRuleSetStructureedOutput
+from pnb.db.data_models.procurement.TenderRule import TenderRuleSetStructuredOutput
 from pnb.langgraph.tools.parser import extract_from_pdf
-#from bpcl.agentic.structured_outputs import InstructionSet
-# from bpcl.db.data_models import Project
-# from bpcl.langgraph.tools.parser import extract_from_pdf
 
 class InstructionAgent:
     agent_name = "instruction_agent"
 
     @staticmethod
-    async def instruction_agent(
-        state: MessagesState, config: RunnableConfig
-    ):
-        tender_details = config['configurable']['project_details']
+    async def instruction_agent(state: MessagesState, config: RunnableConfig):
+        tender_details = config["configurable"]["project_details"]
         instruction_agent = create_react_agent(
             OPENAI_LLM,
             tools=[extract_from_pdf],
-            response_format=(TenderRuleSetStructureedOutput),
+            response_format=(TenderRuleSetStructuredOutput),
             prompt=(
                 """
                 You are an Instruction Creation agent tasked with creating a comprehensive set of instructions based on uploaded documents and project details. These instructions will be used by a bid reviewer agent to compare received tenders based on the instruction set you create. Your goal is to extract important details and create precise, accurate instructions that can be used for reviewing the incoming bids.
@@ -68,11 +61,14 @@ class InstructionAgent:
     <response>
     <instructions>
     </response>
-    """.format(PROJECT_DETAILS="\n".join([f"{key}:{value}" for key,value in tender_details.items()]))
+    """.format(
+                    PROJECT_DETAILS="\n".join(
+                        [f"{key}:{value}" for key, value in tender_details.items()]
+                    )
+                )
             ),
         )
 
         result = await instruction_agent.ainvoke(state)
         # print(result)
-        return result['structured_response']
- 
+        return result["structured_response"]

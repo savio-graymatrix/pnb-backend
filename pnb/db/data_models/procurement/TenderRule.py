@@ -19,5 +19,5 @@ class UpdateTenderRule(TenderRule):
     # created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-class TenderRuleSetStructureedOutput(BaseModel):
+class TenderRuleSetStructuredOutput(BaseModel):
     rules : List[str] = Field(description="List of Rules")
