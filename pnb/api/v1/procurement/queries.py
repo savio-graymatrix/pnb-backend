@@ -15,6 +15,7 @@ from pnb.langgraph.procurement.workflows import PROCUREMENT_GRAPHS
 from langchain_core.messages import HumanMessage
 from langgraph.graph import MessagesState
 from pnb.langgraph.procurement.agents.query_agent import QueryAgent
+from bson import ObjectId
 
 router = APIRouter(prefix="/query", tags=["Procurement · Query"])
 
@@ -42,16 +43,14 @@ async def create_queries(queries: List[UpdateQuery]):
 @router.get("/")
 async def get_all_queries(
     pagination: CursorPaginationRequest = Depends(),
-    tender_id: Optional[PydanticObjectId] = FastAPIQuery(None),
+    tender_id: Optional[str] = FastAPIQuery(None),
 ):
-    query = {}
+    query = dict()
     if tender_id:
-        query["tender_id"] = tender_id
+        query["tender.$id"] = ObjectId(tender_id)
     sort_field = pagination.sort_by or "created_at"
     sort_order = pagination.sort_order or -1
-
     cursor = Query.find(query).sort((sort_field, sort_order))
-
     if pagination.after_id:
         after_bid = await Query.get(pagination.after_id)
         if after_bid:
