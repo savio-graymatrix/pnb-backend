@@ -10,20 +10,21 @@ from typing import Optional
 from datetime import datetime, timezone
 from beanie.operators import Set
 from pnb.db.data_models import Bid, UpdateBid
+from bson import ObjectId
 
 
 router = APIRouter(prefix="/bids", tags=["Procurement · Bids"])
 
 
 @router.get("/")
-async def get_all_bid(
+async def get_all_bids(
     pagination: CursorPaginationRequest = Depends(),
     created_at: Optional[str] = Query(None),
-    tender_id: Optional[PydanticObjectId] = Query(None)
+    tender_id: Optional[str] = Query(None)
 ):
     query = {}
     if tender_id:
-        query['tender_id'] = tender_id
+        query['tender.$id'] = ObjectId(tender_id)
     sort_field = pagination.sort_by or "created_at"
     sort_order = pagination.sort_order or -1
 

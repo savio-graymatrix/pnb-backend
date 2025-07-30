@@ -1,42 +1,31 @@
 from typing import Literal
 from langchain_core.runnables import RunnableConfig
-from langgraph.graph import MessagesState, END
-from langchain_core.messages import AIMessage
-from langgraph.types import Command
+from langgraph.graph import MessagesState
 from langgraph.prebuilt import create_react_agent
 from pnb.langgraph.utils import OPENAI_LLM
-from pnb.db.data_models.procurement.TenderRule import TenderRuleSetStructureedOutput
+from pnb.db.data_models.procurement.TenderRule import TenderRuleSetStructuredOutput
 from pnb.langgraph.tools.parser import extract_from_pdf
-#from bpcl.agentic.structured_outputs import InstructionSet
-# from bpcl.db.data_models import Project
-# from bpcl.langgraph.tools.parser import extract_from_pdf
 
 class InstructionAgent:
     agent_name = "instruction_agent"
 
     @staticmethod
-    async def instruction_agent(
-        state: MessagesState, config: RunnableConfig
-    ):
-
-        # project_id = config["configurable"]["project_id"]
-        # document = await Project.find_one({"_id": project_id})
-        # document = document.rf_proposal.url
+    async def instruction_agent(state: MessagesState, config: RunnableConfig):
+        tender_details = config["configurable"]["project_details"]
         instruction_agent = create_react_agent(
             OPENAI_LLM,
             tools=[extract_from_pdf],
-            response_format=(TenderRuleSetStructureedOutput),
+            response_format=(TenderRuleSetStructuredOutput),
             prompt=(
                 """
-                You are an Instruction Creation agent tasked with creating a comprehensive set of instructions based on uploaded documents and project details. These instructions will be used by a compliance verification agent to compare received tenders based on the instruction set you create. Your goal is to extract important details and create precise, accurate instructions that can be used for compliance checking.
+                You are an Instruction Creation agent tasked with creating a comprehensive set of instructions based on uploaded documents and project details. These instructions will be used by a bid reviewer agent to compare received tenders based on the instruction set you create. Your goal is to extract important details and create precise, accurate instructions that can be used for reviewing the incoming bids.
     
-    You will be provided with 1 input:
-    
-    <uploaded_documents>
-    {UPLOADED_DOCUMENTS}
-    </uploaded_documents>
+    You will be provided with these details:
 
-    You have to use the tools to upload and parse the uploaded documents and then analyze the text for creating instructions.
+    {PROJECT_DETAILS}
+    
+
+    You have to analyze the text for creating instructions.
     
     Carefully analyze the uploaded documents and project details. Pay close attention to:
     1. Specific requirements and specifications
@@ -59,24 +48,27 @@ class InstructionAgent:
     1. All critical details from the uploaded documents and project details are included
     2. Instructions are clear and can be easily used for compliance checking
     3. There are no contradictions or inconsistencies in the instructions
+
+    Baed on the items in the project details you find - create a rule based scoring approach system in your instructon set.
+    This rule based scoring system would jugde the incoming bid document and should give a weighted score out of 100.
+
+    Create instructions to analyse the Technical qualifications and profile qualifications of the bids.
+
+    **IMPORTANT**: Your instructons would be leveraged by multiple agents in the system.
     
-    Once you have created the instruction set, provide a brief explanation of your approach and any key considerations you took into account when creating the instructions. This explanation should be included before the instruction set in your response.
     
     Output your final response in the following format:
     <response>
-    <explanation>
-    [Your explanation of the approach and key considerations]
-    </explanation>
-    
-    <instruction_set>
-    [Your created instruction set]
-    </instruction_set>
+    <instructions>
     </response>
-    """
+    """.format(
+                    PROJECT_DETAILS="\n".join(
+                        [f"{key}:{value}" for key, value in tender_details.items()]
+                    )
+                )
             ),
         )
 
         result = await instruction_agent.ainvoke(state)
         # print(result)
-        return result['structured_response']
- 
+        return result["structured_response"]
