@@ -83,7 +83,7 @@ class ReviewAgent:
                         tender_info=tender_info,
                         tender_rules="\n".join(
                             [
-                                f"{index}. {rule}"
+                                f"{index}. {rule.content}"
                                 for index, rule in enumerate(tender_rules)
                             ]
                         ),

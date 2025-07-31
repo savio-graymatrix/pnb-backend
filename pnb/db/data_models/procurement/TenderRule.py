@@ -7,7 +7,7 @@ from typing import List
 from pnb.db.utils import create_identifier
 
 class TenderRule(Document):
-    series_id: str = Field()
+    series_id: Optional[str] = None 
     content: str = Field()
     tender: Link[Tender]
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
