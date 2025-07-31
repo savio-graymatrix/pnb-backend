@@ -23,15 +23,16 @@ class ReviewAgent:
     async def review(
         state: MessagesState, config: RunnableConfig
     ) -> Command[Literal["__end__"]]:
-        id = config["configurable"]["thread_id"]
-        tender = await Tender.get(id)
+        tender_id = config["configurable"]["thread_id"]
+        bid_id = config["configurable"]["bid_id"]
+        tender = await Tender.get(tender_id)
         tender_info = ""
         if tender:
             for key, detail in tender.model_dump().items():
                 tender_info += f"  {" ".join(map(lambda x : x.capitalize(),key.split("_")))}: {detail}\n"
-        tender_rules = await TenderRule.find({"tender.$id": ObjectId(id)}).to_list()
+        tender_rules = await TenderRule.find({"tender.$id": ObjectId(tender_id)}).to_list()
 
-        bid = await Bid.get(id)
+        bid = await Bid.get(bid_id)
         if bid:
             bid_info = ""
             for key, detail in bid.model_dump().items():
@@ -83,7 +84,7 @@ class ReviewAgent:
                                 for index, rule in enumerate(tender_rules)
                             ]
                         ),
-                        bid_info=bid_info,
+                        bid_info=bid_info
                     )
                 ),
             ),
