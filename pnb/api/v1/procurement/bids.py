@@ -9,12 +9,15 @@ from beanie import PydanticObjectId
 from typing import Optional
 from datetime import datetime, timezone
 from beanie.operators import Set
-from pnb.db.data_models import Bid, UpdateBid
+from pnb.db.data_models import Bid, UpdateBid, CreateBid
 from bson import ObjectId
 
 
 router = APIRouter(prefix="/bids", tags=["Procurement · Bids"])
 
+@router.post("/")
+async def create_bid(bids: List[Bid]):
+    pass
 
 @router.get("/")
 async def get_all_bids(

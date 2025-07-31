@@ -1,10 +1,11 @@
 from datetime import datetime, timezone
 from pnb.db.data_models import File, Tender
-from beanie import Document, Link, PydanticObjectId
+from beanie import Document, Link, PydanticObjectId, before_event, Insert
 from pydantic import BaseModel, Field
 from decimal import Decimal
 from typing import Optional
 from enum import Enum
+from pnb.db.utils import create_identifier
 
 class EMDStatus(Enum):
     PAID = "paid"
@@ -13,6 +14,7 @@ class EMDStatus(Enum):
 
 
 class Bid(Document):
+    series_id: Optional[str] = Field()
     company: str = Field()
     emd_status: EMDStatus = Field(default=EMDStatus.NULL)
     amount: Decimal = Field(...,gt=0.0,decimal_places=2)
@@ -29,6 +31,9 @@ class Bid(Document):
     class Settings:
         name = "bid"
 
+    @before_event(Insert)
+    async def assign_identifier(self):
+        await create_identifier(self)
 
 class UpdateBid(BaseModel):
     company: Optional[str] = Field()
@@ -49,5 +54,5 @@ class CreateBid(BaseModel):
     emd_status: Optional[EMDStatus] = Field(default=EMDStatus.NULL)
     amount: Optional[Decimal] = Field(...,gt=0.0,decimal_places=2)
     tender: PydanticObjectId = Field()
-   
+
     

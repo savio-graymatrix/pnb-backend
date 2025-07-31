@@ -1,11 +1,13 @@
-from beanie import Document
+from beanie import Document, before_event, Insert
 from pydantic import BaseModel, Field, field_validator
 from decimal import Decimal
 from bson.decimal128 import Decimal128
-from typing import Literal, List
+from typing import Literal, List, Optional
 from datetime import datetime, timezone
 from pnb.db.data_models import File
 from enum import Enum
+from pnb.db.utils import create_identifier
+
 
 class TenderType(str, Enum):
     GOODS = "Goods"
@@ -24,15 +26,16 @@ class TenderStatus(str, Enum):
 
 
 class Tender(Document):
+    series_id: Optional[str] = Field()
     title: str = Field(max_length=255)
     department: str = Field()
     type: str = Literal["open_tender", "limited_tender"]
     requirement: str = Field()
-    budget: Decimal = Field(...,gt=0.0,decimal_places=2)
+    budget: Decimal = Field(..., gt=0.0, decimal_places=2)
     mode_of_tender: Literal["online", "offline"] = Field()
-    
+
     description: str = Field(max_length=1024)
-    emd: Decimal = Field(...,gt=0.0,decimal_places=2)
+    emd: Decimal = Field(..., gt=0.0, decimal_places=2)
     officer: str = Field()
     opening_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     closing_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -43,18 +46,18 @@ class Tender(Document):
 
     class Settings:
         name = "tender"
-    
-    @field_validator(
-        "budget",
-        "emd",
-        mode="before"
-    )
-    
+
+    @field_validator("budget", "emd", mode="before")
     @classmethod
     def convert_decimal128(cls, v):
         if isinstance(v, Decimal128):
             return v.to_decimal()
         return v
+
+    @before_event(Insert)
+    async def assign_identifier(self):
+        await create_identifier(self)
+
 
 class UpdateTender(BaseModel):
     department: str = Field()
