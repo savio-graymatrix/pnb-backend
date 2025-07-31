@@ -112,7 +112,7 @@ def extract_from_file(file_url: str):
             with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as tmp:
                 tmp.write(response.content)
                 tmp_path = tmp.name
-            
+            os.remove(tmp_path)
             chunks = pymupdf4llm.to_markdown(tmp_path, page_chunks=True)
             os.remove(tmp_path)
             texts = [c["text"] for c in chunks if c.get("text", "").strip()]
