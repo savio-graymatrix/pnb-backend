@@ -49,6 +49,7 @@ class ReviewAgent():
                 These are the tender rules: {tender_rules}
                 This is the bid: {bid_info}
                 Your task is to review the bid document and provide a review which you will update and save to the database.
+                You will also handle any queries the user might have regarding your score generation process. 
                 
                 **Tools you have access to:**
                 1) extract_from_pdf_tool: Extracts text from a PDF file and returns it as a string. You will use this to parse and get the bid information.
@@ -68,13 +69,14 @@ class ReviewAgent():
                 2) PQ
                 3) TQ
 
-
+                **IMPORTANT**: Analyze and answer the queries with proper justification and context.
+                Out of domain requests or queries should not be entertained.
                 """.format(tender_info=tender_info, tender_rules="\n".join([f"{index}. {rule}" for index, rule in enumerate(tender_rules)]), bid_info=bid_info))
             ),
         
 
         result = await review_agent.ainvoke(state)
-        return result['structured_response']
+        return result
         # return Command(
         #     update={
         #         "messages": [
