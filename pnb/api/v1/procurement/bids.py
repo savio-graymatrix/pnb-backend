@@ -21,7 +21,6 @@ async def create_bids(bids: List[UpdateBid]):
     for bid in bids:
         bid_obj = Bid(**bid.model_dump(exclude_unset=True))
         await bid_obj.insert()
-        print(bid_obj.tender.to_dict())
         await ReviewAgent.review(
             {"messages": []},
             config={

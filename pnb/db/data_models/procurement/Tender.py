@@ -26,7 +26,7 @@ class TenderStatus(str, Enum):
 
 
 class Tender(Document):
-    series_id: Optional[str] = Field()
+    series_id: Optional[str] = None
     title: str = Field(max_length=255)
     department: str = Field()
     type: str = Literal["open_tender", "limited_tender"]
