@@ -13,6 +13,7 @@ from pnb.langgraph.tools.real_time_tool import get_system_time
 from pnb.langgraph.tools.web_search_tool import web_search_tool
 from pnb.langgraph.tools.bid_to_db_tool import bid_to_db_tool
 from pnb.langgraph.tools.parser import extract_from_pdf
+from pnb.langgraph.tools.extractor import extract_from_file
 from bson import ObjectId
 
 
@@ -23,38 +24,38 @@ class ReviewAgent:
     async def review(
         state: MessagesState, config: RunnableConfig
     ) -> Command[Literal["__end__"]]:
-        id = config["configurable"]["thread_id"]
-        tender = await Tender.get(id)
+        tender_id = config["configurable"]["thread_id"]
+        bid_id = config["configurable"]["bid_id"]
+        tender = await Tender.get(tender_id)
         tender_info = ""
         if tender:
             for key, detail in tender.model_dump().items():
                 tender_info += f"  {" ".join(map(lambda x : x.capitalize(),key.split("_")))}: {detail}\n"
-        tender_rules = await TenderRule.find({"tender.$id": ObjectId(id)}).to_list()
+        tender_rules = await TenderRule.find({"tender.$id": ObjectId(tender_id)}).to_list()
 
-        bid = await Bid.get(id)
+        bid = await Bid.get(bid_id)
         if bid:
             bid_info = ""
             for key, detail in bid.model_dump().items():
                 bid_info += f"  {" ".join(map(lambda x : x.capitalize(),key.split("_")))}: {detail}\n"
 
-        review_agent = (
-            create_react_agent(
+        review_agent = create_react_agent(
                 OPENAI_LLM,
                 tools=[
-                    extract_from_pdf,
+                    extract_from_file,
                     md_to_pdf_tool,
                     get_system_time,
                     web_search_tool,
                     bid_to_db_tool,
                 ],
-                response_format=(),
                 prompt=(
                     """
                 You are bid reviewer agent in a bid processing and tender generation setup.
                 This is the tender: {tender_info}
                 These are the tender rules: {tender_rules}
                 This is the bid: {bid_info}
-                Your task is to review the bid document and provide a review which you will update and save to the database.
+                Your task is to parse the urls and review the extracted content and provide a review which you will update and save to the database.
+                You will also handle any queries the user might have regarding your score generation process. 
                 
                 **Tools you have access to:**
                 1) extract_from_pdf_tool: Extracts text from a PDF file and returns it as a string. You will use this to parse and get the bid information.
@@ -74,6 +75,9 @@ class ReviewAgent:
                 2) PQ
                 3) TQ
 
+                **IMPORTANT**: Analyze and answer the queries with proper justification and context.
+                Out of domain requests or queries should not be entertained.
+
 
                 """.format(
                         tender_info=tender_info,
@@ -83,14 +87,13 @@ class ReviewAgent:
                                 for index, rule in enumerate(tender_rules)
                             ]
                         ),
-                        bid_info=bid_info,
+                        bid_info=bid_info
                     )
                 ),
-            ),
-        )
+            )
 
         result = await review_agent.ainvoke(state)
-        return result["structured_response"]
+        return result
         # return Command(
         #     update={
         #         "messages": [

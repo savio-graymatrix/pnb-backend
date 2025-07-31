@@ -20,18 +20,17 @@ async def create_bids(bids: List[UpdateBid]):
     created_bid = list()
     for bid in bids:
         bid_obj = Bid(**bid.model_dump(exclude_unset=True))
-        # if not bid.response:
-        #     bid_obj.response = ""
         await bid_obj.insert()
-        # result = await ReviewAgent.review(
-        #     {"messages": []},
-        #     config={
-        #         "configurable": {"thread_id": query.tender, "query_id": query_obj.id}
-        #     },
-        # )
-        # query_obj.response = result.answer
-        await bid_obj.save()
-        created_bid.append(bid_obj)
+        print(bid_obj.tender.to_dict())
+        await ReviewAgent.review(
+            {"messages": []},
+            config={
+                "configurable": {"thread_id": bid_obj.tender.to_dict()['id'], "bid_id": bid_obj.id}
+            },
+        )
+        
+        
+        created_bid.append(await Bid.get(bid_obj.id))
     return created_bid
 
 
