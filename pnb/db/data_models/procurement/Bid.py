@@ -18,7 +18,7 @@ class EMDStatus(Enum):
 class Bid(Document):
     series_id: Optional[str] = None
     company: str = Field()
-    emd_status: EMDStatus = Field(default=EMDStatus.NULL)
+    emd_status: Optional[EMDStatus] = Field(default=EMDStatus.NULL)
     amount: Decimal = Field(..., gt=0.0, decimal_places=2)
     tender: Link[Tender] = Field()
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -47,7 +47,7 @@ class Bid(Document):
 
 class UpdateBid(BaseModel):
     company: Optional[str]
-    emd_status: Optional[EMDStatus]
+    emd_status: Optional[EMDStatus] = Field(default=EMDStatus.NULL)
     amount: Optional[Decimal]
     tender: Optional[Link[Tender]]
     created_at: Optional[datetime] = Field(
