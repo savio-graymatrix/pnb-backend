@@ -16,14 +16,20 @@ from pnb.langgraph.procurement.agents.review_agent import ReviewAgent
 router = APIRouter(prefix="/bids", tags=["Procurement · Bids"])
 
 @router.post("/")
-async def create_bids(bids: List[Bid]):
+async def create_bids(bids: List[UpdateBid]):
     created_bid = list()
     for bid in bids:
         bid_obj = Bid(**bid.model_dump(exclude_unset=True))
-        if not bid.response:
-            bid_obj.response = ""
+        # if not bid.response:
+        #     bid_obj.response = ""
         await bid_obj.insert()
-        # TODO: Apply Agent Review for Bids
+        # result = await ReviewAgent.review(
+        #     {"messages": []},
+        #     config={
+        #         "configurable": {"thread_id": query.tender, "query_id": query_obj.id}
+        #     },
+        # )
+        # query_obj.response = result.answer
         await bid_obj.save()
         created_bid.append(bid_obj)
     return created_bid
