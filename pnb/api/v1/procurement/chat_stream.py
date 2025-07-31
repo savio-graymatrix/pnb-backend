@@ -5,7 +5,7 @@ from pnb.services.procurement_generate_chat_response import generate_chat_respon
 router = APIRouter(prefix="/chat_stream", tags=["Procurement · Chat Stream"])
 
 
-@router.get("/{message}")
+@router.get("/")
 async def chat_stream(message: str, checkpoint_id: str = Query(None)):
     return StreamingResponse(
         generate_chat_responses(
