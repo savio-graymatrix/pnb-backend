@@ -16,11 +16,13 @@ from pnb.langgraph.tools.parser import extract_from_pdf
 from bson import ObjectId
 
 
-class ReviewAgent():
+class ReviewAgent:
     agent_name = "review_agent"
 
     @staticmethod
-    async def review(state: MessagesState, config: RunnableConfig) -> Command[Literal["__end__"]]:
+    async def review(
+        state: MessagesState, config: RunnableConfig
+    ) -> Command[Literal["__end__"]]:
         id = config["configurable"]["thread_id"]
         tender = await Tender.get(id)
         tender_info = ""
@@ -35,15 +37,19 @@ class ReviewAgent():
             for key, detail in bid.model_dump().items():
                 bid_info += f"  {" ".join(map(lambda x : x.capitalize(),key.split("_")))}: {detail}\n"
 
-        
-        
-        
-        review_agent = create_react_agent(
-            OPENAI_LLM,
-            tools=[extract_from_pdf, md_to_pdf_tool, get_system_time, web_search_tool, bid_to_db_tool],
-            response_format=(),
-            prompt=(
-                """
+        review_agent = (
+            create_react_agent(
+                OPENAI_LLM,
+                tools=[
+                    extract_from_pdf,
+                    md_to_pdf_tool,
+                    get_system_time,
+                    web_search_tool,
+                    bid_to_db_tool,
+                ],
+                response_format=(),
+                prompt=(
+                    """
                 You are bid reviewer agent in a bid processing and tender generation setup.
                 This is the tender: {tender_info}
                 These are the tender rules: {tender_rules}
@@ -69,12 +75,22 @@ class ReviewAgent():
                 3) TQ
 
 
-                """.format(tender_info=tender_info, tender_rules="\n".join([f"{index}. {rule}" for index, rule in enumerate(tender_rules)]), bid_info=bid_info))
+                """.format(
+                        tender_info=tender_info,
+                        tender_rules="\n".join(
+                            [
+                                f"{index}. {rule}"
+                                for index, rule in enumerate(tender_rules)
+                            ]
+                        ),
+                        bid_info=bid_info,
+                    )
+                ),
             ),
-        
+        )
 
         result = await review_agent.ainvoke(state)
-        return result['structured_response']
+        return result["structured_response"]
         # return Command(
         #     update={
         #         "messages": [
@@ -85,5 +101,3 @@ class ReviewAgent():
         #     },
         #     goto=END,
         # )
-
- 

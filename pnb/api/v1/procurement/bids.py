@@ -3,7 +3,6 @@ from typing import List
 from pnb.db.utils import (
     CursorPaginationRequest,
     CursorPaginationResponse,
-    parse_operator_filter,
 )
 from beanie import PydanticObjectId
 from typing import Optional
@@ -11,13 +10,24 @@ from datetime import datetime, timezone
 from beanie.operators import Set
 from pnb.db.data_models import Bid, UpdateBid, CreateBid
 from bson import ObjectId
+from pnb.langgraph.procurement.agents.review_agent import ReviewAgent
 
 
 router = APIRouter(prefix="/bids", tags=["Procurement · Bids"])
 
 @router.post("/")
-async def create_bid(bids: List[Bid]):
-    pass
+async def create_bids(bids: List[Bid]):
+    created_bid = list()
+    for bid in bids:
+        bid_obj = Bid(**bid.model_dump(exclude_unset=True))
+        if not bid.response:
+            bid_obj.response = ""
+        await bid_obj.insert()
+        # TODO: Apply Agent Review for Bids
+        await bid_obj.save()
+        created_bid.append(bid_obj)
+    return created_bid
+
 
 @router.get("/")
 async def get_all_bids(
