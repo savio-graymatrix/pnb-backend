@@ -2,14 +2,15 @@ from langchain_core.tools import tool
 from pnb.db.data_models.procurement.Bid import Bid
 
 @tool
-async def bid_to_db_tool(score:int, pq:bool, tq:bool):
+async def bid_to_db_tool(id:str,score:int, pq:bool, tq:bool):
     """
     Tool to update and save the bid evaluation to the database
 
     Args:
-    score: int
-    pq: bool
-    tq: bool
+    id: str = The bid id of the bid to be updated
+    score: int = The score given to the bid
+    pq: bool = The profile qualification of the bid
+    tq: bool = The technical qualification of the bid
 
     Returns:
     True if the bid was updated and saved to the database else False
@@ -18,7 +19,7 @@ async def bid_to_db_tool(score:int, pq:bool, tq:bool):
     Exception if the bid was not updated and saved to the database
     """
 
-    bid = await Bid.get()
+    bid = await Bid.get(id)
     try:
         if bid:
             bid.score = score
