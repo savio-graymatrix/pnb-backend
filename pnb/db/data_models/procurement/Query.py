@@ -23,7 +23,7 @@ class Query(Document):
         await create_identifier(self)
 
 
-class UpdateQuery(Query):
+class UpdateQuery(BaseModel):
     question: Optional[str]
     response: Optional[str]
     company: Optional[str]
