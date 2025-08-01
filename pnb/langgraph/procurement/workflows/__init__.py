@@ -4,8 +4,9 @@ from pnb.langgraph.procurement.workflows.chatbot_graph import setup_chatbot_grap
 from pnb.langgraph.procurement.workflows.query_graph import setup_query_graph
 from pnb.langgraph.procurement.workflows.review_graph import setup_review_graph
 from pnb.langgraph.procurement.workflows.query_cb_graph import setup_query_cb_graph
-from pnb.langgraph.procurement.workflows.instruction_graph import setup_instruction_graph
 from pnb.langgraph.procurement.workflows.review_cb_graph import setup_review_cb_graph
+from pnb.langgraph.procurement.workflows.tender_cb_graph import setup_tender_cb_graph
+from pnb.langgraph.procurement.workflows.tender_rule_graph import setup_tender_rule_graph
 from pnb.db.stores.MongoStore import MONGO_STORE
 from langgraph.checkpoint.mongodb.aio import AsyncMongoDBSaver
 
@@ -19,9 +20,10 @@ async def compile_procurement_graphs():
             "chatbot": await setup_chatbot_graph(checkpointer=checkpointer),
             "query": await setup_query_graph(checkpointer=checkpointer),
             "review": await setup_review_graph(checkpointer=checkpointer),
-            "instruction": await setup_instruction_graph(checkpointer=checkpointer),
+            "tender_rules": await setup_tender_rule_graph(checkpointer=checkpointer),
             "query_cb": await setup_query_cb_graph(checkpointer=checkpointer),
             "review_cb": await setup_review_cb_graph(checkpointer=checkpointer),
+            "tender_cb": await setup_tender_cb_graph(checkpointer=checkpointer)
         }
     )
     for key, graph in PROCUREMENT_GRAPHS.items():
