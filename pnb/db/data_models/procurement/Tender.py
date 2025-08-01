@@ -9,7 +9,7 @@ from enum import Enum
 from pnb.db.utils import create_identifier
 
 
-class TenderType(str, Enum):
+class TenderDomain(str, Enum):
     GOODS = "Goods"
     SERVICES = "Services"
     WORKS = "Works"
@@ -30,6 +30,7 @@ class Tender(Document):
     title: str = Field(max_length=255)
     department: str = Field()
     type: str = Literal["open_tender", "limited_tender"]
+    domain: TenderDomain = Field(default=TenderDomain.GOODS)
     requirement: str = Field()
     budget: Decimal = Field(..., gt=0.0, decimal_places=2)
     mode_of_tender: Literal["online", "offline"] = Field()

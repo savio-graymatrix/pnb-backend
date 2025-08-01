@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query
 from fastapi.responses import StreamingResponse
-from pnb.services.procurement_generate_chat_response import generate_chat_responses
+from pnb.services.procurement.procurement_generate_chat_response import generate_chat_responses
 
 router = APIRouter(prefix="/chat_stream", tags=["Procurement · Chat Stream"])
 

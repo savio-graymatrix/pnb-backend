@@ -20,7 +20,7 @@ class TenderRule(Document):
     async def assign_identifier(self):
         await create_identifier(self)
 
-class UpdateTenderRule(TenderRule):
+class UpdateTenderRule(BaseModel):
     content: Optional[str] = Field()
     updated_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc))
 
