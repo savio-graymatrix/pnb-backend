@@ -10,7 +10,7 @@ router = APIRouter(prefix="/query_chat_stream", tags=["Procurement · Query Chat
 async def chat_stream(message: str, checkpoint_id: str = Query(None)):
     return StreamingResponse(
         generate_chat_responses(
-            graph=PROCUREMENT_GRAPHS["chatbot"],
+            graph=PROCUREMENT_GRAPHS["query_Chatbot"],
             message=message,
             checkpoint_id=checkpoint_id,
             checkpoint_required=True,
