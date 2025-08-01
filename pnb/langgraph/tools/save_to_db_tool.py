@@ -6,7 +6,7 @@ from typing import Literal
 from pnb import LOGGER
 import traceback
 from decimal import Decimal
-from pnb.langgraph.procurement.agents.instruction_agent import InstructionAgent
+from pnb.langgraph.procurement.agents.tender_rule_agent import TenderRuleAgent
 
 
 @tool
@@ -90,14 +90,14 @@ async def save_to_db_tool(
             description=description,
         )
         await tender.insert()
-        instruction_agent_config = {
+        tender_rule_agent_config = {
             "configurable": {"project_details": tender.model_dump()}
         }
-        instruction_agent_config["configurable"]["project_details"]["documents"] = (
+        tender_rule_agent_config["configurable"]["project_details"]["documents"] = (
             ",".join([str(document.url) for document in tender.documents])
         )
-        instruction_set = await InstructionAgent.instruction_agent(
-            {"messages": []}, config=instruction_agent_config
+        instruction_set = await TenderRuleAgent.tender_rule_agent(
+            {"messages": []}, config=tender_rule_agent_config
         )
         tender_rules = []
         for instruction in instruction_set.rules:

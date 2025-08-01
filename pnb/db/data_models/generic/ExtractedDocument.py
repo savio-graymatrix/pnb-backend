@@ -1,5 +1,5 @@
 from beanie import Document, Link
-from pydantic import HttpUrl, Field, ConfigDict, BaseModel
+from pydantic import HttpUrl, Field, BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
 from pnb.db.data_models import LoanApplication
@@ -14,7 +14,7 @@ class ExtractedDocumentMetadata(BaseModel):
 
 class ExtractedDocument(Document):
     name: str = Field(..., description="Original name of the file")
-    link_to: Link[LoanApplication]
+    link_to: Link[Document]
     content: str = Field()
     metadata: ExtractedDocumentMetadata
     created_at: str = Field(
@@ -22,4 +22,5 @@ class ExtractedDocument(Document):
     )
 
     class Settings:
-        name = "extracted-document"
+        name = "extracted_document"
+        

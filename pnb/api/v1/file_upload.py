@@ -7,7 +7,7 @@ from pnb.db.data_models import (
     UploadFileExceptionResponse,
     UploadFileResponse,
 )
-from pnb.services.upload_to_s3 import upload_to_s3
+from pnb.services.generic.upload_to_s3 import upload_to_s3
 from uuid import uuid4
 
 ALLOWED_MIME_TYPES = {"image/png", "image/jpeg", "application/pdf"}

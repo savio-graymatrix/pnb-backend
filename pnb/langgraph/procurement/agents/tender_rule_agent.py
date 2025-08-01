@@ -6,13 +6,13 @@ from pnb.langgraph.utils import OPENAI_LLM
 from pnb.db.data_models.procurement.TenderRule import TenderRuleSetStructuredOutput
 from pnb.langgraph.tools.parser import extract_from_pdf
 
-class InstructionAgent:
-    agent_name = "instruction_agent"
+class TenderRuleAgent:
+    agent_name = "tender_rule_agent"
 
     @staticmethod
-    async def instruction_agent(state: MessagesState, config: RunnableConfig):
+    async def tender_rule_agent(state: MessagesState, config: RunnableConfig):
         tender_details = config["configurable"]["project_details"]
-        instruction_agent = create_react_agent(
+        tender_rule_agent = create_react_agent(
             OPENAI_LLM,
             tools=[extract_from_pdf],
             response_format=(TenderRuleSetStructuredOutput),
@@ -69,6 +69,6 @@ class InstructionAgent:
             ),
         )
 
-        result = await instruction_agent.ainvoke(state)
+        result = await tender_rule_agent.ainvoke(state)
         # print(result)
         return result["structured_response"]

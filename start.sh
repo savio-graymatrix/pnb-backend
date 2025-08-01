@@ -9,7 +9,7 @@ apt update && apt install -y \
     poppler-utils \
     build-essential \
     wkhtmltopdf \
-&& apt clean && rm -rf /var/lib/apt/lists/*
+&& apt clean && rm -rf /var/lib/apt/lists/* && rm -rf logs/ && rm -rf audit_logs/
 
 uv venv .venv
 . .venv/bin/activate

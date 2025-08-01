@@ -12,11 +12,11 @@ from pnb.langgraph.tools.web_search_tool import web_search_tool
 from pnb.langgraph.tools.save_to_db_tool import save_to_db_tool
 
 
-class ChatbotAgent:
-    agent_name = "chatbot_agent"
+class TenderAgent:
+    agent_name = "tender_agent"
 
     @staticmethod
-    async def chatbot(state: MessagesState, config: RunnableConfig):
+    async def tender(state: MessagesState, config: RunnableConfig):
         id = config["configurable"]["thread_id"]
         chatbot_agent = create_react_agent(
             OPENAI_LLM,
@@ -59,7 +59,7 @@ id: {id}
                 "messages": [
                     AIMessage(
                         content=result["messages"][-1].content,
-                        name=ChatbotAgent.agent_name,
+                        name=TenderAgent.agent_name,
                     )
                 ]
             },

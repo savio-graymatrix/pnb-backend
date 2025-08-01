@@ -2,7 +2,7 @@ from langchain_core.tools import tool
 import markdown
 import pdfkit
 import uuid
-from pnb.services.upload_to_s3 import upload_to_s3
+from pnb.services.generic.upload_to_s3 import upload_to_s3
 from botocore.exceptions import ClientError
 from pnb.core.settings import SETTINGS
 
