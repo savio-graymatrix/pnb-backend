@@ -1,9 +1,8 @@
 from os.path import splitext
 from langchain.document_loaders import TextLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 import hashlib
 from keybert import KeyBERT
-from pnb.db.data_models import ExtractedDocument, File, ExtractedDocumentMetadata
+from pnb.db.data_models import ExtractedDocument, ExtractedDocumentMetadata
 from langchain.tools import tool
 import os
 import pymupdf4llm
@@ -11,11 +10,18 @@ from pdf2image import convert_from_path
 from PIL import Image
 import pytesseract
 from langchain_core.documents import Document
-from pnb import SETTINGS
+from pnb import SETTINGS, LOGGER
 import requests
 import tempfile
+import traceback
 
+# Pre-requisites
+pytesseract.pytesseract.tesseract_cmd = SETTINGS.TESSERACT_PATH
 kw_model = KeyBERT()
+
+
+class FileTypeNotSupportedException(Exception):
+    pass
 
 
 async def store_text_embedding(parent_document_id: str, file_url: str) -> None:
@@ -31,45 +37,50 @@ async def store_text_embedding(parent_document_id: str, file_url: str) -> None:
     :raises:
     FileTypeNotSupported
     """
-    # Step 1: Load file
-    file_path = file_url
-    file_type = splitext(file_url)[-1]
-    documents = [
-            Document(page_content="".join(extract_from_file(file_path)))
-        ]
-    if file_type == ".txt":
-        loader = TextLoader(file_path, encoding="utf-8")
-        documents = loader.load()
-    elif file_type in [".pdf", ".jpeg", ".jfif", ".jpg"]:
-        documents = [
-            Document(page_content="".join(extract_from_file(file_path)))
-        ]
+    try:
+        # Step 1: Load file
+        file_path = file_url
+        file_type = splitext(file_url)[-1]
+        documents = [Document(page_content="".join(extract_from_file(file_path)))]
+        if file_type == ".txt":
+            loader = TextLoader(file_path, encoding="utf-8")
+            documents = loader.load()
+        elif file_type in [".pdf", ".jpeg", ".jfif", ".jpg"]:
+            documents = [Document(page_content="".join(extract_from_file(file_path)))]
+        else:
+            raise FileTypeNotSupportedException
 
-
-    # Step 3: Add metadata (e.g. file name, hash)
-    file_hash = hashlib.sha256(
-        "".join([x.page_content for x in documents]).encode("utf-8")
-    ).hexdigest()
-    extracted_documents = list()
-    for i, doc in enumerate(documents):
-        extracted_document_obj = ExtractedDocument(
-            name=file_url,
-            content=doc.page_content,
-            link_to=parent_document_id,
-            metadata=ExtractedDocumentMetadata(
-                filename=file_url,
-                filetype=file_type,
-                chunk_index=i,
-                hash=file_hash,
-                tags=[
-                    t[0] for t in kw_model.extract_keywords(doc.page_content, top_n=5)
-                ],
-            ),
+        # Step 3: Add metadata (e.g. file name, hash)
+        file_hash = hashlib.sha256(
+            "".join([x.page_content for x in documents]).encode("utf-8")
+        ).hexdigest()
+        extracted_documents = list()
+        for i, doc in enumerate(documents):
+            extracted_document_obj = ExtractedDocument(
+                name=file_url,
+                content=doc.page_content,
+                link_to=parent_document_id,
+                metadata=ExtractedDocumentMetadata(
+                    filename=file_url,
+                    filetype=file_type,
+                    chunk_index=i,
+                    hash=file_hash,
+                    tags=[
+                        t[0]
+                        for t in kw_model.extract_keywords(doc.page_content, top_n=5)
+                    ],
+                ),
+            )
+            extracted_documents.append(extracted_document_obj)
+        await ExtractedDocument.insert_many(extracted_documents)
+    except:
+        LOGGER.error(
+            f"""Parameters: \
+                    \nparent_document_id: {parent_document_id}\n  \
+                    file_url: {file_url}  \
+                    \n\nTraceback:{traceback.format_exc()}"""
         )
-        extracted_documents.append(extracted_document_obj)
-    await ExtractedDocument.insert_many(extracted_documents)
 
-pytesseract.pytesseract.tesseract_cmd = SETTINGS.TESSERACT_PATH
 
 @tool
 def extract_from_file(file_url: str):
@@ -91,11 +102,13 @@ def extract_from_file(file_url: str):
             # Step 2: Save to temp file
             tmp_path = None
             texts = None
-            
+
             with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as tmp:
                 tmp.write(response.content)
                 tmp_path = tmp.name
-            pages = convert_from_path(tmp_path, dpi=300, poppler_path=SETTINGS.POPPLER_PATH)
+            pages = convert_from_path(
+                tmp_path, dpi=300, poppler_path=SETTINGS.POPPLER_PATH
+            )
             texts = [pytesseract.image_to_string(img) for img in pages]
             os.remove(tmp_path)
             return texts

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query
 from fastapi.responses import StreamingResponse
-from pnb.services.generate_chat_responses import generate_chat_responses
+from pnb.services.credit_assist.generate_chat_responses import generate_chat_responses
 
 router = APIRouter(prefix="/chat_stream", tags=["Credit Assist · Chat Stream"])
 
