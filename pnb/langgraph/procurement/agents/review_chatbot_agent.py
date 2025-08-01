@@ -14,8 +14,8 @@ from pnb.db.data_models.procurement.Query import Query
 
 
 
-class MiniChatbotAgent:
-    agent_name = "mini_chatbot_agent"
+class ReviewChatbotAgent:
+    agent_name = "review_chatbot_agent"
 
     @staticmethod
     async def chatbot(state: MessagesState, config: RunnableConfig):
@@ -36,8 +36,8 @@ class MiniChatbotAgent:
         chatbot_agent = create_react_agent(
             OPENAI_LLM,
             prompt="""
-You are an interactive chatbot agent. Answer to your best capability any query the user might have.
-You have a tool to create pdfs of text the user wants.
+You are an interactive Bid Review chatbot agent. The bid and its review has been already created. Your job is to answer to any query the user might have regarding the bid and its review.
+You have a tool to create pdfs of text if the user requests for it.
 You can sum up queries of the same companies and create pdfs if the user asks you for it.
 This is the tender: {tender_info}
 This is the query: {query_info}
@@ -57,7 +57,7 @@ You have access to the following tools:
                 "messages": [
                     AIMessage(
                         content=result["messages"][-1].content,
-                        name=MiniChatbotAgent.agent_name,
+                        name=ReviewChatbotAgent.agent_name,
                     )
                 ]
             },

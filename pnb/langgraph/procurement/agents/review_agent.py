@@ -54,11 +54,7 @@ class ReviewAgent:
                 This is the tender: {tender_info}
                 These are the tender rules: {tender_rules}
                 This is the bid: {bid_info}
-<<<<<<< HEAD
-                Your task is to review the bid document and provide a review which you will update and save to the database.
-=======
                 Your task is to parse the urls and review the extracted content and provide a review which you will update and save to the database.
->>>>>>> 6505374142280fe743c447cc5778b57e4c27b632
                 You will also handle any queries the user might have regarding your score generation process. 
                 
                 **Tools you have access to:**
@@ -83,14 +79,6 @@ class ReviewAgent:
                 Out of domain requests or queries should not be entertained.
 
 
-<<<<<<< HEAD
-                """.format(tender_info=tender_info, tender_rules="\n".join([f"{index}. {rule}" for index, rule in enumerate(tender_rules)]), bid_info=bid_info))
-            ),
-        )
-
-        result = await review_agent.ainvoke(state)
-        return result['structured_response']
-=======
                 """.format(
                         tender_info=tender_info,
                         tender_rules="\n".join(
@@ -106,7 +94,6 @@ class ReviewAgent:
 
         result = await review_agent.ainvoke(state)
         return result
->>>>>>> 6505374142280fe743c447cc5778b57e4c27b632
         # return Command(
         #     update={
         #         "messages": [
