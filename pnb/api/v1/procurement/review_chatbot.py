@@ -3,7 +3,7 @@ from fastapi.responses import StreamingResponse
 from pnb.services.generic.generate_chat_response import generate_chat_responses
 from pnb.langgraph.procurement.workflows import PROCUREMENT_GRAPHS
 
-router = APIRouter(prefix="/chat_stream", tags=["Procurement · Chat Stream"])
+router = APIRouter(prefix="/bid_chat_stream", tags=["Procurement · Bid Chat Stream"])
 
 
 @router.get("/")
