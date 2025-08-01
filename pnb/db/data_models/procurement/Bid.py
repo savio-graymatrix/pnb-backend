@@ -26,6 +26,7 @@ class Bid(Document):
     financials: File = Field()
     operationals: File = Field()
     technicals: File = Field()
+    reasoning: Optional[str] = None
     score: Optional[int] = None
     pq: Optional[bool] = None
     tq: Optional[bool] = None
@@ -59,6 +60,7 @@ class UpdateBid(BaseModel):
     financials: Optional[File]
     operationals: Optional[File]
     technicals: Optional[File]
+    reasoning: Optional[str] = None
     score: Optional[int] = None
     pq: Optional[bool] = None
     tq: Optional[bool] = None
