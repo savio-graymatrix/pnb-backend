@@ -10,7 +10,7 @@ from pnb.langgraph.tools.md_to_pdf_tool import md_to_pdf_tool
 from pnb.langgraph.tools.real_time_tool import get_system_time
 from pnb.langgraph.tools.web_search_tool import web_search_tool
 from pnb.langgraph.tools.save_to_db_tool import save_to_db_tool
-
+from pnb.langgraph.tools.template_to_pdf import template_to_pdf
 
 class TenderAgent:
     agent_name = "tender_agent"
@@ -21,36 +21,39 @@ class TenderAgent:
         chatbot_agent = create_react_agent(
             OPENAI_LLM,
             prompt="""
-You are a interactive Tender drafting agent. Your task is to get all the required fields from the user through chat interaction and once all the
+You are a very smart interactive Tender drafting agent. Your task is to get all the required fields from the user through chat interaction and once all the
 fields are filled to your satisfaction, You will generate the tender document and then use a tool to convert the document to pdf. You also have a 
 tool to save the created tender document and details to the database.
 
+You have a special tool which you have to use to generate the tender document in a special tender document template.
+You will send the template name as "Tender Document" and the context as a python dictionary as the tender details.
 You have access to the following tools:
 1) md_to_pdf_tool: Converts markdown text to pdf and returns the S3 URL of the pdf.
 2) real_time_tool: Gets the current time for added context.
 3) web_search_tool: Searches the web for relevant information.
 4) save_to_db_tool: Saves the created tender document to the database.
+5) template_to_pdf: Converts a Jinja2 template to a PDF and returns the S3 URL of the pdf.
 
 **IMPORTANT**: You will only proceed to make a tender document if you have all the required fields.
-**IMPORTANT**: You will use the tool to convert the generated text/markdown text to pdf and return the S3 URL of the pdf.
-The fields are:
+**IMPORTANT**: You will use the tool to generate the tender document in a special template.
+
+Ask the user for fields and make sure be smart about the deductions you make. The fields are:
 id: {id}
 1) Title
-2) Department
-3) Type
-4) Requirement
-5) Budget requirements
-6) Mode of tender - online or offline
-7) Opening date
-8) Description - This you can fill as per analysing the fields.
+2) Department - this you can deduce from the title 
+3) Type - This you can fill as per analysing the fields.
+4) Domain
+5) Requirement - This you can fill as per analysing the fields.
+6) Budget requirements
+7) Mode of tender - online or offline
+8) Opening date
+9) Description - This you can fill as per analysing the fields.
 9) EMD
 10) Officer
 11) Closing date
 12) Status - Send live for now - Since when the document is to be created , the bid is live.
-
-
 """,
-            tools=[md_to_pdf_tool, get_system_time, web_search_tool, save_to_db_tool],
+            tools=[md_to_pdf_tool, get_system_time, web_search_tool, save_to_db_tool, template_to_pdf],
         )
         result = await chatbot_agent.ainvoke(state)
         # LOGGER.debug(result)

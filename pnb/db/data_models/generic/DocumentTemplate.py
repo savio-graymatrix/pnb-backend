@@ -1,8 +1,11 @@
-from beanie import Document, Link, PydanticObjectId, before_event, Insert
+from tempfile import template
+from beanie import Document, Link, PydanticObjectId, before_event, Insert, init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import Field, BaseModel
 from datetime import datetime, timezone
 from typing import Optional
 from pnb.db.utils import create_identifier
+from pnb.core.settings import SETTINGS
 
 
 class DocumentTemplate(Document):
@@ -18,3 +21,4 @@ class DocumentTemplate(Document):
     @before_event(Insert)
     async def handle_indentifier(self):
         await create_identifier(self)
+

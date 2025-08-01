@@ -11,7 +11,7 @@ from pnb.langgraph.tools.real_time_tool import get_system_time
 from pnb.langgraph.tools.web_search_tool import web_search_tool
 from pnb.db.data_models.procurement.Tender import Tender
 from pnb.db.data_models.procurement.TenderRule import TenderRule
-
+from bson import ObjectId
 
 
 class TenderChatbotAgent:
@@ -20,16 +20,19 @@ class TenderChatbotAgent:
     @staticmethod
     async def chatbot(state: MessagesState, config: RunnableConfig):
         id = config["configurable"]["thread_id"]
+        
         tender = await Tender.get(id)
         tender_info = ""
         if tender:
             for key, detail in tender.model_dump().items():
                 tender_info += f"  {" ".join(map(lambda x : x.capitalize(),key.split("_")))}: {detail}\n"
-        tender_rule = await TenderRule.find(id)
+        tender_rule = await TenderRule.find({"tender.$id": ObjectId(id)}).to_list()
         tender_rule_info = ""
         if tender_rule:
-            for key, detail in tender_rule.model_dump().items():
-                tender_rule_info += f"  {" ".join(map(lambda x : x.capitalize(),key.split("_")))}: {detail}\n"
+            for detail in tender_rule:
+                tender_rule_info += f"\n-------------------\n"
+                for key, value in detail.model_dump().items():
+                    tender_rule_info += f"  {" ".join(map(lambda x : x.capitalize(),key.split("_")))}: {value}\n"
 
 
 

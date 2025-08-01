@@ -7,13 +7,14 @@ from pnb import LOGGER
 import traceback
 from decimal import Decimal
 from pnb.langgraph.procurement.agents.tender_rule_agent import TenderRuleAgent
-
+from pnb.db.data_models.procurement.Tender import TenderDomain
 
 @tool
 async def save_to_db_tool(
     title: str,
     department: str,
     type: Literal["open_tender", "limited_tender"],
+    domain: Literal[TenderDomain.GOODS, TenderDomain.WORKS, TenderDomain.SERVICES],
     requirement: str,
     budget: Decimal,
     mode_of_tender: Literal["online", "offline"],
@@ -32,6 +33,7 @@ async def save_to_db_tool(
         title: The title of the tender document.
         department: The department of the tender document.
         type: The type of the tender document - open_tender or limited_tender.
+        domain: The domain of the tender document - goods, works or services.
         requirement: The requirement of the tender document.
         budget: The budget of the tender document in decimal format.
         mode_of_tender: The mode of tender of the tender document - online or offline.

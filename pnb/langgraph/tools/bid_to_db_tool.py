@@ -2,7 +2,7 @@ from langchain_core.tools import tool
 from pnb.db.data_models.procurement.Bid import Bid
 
 @tool
-async def bid_to_db_tool(bid_id: str, score:int, pq:bool, tq:bool):
+async def bid_to_db_tool(bid_id: str, score:int, pq:bool, tq:bool, reasoning:str):
     """
     Tool to update and save the bid evaluation to the database
 
@@ -11,6 +11,7 @@ async def bid_to_db_tool(bid_id: str, score:int, pq:bool, tq:bool):
     score: int
     pq: bool
     tq: bool
+    reasoning: str - The whole reasoning for the bid evaluation and the score. Similar to a log. Will contain th whole analysis of the bid.
 
     Returns:
     True if the bid was updated and saved to the database else False
@@ -25,6 +26,7 @@ async def bid_to_db_tool(bid_id: str, score:int, pq:bool, tq:bool):
             bid.score = score
             bid.pq = pq
             bid.tq = tq
+            bid.reasoning = reasoning
             await bid.save()
         return True
     except Exception as e:

@@ -27,8 +27,7 @@ async def create_bids(bids: List[UpdateBid], background_tasks: BackgroundTasks):
             background_tasks.add_task(
                 store_text_embedding,
                 bid_obj.id,
-                document.url,
-                message="Generating Embeddings",
+                str(document.url),
             )
         await ReviewAgent.review(
             {"messages": []},

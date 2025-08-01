@@ -7,7 +7,7 @@ from pnb.db.utils import create_identifier
 
 
 class Query(Document):
-    series_id: Optional[str] = Field()
+    series_id: Optional[str] = Field(default=None)
     question: str
     response: Optional[str]
     company: str

@@ -8,12 +8,7 @@ from pnb.langgraph.utils import OPENAI_LLM
 from pnb.db.data_models.procurement.Tender import Tender
 from pnb.db.data_models.procurement.TenderRule import TenderRule
 from pnb.db.data_models.procurement.Bid import Bid
-from pnb.langgraph.tools.md_to_pdf_tool import md_to_pdf_tool
-from pnb.langgraph.tools.real_time_tool import get_system_time
-from pnb.langgraph.tools.web_search_tool import web_search_tool
 from pnb.langgraph.tools.bid_to_db_tool import bid_to_db_tool
-from pnb.langgraph.tools.parser import extract_from_pdf
-from pnb.langgraph.tools.extractor import extract_from_file
 from bson import ObjectId
 
 
@@ -42,10 +37,6 @@ class ReviewAgent:
         review_agent = create_react_agent(
                 OPENAI_LLM,
                 tools=[
-                    extract_from_file,
-                    md_to_pdf_tool,
-                    get_system_time,
-                    web_search_tool,
                     bid_to_db_tool,
                 ],
                 prompt=(
@@ -54,15 +45,11 @@ class ReviewAgent:
                 This is the tender: {tender_info}
                 These are the tender rules: {tender_rules}
                 This is the bid: {bid_info}
-                Your task is to parse the urls and review the extracted content and provide a review which you will update and save to the database.
+                Your task is to review the bid and provide a review which you will update and save to the database.
                 You will also handle any queries the user might have regarding your score generation process. 
                 
                 **Tools you have access to:**
-                1) extract_from_pdf_tool: Extracts text from a PDF file and returns it as a string. You will use this to parse and get the bid information.
-                2) md_to_pdf_tool: Converts markdown text to pdf and returns the S3 URL of the pdf. You will use this to save the bid information to a pdf.
-                3) bid_to_db_tool: You will use this to save the bid information to the database. Use this after using the pdf creation tool.
-                4) real_time_tool: Gets the current time for added context.
-                5) web_search_tool: Searches the web for relevant information.
+                1) bid_to_db_tool: You will use this to save the bid information to the database.
         
                 Scoring Evaluation:
                 1) The tender rules are included in the tender rule set and it contains a rule based scoring evaluation which will be used to evaluate the bid document.
@@ -74,6 +61,7 @@ class ReviewAgent:
                 1) Score
                 2) PQ
                 3) TQ
+                4) Reasoning - The whole reasoning for the bid evaluation and the score. Similar to a log. Will contain the whole analysis of the bid. This reasoning will be used by other agents to create report and summaries. This should be in depth.
 
                 **IMPORTANT**: Analyze and answer the queries with proper justification and context.
                 Out of domain requests or queries should not be entertained.
