@@ -9,6 +9,7 @@ from pnb.db.data_models.procurement.Tender import Tender
 from pnb.db.data_models.procurement.TenderRule import TenderRule
 from pnb.db.data_models.procurement.Bid import Bid
 from pnb.langgraph.tools.bid_to_db_tool import bid_to_db_tool
+from pnb.db.data_models.generic.ExtractedDocument import ExtractedDocument
 from bson import ObjectId
 
 
@@ -33,6 +34,13 @@ class ReviewAgent:
             bid_info = ""
             for key, detail in bid.model_dump().items():
                 bid_info += f"  {" ".join(map(lambda x : x.capitalize(),key.split("_")))}: {detail}\n"
+        extracted_documents = await ExtractedDocument.find({"link_to": ObjectId(bid_id)}).to_list()
+        extracted_documents_info = ""
+        if extracted_documents:
+            for document in extracted_documents:
+                extracted_documents_info += f"\n-------------------\n"
+                for key, value in document.model_dump().items():
+                    extracted_documents_info += f"  {" ".join(map(lambda x : x.capitalize(),key.split("_")))}: {value}\n"
 
         review_agent = create_react_agent(
                 OPENAI_LLM,
@@ -45,6 +53,7 @@ class ReviewAgent:
                 This is the tender: {tender_info}
                 These are the tender rules: {tender_rules}
                 This is the bid: {bid_info}
+                These are the extracted documents: {extracted_documents_info}
                 Your task is to review the bid and provide a review which you will update and save to the database.
                 You will also handle any queries the user might have regarding your score generation process. 
                 
@@ -75,7 +84,8 @@ class ReviewAgent:
                                 for index, rule in enumerate(tender_rules)
                             ]
                         ),
-                        bid_info=bid_info
+                        bid_info=bid_info,
+                        extracted_documents_info=extracted_documents_info
                     )
                 ),
             )
@@ -92,3 +102,4 @@ class ReviewAgent:
         #     },
         #     goto=END,
         # )
+ 
