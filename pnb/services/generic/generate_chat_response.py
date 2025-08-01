@@ -49,19 +49,17 @@ async def generate_chat_responses(
             {"messages": [HumanMessage(content=message)]}, version="v2", config=config
         )
 
-        async for event in events:
-            event_type = event["event"]
-
-            if event_type in ["on_tool_end", "on_tool_start"]:
+    async for event in events:
+        event_type = event["event"]
+        if event_type in ["on_tool_end", "on_tool_start"]:
+            continue
+        if event_type in ["on_chat_model_stream", "on_chat_model_end"]:
+            if "chunk" not in event["data"]:
                 continue
-            if event_type in ["on_chat_model_stream", "on_chat_model_end"]:
-                if "chunk" not in event["data"]:
-                    continue
-
-                chunk_content = serialise_ai_message_chunk(event["data"]["chunk"])
-                safe_content = chunk_content.replace("'", "\\'").replace("\n", "\\n")
-                if safe_content == "":
-                    continue
-                yield f'data: {{"type": "content", "content": "{safe_content}"}}\n\n'
-        # Send an end event
-        yield f'data: {{"type": "end"}}\n\n'
+            chunk_content = serialise_ai_message_chunk(event["data"]["chunk"])
+            safe_content = chunk_content.replace("'", "\\'").replace("\n", "\\n")
+            if safe_content == "":
+                continue
+            yield f'data: {{"type": "content", "content": "{safe_content}"}}\n\n'
+    # Send an end event
+    yield f'data: {{"type": "end"}}\n\n'
