@@ -24,11 +24,7 @@ async def create_bids(bids: List[UpdateBid], background_tasks: BackgroundTasks):
         bid_obj = Bid(**bid.model_dump(exclude_unset=True))
         await bid_obj.insert()
         for document in [bid.operationals, bid.financials, bid.technicals]:
-            background_tasks.add_task(
-                store_text_embedding,
-                bid_obj.id,
-                str(document.url),
-            )
+            await store_text_embedding(bid_obj.id,str(document.url))
         await ReviewAgent.review(
             {"messages": []},
             config={
