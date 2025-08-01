@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Query, Depends, Body
+from fastapi import APIRouter, HTTPException, Query, Depends, Body, BackgroundTasks
 from typing import List
 from pnb.db.utils import (
     CursorPaginationRequest,
@@ -11,24 +11,35 @@ from beanie.operators import Set
 from pnb.db.data_models import Bid, UpdateBid, CreateBid
 from bson import ObjectId
 from pnb.langgraph.procurement.agents.review_agent import ReviewAgent
+from pnb.langgraph.tools.extractor import store_text_embedding
 
 
 router = APIRouter(prefix="/bids", tags=["Procurement · Bids"])
 
+
 @router.post("/")
-async def create_bids(bids: List[UpdateBid]):
+async def create_bids(bids: List[UpdateBid], background_tasks: BackgroundTasks):
     created_bid = list()
     for bid in bids:
         bid_obj = Bid(**bid.model_dump(exclude_unset=True))
         await bid_obj.insert()
+        for document in [bid.operationals, bid.financials, bid.technicals]:
+            background_tasks.add_task(
+                store_text_embedding,
+                bid_obj.id,
+                document.url,
+                message="Generating Embeddings",
+            )
         await ReviewAgent.review(
             {"messages": []},
             config={
-                "configurable": {"thread_id": bid_obj.tender.to_dict()['id'], "bid_id": bid_obj.id}
+                "configurable": {
+                    "thread_id": bid_obj.tender.to_dict()["id"],
+                    "bid_id": bid_obj.id,
+                }
             },
         )
-        
-        
+
         created_bid.append(await Bid.get(bid_obj.id))
     return created_bid
 
@@ -37,11 +48,11 @@ async def create_bids(bids: List[UpdateBid]):
 async def get_all_bids(
     pagination: CursorPaginationRequest = Depends(),
     created_at: Optional[str] = Query(None),
-    tender_id: Optional[str] = Query(None)
+    tender_id: Optional[str] = Query(None),
 ):
     query = {}
     if tender_id:
-        query['tender.$id'] = ObjectId(tender_id)
+        query["tender.$id"] = ObjectId(tender_id)
     sort_field = pagination.sort_by or "created_at"
     sort_order = pagination.sort_order or -1
 
