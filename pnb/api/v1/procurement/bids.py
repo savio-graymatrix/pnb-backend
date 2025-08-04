@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Query, Depends, Body, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Query, Depends, Body
 from typing import List
 from pnb.db.utils import (
     CursorPaginationRequest,
@@ -18,7 +18,7 @@ router = APIRouter(prefix="/bids", tags=["Procurement · Bids"])
 
 
 @router.post("/")
-async def create_bids(bids: List[UpdateBid], background_tasks: BackgroundTasks):
+async def create_bids(bids: List[UpdateBid]):
     created_bid = list()
     for bid in bids:
         bid_obj = Bid(**bid.model_dump(exclude_unset=True))

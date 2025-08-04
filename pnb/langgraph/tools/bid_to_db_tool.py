@@ -1,13 +1,15 @@
 from langchain_core.tools import tool
 from pnb.db.data_models.procurement.Bid import Bid
+from decimal import Decimal
 
 @tool
-async def bid_to_db_tool(bid_id: str, score:int, pq:bool, tq:bool, reasoning:str):
+async def bid_to_db_tool(bid_id: str, amount: Decimal, score:int, pq:bool, tq:bool, reasoning:str):
     """
     Tool to update and save the bid evaluation to the database
 
     Args:
     bid_id: str
+    amount: Decimal
     score: int
     pq: bool
     tq: bool
@@ -27,6 +29,7 @@ async def bid_to_db_tool(bid_id: str, score:int, pq:bool, tq:bool, reasoning:str
             bid.pq = pq
             bid.tq = tq
             bid.reasoning = reasoning
+            bid.amount = amount
             await bid.save()
         return True
     except Exception as e:

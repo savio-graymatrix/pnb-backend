@@ -68,9 +68,10 @@ class ReviewAgent:
                 You will extract the bid information from the pdf and save it to the database using the tool. The following details you should save to the database:
                 
                 1) Score
-                2) PQ
-                3) TQ
-                4) Reasoning - The whole reasoning for the bid evaluation and the score. Similar to a log. Will contain the whole analysis of the bid. This reasoning will be used by other agents to create report and summaries. This should be in depth.
+                2) Amount - The bid amount 
+                3) PQ
+                4) TQ
+                5) Reasoning - The whole reasoning for the bid evaluation and the score. Similar to a log. Will contain the whole analysis of the bid. This reasoning will be used by other agents to create report and summaries. This should be in depth.
 
                 **IMPORTANT**: Analyze and answer the queries with proper justification and context.
                 Out of domain requests or queries should not be entertained.
