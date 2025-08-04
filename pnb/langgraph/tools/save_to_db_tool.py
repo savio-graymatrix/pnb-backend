@@ -7,14 +7,14 @@ from pnb import LOGGER
 import traceback
 from decimal import Decimal
 from pnb.langgraph.procurement.agents.tender_rule_agent import TenderRuleAgent
-from pnb.db.data_models.procurement.Tender import TenderDomain
+from pnb.db.data_models.procurement.Tender import TenderDomain, TenderType
 
 @tool
 async def save_to_db_tool(
     title: str,
     department: str,
-    type: Literal["open_tender", "limited_tender"],
-    domain: Literal[TenderDomain.GOODS, TenderDomain.WORKS, TenderDomain.SERVICES],
+    type: TenderType,
+    domain: TenderDomain,
     requirement: str,
     budget: Decimal,
     mode_of_tender: Literal["online", "offline"],
@@ -63,6 +63,8 @@ async def save_to_db_tool(
         or not document_url
         or not opening_date
         or not description
+        or not type
+        or not domain
         or not emd
         or not officer
         or not closing_date
@@ -83,6 +85,7 @@ async def save_to_db_tool(
             requirement=requirement,
             budget=budget,
             emd=emd,
+            domain=domain,
             officer=officer,
             closing_date=closing_date,
             status=status,

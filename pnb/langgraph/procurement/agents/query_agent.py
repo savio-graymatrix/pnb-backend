@@ -46,7 +46,7 @@ class QueryAgent:
         Your task is to resolve the query
         The query is : {question}
         **IMPORTANT**
-        Be explicit with your answer. No greetings.
+        Be explicit and to the point with your answer. No greetings.
         Out of domain questions without regards to the specified tender should not be entertained
         """.format(
                     question=question,
@@ -60,6 +60,7 @@ class QueryAgent:
 
         # result = query_agent.with_structured_output(Query)
         sr = await query_agent.ainvoke(state)
-        return sr["structured_response"]
+        #print(sr)
+        return sr["messages"][0].content
         # result = await structured_agent.ainvoke(state)
         # return result
