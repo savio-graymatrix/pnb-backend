@@ -161,7 +161,7 @@ async def template_to_pdf(name:str, context: dict):
         'quiet': ''
     }
     pdf_bytes = pdfkit.from_string(rendered, False, options=options, configuration=config)
-    filename = f"reports/{uuid.uuid4()}.pdf"
+    filename = f"{uuid.uuid4()}.pdf"
 
     s3_url = upload_to_s3(
         file_bytes=pdf_bytes,
