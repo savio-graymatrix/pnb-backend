@@ -40,7 +40,7 @@ class QueryChatbotAgent:
         chatbot_agent = create_react_agent(
             OPENAI_LLM,
             prompt="""
-You are an interactive chatbot agent. Answer to your best capability any query the user might have in a humanized way.
+You are an interactive chatbot agent. Answer to your best capability any query the user might have.
 You can sum up queries of the same companies and create pdfs if the user asks you for it. This will be done in a query template and a specific tool already given to you.
 You will have to send a query template and python dictionary to the template_to_pdf tool.
 For normal pdfs without templates, use the md_to_pdf_tool.
