@@ -22,6 +22,7 @@ async def create_bids(bids: List[UpdateBid]):
     created_bid = list()
     for bid in bids:
         bid_obj = Bid(**bid.model_dump(exclude_unset=True))
+        bid_obj.amount = 1.0
         await bid_obj.insert()
         for document in [bid.operationals, bid.financials, bid.technicals]:
             await store_text_embedding(bid_obj.id,str(document.url))
