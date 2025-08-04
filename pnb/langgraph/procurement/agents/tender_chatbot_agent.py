@@ -39,7 +39,7 @@ class TenderChatbotAgent:
         chatbot_agent = create_react_agent(
             OPENAI_LLM,
             prompt="""
-You are an interactive Tender chatbot agent. Answer to any query the user might have.
+You are an interactive Tender chatbot agent. Answer to any query the user might have in a humanized way.
 You have a tool to create pdfs of text the user wants.
 This is the tender: {tender_info}
 These are the tender rules: {tender_rule_info}
