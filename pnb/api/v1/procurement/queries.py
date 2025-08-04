@@ -34,7 +34,7 @@ async def create_queries(queries: List[UpdateQuery]):
                 "configurable": {"thread_id": query.tender, "query_id": query_obj.id}
             },
         )
-        query_obj.response = result.answer
+        query_obj.response = result
         await query_obj.save()
         created_query.append(query_obj)
     return created_query
