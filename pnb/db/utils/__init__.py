@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 
 # Create Identifier
 async def create_identifier(self):
-    if not self.series_id:
+    if self.series_id == None:
         entity = self.__class__.__name__.upper()
         year = datetime.now(timezone.utc).year
         # Count existing users for the year
