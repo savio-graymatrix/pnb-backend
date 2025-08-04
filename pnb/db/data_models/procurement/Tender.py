@@ -24,12 +24,15 @@ class TenderStatus(str, Enum):
     CORRINGENDUM = "Corrigendum"
     DRAFT = "Draft"
 
+class TenderType(str, Enum):
+    OPEN_TENDER = "Open Tender"
+    LIMITED_TENDER = "Limited Tender"
 
 class Tender(Document):
     series_id: Optional[str] = None
     title: str = Field(max_length=255)
     department: str = Field()
-    type: str = Literal["open_tender", "limited_tender"]
+    type: TenderType = Field(default=TenderType.OPEN_TENDER)
     domain: TenderDomain = Field(default=TenderDomain.GOODS)
     requirement: str = Field()
     budget: Decimal = Field(..., gt=0.0, decimal_places=2)
