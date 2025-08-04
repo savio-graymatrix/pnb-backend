@@ -71,66 +71,23 @@ async def template_to_pdf(name:str, context: dict):
     and uploads it to S3, returning the S3 URL.
 
     Args:
-        template_id (str): The name of the Jinja2 template to use. (Query Document, Tender Document, Bid Evaluation Report)
-        context (dict): The dictionary containing data to render the template (e.g., bidder_name, analysis).
-        This is how a sample bid evaluation context looks like:
-        evaluation_context = {
-            'bidder_name': 'KRS & SJ INFRASTRUCTURE',
-            'tender_title': 'Construction of City Gate Station...',
-            'crfq_no': '1000427710',
-            'tender_id': '18849',
-            'analysis': {
-                'pq': {
-                    'experience': 'Completion certificates provided...',
-                    'statutory': 'GST, PAN documents are valid...',
-                    'personnel': 'Key personnel CVs included...',
-                    'status': 'PASS' # or 'FAIL'
-                },
-                'tq': {
-                    'proposal': 'Detailed engineering methodology covers all scope...',
-                    'certificates': 'Multiple completion certificates attached...',
-                    'quality_safety': 'ISO 9001:2015 cert provided...',
-                    'status': 'PASS'
-                },
-                'financial': {
-                    'strength': 'Audited financial statements for FY 2021-24 provided...',
-                    'emd_status': 'EMD status is not confirmed in the bid metadata. This is a critical issue.'
-                },
-                'compliance_rules': [
-                    'Two-bid system: Documents are separated as required.',
-                    'Online submission: Confirmed.',
-                    'EMD: Not confirmed in the bid metadata (critical).'
-                ]
-            },
-            'scoring': {
-                'max_total_score': 100,
-                'final_score': 88,
-                'total_comment': 'Deduction only for EMD and minor financial comfort.',
-                'criteria': [
-                    {'name': 'Similar Work Experience', 'max_marks': 20, 'awarded_marks': 20, 'comment': 'Large, recent, relevant CGD project completed'},
-                    # ... more criteria dictionaries
-                ]
-            },
-            'summary': {
-                'critical_notes': 'The only major compliance gap is the EMD status...',
-                'recommendations': [
-                    'If EMD is confirmed/rectified: The bid is compliant...',
-                    'If EMD is not submitted: The bid is non-compliant...'
-                ],
-                'overall_compliance': 'Conditional'
-            }
-        }
+        `name`: The name of the Jinja2 template to use. (Query Document, Tender Document, Bid Evaluation Report)
+        `context`: The dictionary containing data to render the template.
+        This is a mock Query Document argument:
+        {'name': 'Query Document', 'context': {'queries': [{'id': '688ca73debbeb712595f830e', 'company': 'Pacific Engineers', 'question': 'yo can you tell me about the tebder?', 'response': 'The tender is for the construction of a City Gate Station and Mother Station for a CGD project beside Goa. Budget: INR 600 million. EMD: INR 600,000. Submission is offline before 19-Dec-2025. Tender Document: https://ssm-talkk-dev.pocs.tech/reports/e160a234-43d3-4cda-b8e0-5487c0d45c2e.pdf', 'created_at': '2025-08-01 11:38:37'}, {'id': '688ca7a2ebbeb712595f830f', 'company': 'Pacific Engineers', 'question': 'wjere is the tender locstion?', 'response': 'The tender location is beside Goa.', 'created_at': '2025-08-01 11:40:18'}, {'id': '688ccfa4c234cae92002cde0', 'company': 'gRAY mATRIX', 'question': 'i am a construction company. Can i apply?', 'response': 'To apply for the tender for the Construction of City Gate Station (CGS), Mother Station, and associated works for the CGD project beside Goa, you must meet the following mandatory requirements:\n\n1. Submit your bid before the closing date (2025-12-19).\n2. Submit the bid in offline mode as specified in the tender.\n3. Provide an Earnest Money Deposit (EMD) of INR 600,000.\n4. Have completed at least one similar project of value ≥ INR 300 million in the last 5 years, or two or more similar projects of value ≥ INR 150 million each in the last 5 years.\n5. Employ a Project Manager with at least 10 years’ experience in similar works, and at least two engineers with 5 years’ experience in CGD/CGS/Mother Station projects.\n6. Provide proof of ownership/lease of major construction equipment required for the project.\n7. Have an average annual turnover of at least INR 200 million in the last 3 financial years, and a positive net worth in the last financial year.\n8. Submit all required forms, declarations, and statutory documents (GST, PAN, ISO 9001, etc.).\n9. Submit a detailed technical proposal and project schedule as per the tender requirements.\n10. Ensure your financial offer is within the budget cap of INR 600 million.\n\nFailure to meet any of these requirements will result in disqualification. If you meet all, you are eligible to apply for this tender beside Goa.', 'created_at': '2025-08-01 14:31:00'}, {'id': '688ccfb3c234cae92002cde1', 'company': 'gRAY mATRIX', 'question': 'WHAT IS THE BIUDGET????', 'response': 'The budget for this tender beside Goa is INR 600,000,000 (Six Hundred Million Indian Rupees).', 'created_at': '2025-08-01 14:31:15'}, {'id': '68904425ec0fb1dab07556d1', 'company': 'XYZ', 'question': 'New Query', 'response': 'No query was provided. Please specify your question related to the tender “CONSTRUCTION OF CITY GATE STATION (CGS) CUM MOTHER STATION & ASSOCIATED WORKS FOR CGD PROJECT BESIDE GOA” for resolution. Out of domain or unrelated questions will not be addressed.', 'created_at': '2025-08-04 05:24:53'}]}}
+        This is a mock Bid Evauation Report argument:
+        {'name': 'Bid Evaluation Report', 'context': {'tender': {'id': '688ca34dd73fc89ac2e2c888', 'title': 'CONSTRUCTION OF CITY GATE STATION (CGS) CUM MOTHER STATION & ASSOCIATED WORKS FOR CGD PROJECT AT PERUNDURAI DISTRICT OF ERODE GA IN THE STATE OF TAMILNADU', 'department': 'Construction', 'budget': 600000000, 'emd': 600000, 'opening_date': '2025-06-19', 'closing_date': '2025-12-19', 'status': 'LIVE'}, 'bids': [{'id': '688cb40205940af73b48392a', 'company': 'KSR & SJ INFRASTRUCTURE', 'amount': 400000000000, 'emd_status': 'NULL', 'score': 0, 'pq': False, 'tq': False, 'reasoning': 'Disqualified due to non-compliance with mandatory requirements: EMD not submitted and bid amount vastly exceeds budget cap. Not eligible for further consideration.', 'created_at': '2025-07-31 09:22:29', 'updated_at': '2025-07-31 09:22:29', 'financials': 'See Financial_Document.pdf'}, {'id': '688cb5a6f214e63ccc20cd02', 'company': 'KSR & SJ INFRASTRUCTURE', 'amount': 400000000000, 'emd_status': 'NULL', 'score': 0, 'pq': False, 'tq': False, 'reasoning': 'Disqualified due to non-compliance with mandatory requirements: EMD not submitted and bid amount vastly exceeds budget cap. Not eligible for further consideration.', 'created_at': '2025-07-31 09:22:29', 'updated_at': '2025-07-31 09:22:29', 'financials': 'See Financial_Document.pdf'}, {'id': '688cb842f214e63ccc20cd03', 'company': 'KSR & SJ INFRASTRUCTURE', 'amount': 500000000, 'emd_status': 'NULL', 'score': 0, 'pq': False, 'tq': False, 'reasoning': 'Disqualified due to non-compliance with mandatory requirements: EMD not submitted. Not eligible for further consideration.', 'created_at': '2025-07-31 09:22:29', 'updated_at': '2025-07-31 09:22:29', 'financials': 'See Financial_Document.pdf'}, {'id': '688cb97122e21332c9c58537', 'company': 'KSR & SJ INFRASTRUCTURE', 'amount': 500000000, 'emd_status': 'NULL', 'score': 0, 'pq': False, 'tq': False, 'reasoning': 'Disqualified due to non-compliance with mandatory requirements: EMD not submitted. Not eligible for further consideration.', 'created_at': '2025-07-31 09:22:29', 'updated_at': '2025-07-31 09:22:29', 'financials': 'See Financial_Document.pdf'}, {'id': '688cba247149ee52708b40e5', 'company': 'KSR & SJ INFRASTRUCTURE', 'amount': 500000000, 'emd_status': 'NULL', 'score': 0, 'pq': False, 'tq': False, 'reasoning': 'Disqualified due to non-compliance with mandatory requirements: EMD not submitted. Not eligible for further consideration.', 'created_at': '2025-07-31 09:22:29', 'updated_at': '2025-07-31 09:22:29', 'financials': 'See Financial_Document.pdf'}, {'id': '688cbdf2e6d64c6f05874084', 'company': 'KSR & SJ INFRASTRUCTURE', 'amount': 500000000, 'emd_status': 'PAID', 'score': 82, 'pq': True, 'tq': True, 'reasoning': 'Compliant with most requirements. Strong technical and operational proposal. Average turnover slightly below threshold and ISO/QA plan not explicit, but otherwise eligible and scored 82/100.', 'created_at': '2025-07-31 09:22:29', 'updated_at': '2025-07-31 09:22:29', 'financials': 'See Financial_Document.pdf'}]}}
 
     Returns:
         str: The S3 URL of the uploaded PDF file.
 
     Raises:
-        ValueError: If template_id is empty or context is not a valid dictionary.
+        ValueError: If name is empty or context is not a valid dictionary.
         RuntimeError: If template fetching, rendering, PDF generation, or S3 upload fails.
     """
 
     if not name or not context:
-        raise ValueError("template_id and context must be provided")
+        raise ValueError("name and context must be provided")
     if name not in ["Query Document", "Tender Document", "Bid Evaluation Report"]:
         raise ValueError("Invalid template name")
     

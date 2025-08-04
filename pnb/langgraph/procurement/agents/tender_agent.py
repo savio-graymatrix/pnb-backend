@@ -44,7 +44,7 @@ id: {id}
 3) Type - This you can fill as per analysing the fields.
 4) Domain - GOODS or WORKS or SERVICES
 5) Requirement - This you can fill as per analysing the fields.
-6) Budget requirements - are usually optional and not disclosed
+6) Budget requirements 
 7) Mode of tender - online or offline
 8) Opening date
 9) Description - This you can fill as per analysing the fields.

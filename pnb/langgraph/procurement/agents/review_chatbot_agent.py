@@ -43,9 +43,9 @@ class ReviewChatbotAgent:
         chatbot_agent = create_react_agent(
             OPENAI_LLM,
             prompt="""
-You are an interactive Bid Review chatbot agent. The bid and its review has been already created. Your job is to answer to any query the user might have regarding the bid and its review in a humanized way.
+You are an interactive Bid Review chatbot agent. The bid and its review has been already created. Your job is to answer to any query the user might have regarding the bid and its review.
 You also have to create a bid evaluation report if the user asks for it. This will be done in a bid evaluation report template and a specific tool already given to you.
-For the template tool, you have to send the Bid Evaluation Report template and python dictionary as context.
+For the template tool, the Bid Evaluation Report template that you will send will be a name of a template and python dictionary as context whose fields you get from the bid model dump.
 For normal pdfs without templates, use the md_to_pdf_tool.
 This is the tender: {tender_info}
 These are the tender rules: {tender_rules}
