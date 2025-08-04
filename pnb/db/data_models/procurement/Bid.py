@@ -49,7 +49,7 @@ class Bid(Document):
 class UpdateBid(BaseModel):
     company: Optional[str]
     emd_status: Optional[EMDStatus] = Field(default=EMDStatus.NULL)
-    amount: Optional[Decimal]
+    amount: Optional[Decimal] = Field(default=0.0, gt=0.0, decimal_places=2)
     tender: Optional[Link[Tender]]
     created_at: Optional[datetime] = Field(
         default_factory=lambda: datetime.now(timezone.utc)
