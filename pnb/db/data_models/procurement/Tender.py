@@ -29,7 +29,7 @@ class TenderType(str, Enum):
     LIMITED_TENDER = "Limited Tender"
 
 class Tender(Document):
-    series_id: Optional[str] = None
+    series_id: Optional[str] = Field(default=None)
     title: str = Field(max_length=255)
     department: str = Field()
     type: TenderType = Field(default=TenderType.OPEN_TENDER)
@@ -51,6 +51,10 @@ class Tender(Document):
     class Settings:
         name = "tender"
 
+    @before_event(Insert)
+    async def handle_indentifier(self):
+        await create_identifier(self)
+
     @field_validator("budget", "emd", mode="before")
     @classmethod
     def convert_decimal128(cls, v):
@@ -58,9 +62,7 @@ class Tender(Document):
             return v.to_decimal()
         return v
 
-    @before_event(Insert)
-    async def assign_identifier(self):
-        await create_identifier(self)
+    
 
 
 class UpdateTender(BaseModel):
