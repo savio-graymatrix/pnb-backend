@@ -59,11 +59,12 @@ def vector_search_across_collections(input: dict) -> Dict[str, List[Dict]]:
 
         for col_name in search_collections:
             collection = db[col_name]
-            docs = list(collection.find())
+            docs = list(collection.find({}, {"embedding": 1}))  # fetch only embeddings
+
             if not docs:
                 continue
 
-            scored_docs = []
+            matched_docs = []
             for doc in docs:
                 doc_emb = np.array(doc.get("embedding", []))
                 if doc_emb.size != query_embedding.size:
@@ -74,14 +75,15 @@ def vector_search_across_collections(input: dict) -> Dict[str, List[Dict]]:
                         np.linalg.norm(doc_emb) * np.linalg.norm(query_embedding)
                     )
                     if score >= SIMILARITY_THRESHOLD:
-                        doc.pop("embedding", None)  # Remove embedding before return
-                        scored_docs.append((score, doc))
+                        # Fetch full doc excluding embedding
+                        full_doc = collection.find_one({"_id": doc["_id"]}, {"_id": 0, "embedding": 0})
+                        if full_doc:
+                            matched_docs.append((score, full_doc))
                 except Exception as e:
                     print(f"Skipping doc due to scoring error: {e}")
 
-            top_matches = sorted(scored_docs, key=lambda x: x[0], reverse=True)
-            if top_matches:
-                results[col_name] = [doc for _, doc in top_matches]
+            if matched_docs:
+                results[col_name] = [doc for _, doc in sorted(matched_docs, key=lambda x: x[0], reverse=True)]
 
         return results
 

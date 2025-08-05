@@ -1095,6 +1095,12 @@ wheels = [
 ]
 
 [[package]]
+name = "mysql-connector-python-rf"
+version = "2.2.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/21/79/2ff01ab7aa08db3a16b70b990c579c1024c6b2a734263cc7513a758867de/mysql-connector-python-rf-2.2.2.tar.gz", hash = "sha256:f8a19ef79d2e28ad28c740e3b757d60ff6077e1a08c357eb31dfa6839aaaf294", size = 11926482, upload-time = "2017-02-04T02:12:42.135Z" }
+
+[[package]]
 name = "networkx"
 version = "3.5"
 source = { registry = "https://pypi.org/simple" }
@@ -1508,6 +1514,7 @@ dependencies = [
     { name = "langgraph-supervisor" },
     { name = "markdown" },
     { name = "motor" },
+    { name = "mysql-connector-python-rf" },
     { name = "pandas" },
     { name = "pdf2image" },
     { name = "pdfkit" },
@@ -1534,6 +1541,7 @@ requires-dist = [
     { name = "langgraph-supervisor", specifier = ">=0.0.27" },
     { name = "markdown", specifier = ">=3.8.2" },
     { name = "motor", specifier = ">=3.7.1" },
+    { name = "mysql-connector-python-rf", specifier = ">=2.2.2" },
     { name = "pandas", specifier = ">=2.3.1" },
     { name = "pdf2image", specifier = ">=1.17.0" },
     { name = "pdfkit", specifier = ">=1.0.0" },
