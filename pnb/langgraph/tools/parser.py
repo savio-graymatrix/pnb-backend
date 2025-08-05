@@ -1,5 +1,5 @@
 import pymupdf4llm
-from pnb.services.upload_to_s3 import s3_client
+from pnb.services.generic.upload_to_s3 import s3_client
 import fitz
 from pnb import SETTINGS
 from langchain_core.tools import tool

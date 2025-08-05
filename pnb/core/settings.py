@@ -16,6 +16,11 @@ class Settings(BaseModel):
     LOG_LEVEL: str = os.getenv("LOG_LEVEL","INFO").strip()
     POPPLER_PATH: str = os.getenv("POPPLER_PATH","").strip()
     TESSERACT_PATH: str = os.getenv("TESSERACT_PATH","").strip()
+    ALLOWED_HOSTS: list = os.getenv("ALLOWED_HOSTS","*").strip().split(",")
     WKHTML_PATH: str = os.getenv("WKHTML_PATH","").strip()
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY","").strip()
+    CALL_CENTER_OPENAI_LIVE_MODEL: str = os.getenv("CALL_CENTER_OPENAI_LIVE_MODEL","").strip()
+    CALL_CENTER_OPENAI_LIVE_TRANSCRIPTION_MODEL: str = os.getenv("CALL_CENTER_OPENAI_LIVE_TRANSCRIPTION_MODEL","").strip()
+    GPTAMALGAMATION_ENDPOINT_URL: str = os.getenv("GPTAMALGAMATION_ENDPOINT_URL","").strip()
 
 SETTINGS = Settings()

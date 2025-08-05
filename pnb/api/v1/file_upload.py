@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Query, UploadFile, File as FastAPIFile, HTTPException
 from fastapi.responses import Response
 from typing import Union, List
-from pnb.db.data_models.File import (
+from pnb.db.data_models import (
     File,
     FileException,
     UploadFileExceptionResponse,
     UploadFileResponse,
 )
-from pnb.services.upload_to_s3 import upload_to_s3
+from pnb.services.generic.upload_to_s3 import upload_to_s3
 from uuid import uuid4
 
 ALLOWED_MIME_TYPES = {"image/png", "image/jpeg", "application/pdf"}
