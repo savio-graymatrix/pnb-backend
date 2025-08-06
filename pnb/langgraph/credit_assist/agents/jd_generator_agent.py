@@ -6,9 +6,15 @@ from langgraph.prebuilt import create_react_agent
 from langchain_openai import ChatOpenAI
 import os
 from pnb.langgraph.tools.save_jd_tool import save_jd_tool
+from pymongo import MongoClient
+from datetime import datetime
+from pnb import SETTINGS
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# Setup MongoDB history client
+client = MongoClient(SETTINGS.MONGO_URI)
 
 # You can adjust temperature or other params here
 
@@ -28,6 +34,20 @@ class ChatbotAgent:
         id = config["configurable"].get("thread_id")
         
         tools_box = [save_jd_tool]
+
+        # Get the collection for this specific thread
+        thread_collection = client["jd_generator_chatbot"][f"conversation_{id}"]
+
+        # Retrieve last 5 messages for this thread
+        recent_messages = list(
+            thread_collection.find().sort("timestamp", -1).limit(5)
+        )
+
+        history_context = []
+        for entry in reversed(recent_messages):
+            history_context.append({"role": "user", "content": entry["query"]})
+            history_context.append({"role": "assistant", "content": entry["response"]})
+
 
         chatbot_agent = create_react_agent(
             model=OPENAI_LLM,
@@ -91,8 +111,21 @@ Would you like me to save this JD to the database, or make some changes first?â€
 """.format(id=id),
         )
 
+        # Merge context history and current state
+        augmented_state = {
+            "messages": history_context + state["messages"]
+        }
+
         # Invoke the chatbot logic
-        result = await chatbot_agent.ainvoke(state)
+        result = await chatbot_agent.ainvoke(augmented_state)
+
+        # Save current query-response to MongoDB
+        thread_collection.insert_one({
+            "thread_id": id,
+            "query": state["messages"][-1].content,
+            "response": result["messages"][-1].content,
+            "timestamp": datetime.now()
+        })
 
         return Command(
             update={"messages": [AIMessage(content=result["messages"][-1].content, name=ChatbotAgent.agent_name)]},
