@@ -20,6 +20,7 @@ dependencies = [
     "langgraph-supervisor>=0.0.27",
     "markdown>=3.8.2",
     "motor>=3.7.1",
+    "mysql-connector-python-rf>=2.2.2",
     "pandas>=2.3.1",
     "pdf2image>=1.17.0",
     "pdfkit>=1.0.0",
