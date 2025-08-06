@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Body
 from fastapi.responses import JSONResponse
 import requests
 from pnb import SETTINGS
@@ -6,12 +6,8 @@ from pnb import SETTINGS
 router = APIRouter(prefix="/transcript-suggestion", tags=["Transcript Suggestion"])
 
 @router.post("/")
-async def get_transcript_suggestion(request: Request):
+async def get_transcript_suggestion(body=Body(...)):
     try:
-        # Parse incoming JSON body
-        body = await request.json()
-
-        # Forward the body to the local AI service
         response = requests.post(
             f"{SETTINGS.GPTAMALGAMATION_ENDPOINT_URL}",
             headers={"Content-Type": "application/json"},
