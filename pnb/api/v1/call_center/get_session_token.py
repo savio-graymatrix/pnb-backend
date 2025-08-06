@@ -14,7 +14,7 @@ def get_session_token():
     }
     payload = {
         "input_audio_transcription": {
-            "model": 'gpt-4o-mini-transcribe',
+            "model": SETTINGS.CALL_CENTER_OPENAI_LIVE_TRANSCRIPTION_MODEL,
             "language": 'en',
         },
         "turn_detection": {
