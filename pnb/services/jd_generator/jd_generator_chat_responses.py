@@ -9,9 +9,9 @@ from langgraph.graph import StateGraph
 from langgraph.graph.message import add_messages, MessagesState
 from langgraph.graph import END
 from langchain_core.messages import HumanMessage
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.memory import InMemorySaver
 
-memory_saver = MemorySaver()
+memory_saver = InMemorySaver()
 
 
 # LangGraph step
