@@ -7,19 +7,22 @@ router = APIRouter(prefix="/get-session-token", tags=["Transcript generation eph
 
 @router.get("/")
 def get_session_token():
-    url = "https://api.openai.com/v1/realtime/sessions"
+    url = "https://api.openai.com/v1/realtime/transcription_sessions"
     headers = {
         "Authorization": f"Bearer {SETTINGS.OPENAI_API_KEY}",
         "Content-Type": "application/json",
     }
     payload = {
-        "model": SETTINGS.CALL_CENTER_OPENAI_LIVE_MODEL,
-        "modalities": ["text"],
         "input_audio_transcription": {
-            "model": SETTINGS.CALL_CENTER_OPENAI_LIVE_TRANSCRIPTION_MODEL,
-            "language": "en",
+            "model": 'gpt-4o-mini-transcribe',
+            "language": 'en',
         },
-        # "instructions": "set the language to english also do a small talkk"
+        "turn_detection": {
+            "type": "server_vad",
+            "threshold": 0.8,
+            "prefix_padding_ms": 10,
+            "silence_duration_ms": 999
+        }
     }
 
     response = requests.post(url, headers=headers, json=payload)

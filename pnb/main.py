@@ -14,15 +14,16 @@ async def lifespan(app: FastAPI):
     await compile_procurement_graphs()
     yield
     await MONGO_STORE.disconnect()
-    
 
-#setup    
+
+#setup
 app = FastAPI(lifespan=lifespan)
+
 app.add_middleware(
         CORSMiddleware,
-        allow_origins=SETTINGS.ALLOWED_HOSTS,  
+        allow_origins=SETTINGS.ALLOWED_HOSTS,
         allow_credentials=True,
-        allow_methods=["*"],  
+        allow_methods=["*"],
         allow_headers=["*"],
     )
 app.include_router(api_router)
