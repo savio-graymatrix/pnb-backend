@@ -27,7 +27,7 @@ async def _save_jd_tool(role: str, experience: float, skills: List[str], locatio
 
     async with aiohttp.ClientSession() as session:
         async with session.post(API_URL, json=payload) as response:
-            if response.status == 200:
+            if response.status == 201 or response.status == 200:
                 data = await response.json()
                 if data.get("success") == 1:
                     return f"✅ Job description saved successfully! ID: {data['data']['id']}"
