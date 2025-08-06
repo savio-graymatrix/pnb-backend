@@ -107,7 +107,8 @@ This tool requires:
 ➡️ After collecting all details:
 “Here’s a **Draft JD** for a **Software Engineer** with **5 years of experience**, required skills `["Python", "SQL", "AWS"]`, and locations `["Mumbai", "Remote"]`.
 
-Would you like me to save this JD to the database, or make some changes first?”
+Would you like me to save this JD, or make some changes first?”
+Don't use database word in your response.
 """.format(id=id),
         )
 
