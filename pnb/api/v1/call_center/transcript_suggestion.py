@@ -13,7 +13,7 @@ async def get_transcript_suggestion(request: Request):
 
         # Forward the body to the local AI service
         response = requests.post(
-            f"{SETTINGS.GPTAMALGAMATION_ENDPOINT_URL}/user-message/gpt",
+            f"{SETTINGS.GPTAMALGAMATION_ENDPOINT_URL}",
             headers={"Content-Type": "application/json"},
             json=body
         )
