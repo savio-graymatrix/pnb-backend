@@ -8,7 +8,7 @@ from fastapi import (
     File as FastAPIFile,
     Form,
 )
-from fastapi.responses import HTMLResponse 
+from fastapi.responses import HTMLResponse
 from typing import List, Optional
 from pnb.db.data_models import (
     LoanApplication,
@@ -31,7 +31,9 @@ from pnb.api.v1.file_upload import upload_files
 import json
 import traceback
 
-router = APIRouter(prefix="/loan_application", tags=["Credit Assist · Loan Application"])
+router = APIRouter(
+    prefix="/loan_application", tags=["Credit Assist · Loan Application"]
+)
 
 loan_form_template = """
 <!DOCTYPE html>
@@ -117,7 +119,7 @@ loan_form_template = """
 <body>
     <div class="container">
         <h2>Loan Application Form</h2>
-        <form action="/api/v1/loan_application/upload/create" method="post" enctype="multipart/form-data">
+        <form action="/api/v1/credit_assist/loan_application/upload/create" method="post" enctype="multipart/form-data">
             <label>Applicant Name:</label>
             <input type="text" name="applicant_name" required>
 
@@ -227,7 +229,7 @@ async def handle_loan_application(
         file_response = await upload_files(
             [aadhar_document, pan_document, loan_application_document]
         )
-        file_response = json.loads(file_response.body)['files']
+        file_response = json.loads(file_response.body)["files"]
         print(file_response)
         application_obj = await LoanApplication(
             applicant_name=applicant_name,
@@ -256,7 +258,7 @@ async def handle_loan_application(
         return HTMLResponse(success_html)
     except Exception as e:
         print(traceback.format_exc())
-        raise HTTPException(status_code=500,detail="Something went wrong")
+        raise HTTPException(status_code=500, detail="Something went wrong")
 
 
 # Create Loan Applications
