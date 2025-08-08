@@ -33,8 +33,9 @@ class ReviewChatbotAgent:
         ).to_list()
 
         bids = await Bid.find({"tender.$id": ObjectId(tender_id)}).to_list()
+        
+        bid_info = ""
         if bids:
-            bid_info = ""
             for detail in bids:
                 bid_info += f"\n-------------------\n"
                 for key, value in detail.model_dump().items():
