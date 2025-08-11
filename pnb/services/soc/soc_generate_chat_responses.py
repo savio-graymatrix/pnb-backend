@@ -23,7 +23,19 @@ def serialise_ai_message_chunk(chunk):
             f"Object of type {type(chunk).__name__} is not correctly formatted for serialisation"
         )
 
-async def generate_chat_responses(message: str, checkpoint_id: Optional[str] = None):
+async def generate_chat_responses(
+    message: str,
+    checkpoint_id: Optional[str] = None,
+    collection: Optional[str] = None
+):
+    """
+    Stream chat responses from the SOC chatbot.
+
+    Args:
+        message (str): The user's message.
+        checkpoint_id (Optional[str]): ID for maintaining conversation context.
+        collection (Optional[str]): The single MongoDB collection to search within.
+    """
     is_new_conversation = checkpoint_id is None
 
     if is_new_conversation:
@@ -32,7 +44,8 @@ async def generate_chat_responses(message: str, checkpoint_id: Optional[str] = N
 
         config = {
             "configurable": {
-                "thread_id": new_checkpoint_id
+                "thread_id": new_checkpoint_id,
+                "collection": collection
             }
         }
 
@@ -48,7 +61,8 @@ async def generate_chat_responses(message: str, checkpoint_id: Optional[str] = N
     else:
         config = {
             "configurable": {
-                "thread_id": checkpoint_id
+                "thread_id": checkpoint_id,
+                "collection": collection
             }
         }
         # Continue existing conversation

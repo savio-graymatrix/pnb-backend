@@ -1,20 +1,19 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from pymongo import MongoClient
-from bson import ObjectId
 from datetime import datetime, timedelta
+from bson import ObjectId
 from dotenv import load_dotenv
 from pnb import SETTINGS
 
 load_dotenv()
 
-router = APIRouter(prefix="/soc_all_incidents", tags=["SOC · Incident Reports"])
+router = APIRouter(prefix="/soc_all_incident_reports", tags=["SOC · Incident Report Names"])
 
 MONGO_URI = SETTINGS.MONGO_URI
-DB_NAME = "soc_incidents"  
-INCIDENTS_COLLECTION = "Incidents"
+DB_NAME = "soc_incidents"
+REPORT_NAMES_COLLECTION = "IncidentReportNames"
 
-# IST time offset
 IST_OFFSET = timedelta(hours=5, minutes=30)
 
 def convert_datetime_to_ist(obj):
@@ -26,27 +25,28 @@ def convert_datetime_to_ist(obj):
     elif isinstance(obj, dict):
         return {k: convert_datetime_to_ist(v) for k, v in obj.items()}
     elif isinstance(obj, datetime):
+        # Convert UTC datetime to IST before formatting
         return (obj + IST_OFFSET).isoformat()
     elif isinstance(obj, ObjectId):
         return str(obj)
     return obj
 
-@router.get("/fetch")
-def get_incidents_by_report_name(report_name: str = Query(..., description="Report name to filter incidents")):
+@router.get("/fetch_report_name")
+def get_all_incident_report_names():
     try:
         client = MongoClient(MONGO_URI)
         db = client[DB_NAME]
-        collection = db[INCIDENTS_COLLECTION]
+        collection = db[REPORT_NAMES_COLLECTION]
 
-        # Fetch only matching incidents
+        # Fetch both report_name and created_at
         documents = list(
-            collection.find(
-                {"report_name": report_name},
-                {"_id": 0, "embedding": 0}  # exclude _id and embeddings
-            )
+            collection.find({}, {"_id": 0, "report_name": 1, "created_at": 1}).sort("created_at", -1)
         )
 
-        return JSONResponse(content=convert_datetime_to_ist(documents))
+        # Convert datetime to IST ISO strings
+        documents = convert_datetime_to_ist(documents)
+
+        return JSONResponse(content=documents)
 
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
