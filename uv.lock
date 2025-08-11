@@ -1423,6 +1423,15 @@ wheels = [
 ]
 
 [[package]]
+name = "phonenumbers"
+version = "9.0.11"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/7b/54/367d3b262bb1505af1c2b164e6e31c87522e17c68095faa56e01f4dbbd57/phonenumbers-9.0.11.tar.gz", hash = "sha256:6573858dcf0a7a2753a071375e154d9fc11791546c699b575af95d2ba7d84a1d", size = 2297786, upload-time = "2025-08-07T15:42:47.807Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/90/1a/cc7f1a81045cb4c1f5801082adf29c34b67c7193f0d29ae56ce68546137c/phonenumbers-9.0.11-py2.py3-none-any.whl", hash = "sha256:a8ebb2136f1f14dfdbadb98be01cb71b96f880dea011eb5e0921967fe3a23abf", size = 2583590, upload-time = "2025-08-07T15:42:44.048Z" },
+]
+
+[[package]]
 name = "pillow"
 version = "11.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1511,6 +1520,7 @@ dependencies = [
     { name = "pandas" },
     { name = "pdf2image" },
     { name = "pdfkit" },
+    { name = "phonenumbers" },
     { name = "pymupdf" },
     { name = "pymupdf4llm" },
     { name = "pytesseract" },
@@ -1537,6 +1547,7 @@ requires-dist = [
     { name = "pandas", specifier = ">=2.3.1" },
     { name = "pdf2image", specifier = ">=1.17.0" },
     { name = "pdfkit", specifier = ">=1.0.0" },
+    { name = "phonenumbers", specifier = ">=9.0.11" },
     { name = "pymupdf", specifier = ">=1.26.3" },
     { name = "pymupdf4llm", specifier = ">=0.0.26" },
     { name = "pytesseract", specifier = ">=0.3.13" },
