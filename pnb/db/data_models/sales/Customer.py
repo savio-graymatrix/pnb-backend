@@ -26,7 +26,7 @@ class Customer(Document):
     phone_number: str
     customer_segment: Link[CustomerSegment]
 
-    @field_validator("phone", mode="before")
+    @field_validator("phone_number", mode="before")
     def validate_phone(cls, value):
         try:
             parsed = phonenumbers.parse(
