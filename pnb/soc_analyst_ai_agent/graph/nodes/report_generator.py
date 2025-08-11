@@ -11,6 +11,8 @@ load_dotenv()
 # Setup MongoDB
 client = MongoClient(SETTINGS.MONGO_URI)
 db = client["soc_incidents"]
+collection_name = "Incidents"
+report_names_collection = "IncidentReportNames"
 
 # Setup OpenAI
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -33,7 +35,7 @@ def report_generator(state):
     incidents = state.get("logs", [])
     filename = state.get("report_filename", "Incident Report UNKNOWN.json")
     report_name = filename.replace(".json", "")
-    collection_name = filename.replace(".json", "")
+    # collection_name = filename.replace(".json", "")
 
     summary_report = []
 
@@ -69,5 +71,13 @@ def report_generator(state):
     if summary_report:
         db[collection_name].insert_many(summary_report)
         print(f"Inserted {len(summary_report)} incidents into MongoDB collection: {collection_name}")
+
+        # Insert report name into the separate collection
+        db[report_names_collection].update_one(
+            {"report_name": report_name},
+            {"$setOnInsert": {"report_name": report_name, "created_at": datetime.utcnow()}},
+            upsert=True
+        )
+        print(f"Stored report name '{report_name}' in collection: {report_names_collection}")
 
     return state
