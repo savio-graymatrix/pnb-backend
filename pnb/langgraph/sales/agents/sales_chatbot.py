@@ -7,6 +7,11 @@ from pnb.langgraph.utils import OPENAI_LLM
 from pnb.langgraph.tools.web_search_tool import web_search_tool
 from pnb.langgraph.tools.real_time_tool import get_system_time
 from pnb.langgraph.tools.md_to_pdf_tool import md_to_pdf_tool
+from pnb.db.data_models.sales.Product import Product
+from pnb.db.data_models.sales.Customer import Customer
+from pnb.db.data_models.sales.ProductPurchaseLink import ProductPurchaseLink
+from pnb.langgraph.tools.send_whatsapp_tool import handle_text_message
+from pnb.langgraph.tools.send_mail_tool import handle_email
 
 class SalesChatbotagent:
     agent_name = "sales_chatbot_agent"
@@ -16,9 +21,10 @@ class SalesChatbotagent:
 
         id = config["configurable"]["thread_id"]
 
+
         sales_chatbot_agent = create_react_agent(
             OPENAI_LLM,
-            tools=[web_search_tool, get_system_time, md_to_pdf_tool],
+            tools=[web_search_tool, get_system_time, md_to_pdf_tool, handle_text_message, handle_email],
             prompt="""
             You are a sales lead generation agent. You will get some files to analyse.
             You will be tasked to:
@@ -32,6 +38,8 @@ class SalesChatbotagent:
             1) web_search_tool: Search the web for relevant information.
             2) get_system_time: Get the current system time.
             3) md_to_pdf_tool: Create a pdf of the content you have created based on user request.
+            4) handle_text_message: Create a whatsapp message for the user based on the content you have created.
+            5) handle_email: Create a mail for the user based on the content you have created.
             """
 
 
