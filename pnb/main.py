@@ -18,7 +18,6 @@ async def lifespan(app: FastAPI):
     await MONGO_STORE.disconnect()
 
 
-#Setup
 app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
