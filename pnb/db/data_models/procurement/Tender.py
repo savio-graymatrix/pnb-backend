@@ -24,9 +24,11 @@ class TenderStatus(str, Enum):
     CORRINGENDUM = "Corrigendum"
     DRAFT = "Draft"
 
+
 class TenderType(str, Enum):
     OPEN_TENDER = "Open Tender"
     LIMITED_TENDER = "Limited Tender"
+
 
 class Tender(Document):
     series_id: Optional[str] = Field(default=None)
@@ -62,12 +64,10 @@ class Tender(Document):
             return v.to_decimal()
         return v
 
-    
-
 
 class UpdateTender(BaseModel):
     department: str = Field()
-    type: str = Literal["open_tender", "limited_tender"]
+    type: TenderType = Field(default=TenderType.OPEN_TENDER)
     requirement: str = Field()
     budget: Decimal = Field()
     mode_of_tender: Literal["online", "offline"] = Field()
