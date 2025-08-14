@@ -7,6 +7,8 @@ from datetime import datetime, timezone
 from pnb.db.data_models import File
 from enum import Enum
 from pnb.db.utils import create_identifier, handle_add_to_knowledge_graph
+from pnb import LOGGER
+import asyncio
 
 
 class TenderDomain(str, Enum):
@@ -59,7 +61,7 @@ class Tender(Document):
 
     @after_event(Insert)
     async def add_to_knowledge_graph(data: Document):
-        await handle_add_to_knowledge_graph(data)
+        asyncio.create_task(handle_add_to_knowledge_graph(data=data))
 
     @field_validator("budget", "emd", mode="before")
     @classmethod
