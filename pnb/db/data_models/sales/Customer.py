@@ -1,8 +1,10 @@
-from beanie import Document, Link
+from beanie import Document, Link, after_event, Insert, before_event
 from pydantic import Field, EmailStr, field_validator
 from enum import Enum
 import phonenumbers
 from datetime import datetime, timezone
+from pnb.db.utils import handle_add_to_knowledge_graph, create_identifier
+import asyncio
 
 
 class Gender(Enum):
@@ -39,3 +41,11 @@ class Customer(Document):
             )
         except phonenumbers.NumberParseException:
             raise ValueError("Invalid phone number format")
+
+    @after_event(Insert)
+    async def add_to_knowledge_graph(data: Document):
+        asyncio.create_task(handle_add_to_knowledge_graph(data=data))
+
+    @before_event(Insert)
+    async def handle_indentifier(self):
+        await create_identifier(self)

@@ -14,11 +14,9 @@ from pnb.db.data_models import (
     DocumentChecklist,
     AgentLifeCycle,
     ReviewSet,
-    LoanApplication
+    LoanApplication,
 )
 from pnb import LOGGER
-# from langchain_mongodb.agent_toolkit.toolkit import MongoDBDatabaseToolkit
-# from langchain_mongodb.agent_toolkit.database import MongoDBDatabase
 from bson.objectid import ObjectId
 
 

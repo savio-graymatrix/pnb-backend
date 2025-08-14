@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from pymongo import MongoClient
 from bson import ObjectId
-from datetime import datetime, timedelta
+from datetime import datetime
 from dotenv import load_dotenv
 from pnb import SETTINGS
 
@@ -12,41 +12,37 @@ router = APIRouter(prefix="/soc_all_incidents", tags=["SOC · Incident Reports"]
 
 MONGO_URI = SETTINGS.MONGO_URI
 DB_NAME = "soc_incidents"  
-INCIDENTS_COLLECTION = "Incidents"
 
-# IST time offset
-IST_OFFSET = timedelta(hours=5, minutes=30)
-
-def convert_datetime_to_ist(obj):
+def convert_datetime(obj):
     """
-    Recursively convert datetime fields to IST ISO strings for JSON serialization.
+    Recursively convert datetime fields to ISO strings for JSON serialization.
     """
     if isinstance(obj, list):
-        return [convert_datetime_to_ist(item) for item in obj]
+        return [convert_datetime(item) for item in obj]
     elif isinstance(obj, dict):
-        return {k: convert_datetime_to_ist(v) for k, v in obj.items()}
+        return {k: convert_datetime(v) for k, v in obj.items()}
     elif isinstance(obj, datetime):
-        return (obj + IST_OFFSET).isoformat()
+        return obj.isoformat()
     elif isinstance(obj, ObjectId):
         return str(obj)
     return obj
 
 @router.get("/fetch")
-def get_incidents_by_report_name(report_name: str = Query(..., description="Report name to filter incidents")):
+def get_all_incident_documents():
     try:
         client = MongoClient(MONGO_URI)
         db = client[DB_NAME]
-        collection = db[INCIDENTS_COLLECTION]
 
-        # Fetch only matching incidents
-        documents = list(
-            collection.find(
-                {"report_name": report_name},
-                {"_id": 0, "embedding": 0}  # exclude _id and embeddings
-            )
-        )
+        all_data = {}
+        collection_names = db.list_collection_names()
 
-        return JSONResponse(content=convert_datetime_to_ist(documents))
+        for collection_name in collection_names:
+            collection = db[collection_name]
+            documents = list(collection.find({}, {"_id": 0, "embedding": 0}))  # exclude _id and embeddings
+
+            all_data[collection_name] = convert_datetime(documents)
+
+        return JSONResponse(content=all_data)
 
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})

@@ -9,6 +9,7 @@ from decimal import Decimal
 from pnb.langgraph.procurement.agents.tender_rule_agent import TenderRuleAgent
 from pnb.db.data_models.procurement.Tender import TenderDomain, TenderType
 
+
 @tool
 async def save_to_db_tool(
     title: str,
@@ -95,20 +96,20 @@ async def save_to_db_tool(
             description=description,
         )
         await tender.insert()
-        tender_rule_agent_config = {
-            "configurable": {"project_details": tender.model_dump()}
-        }
-        tender_rule_agent_config["configurable"]["project_details"]["documents"] = (
-            ",".join([str(document.url) for document in tender.documents])
-        )
-        instruction_set = await TenderRuleAgent.tender_rule_agent(
-            {"messages": []}, config=tender_rule_agent_config
-        )
-        tender_rules = []
-        for instruction in instruction_set.rules:
-            rule = TenderRule(content=instruction, tender=tender.id)
-            tender_rules.append(rule)
-        await TenderRule.insert_many(tender_rules)
+        # tender_rule_agent_config = {
+        #     "configurable": {"project_details": tender.model_dump()}
+        # }
+        # tender_rule_agent_config["configurable"]["project_details"]["documents"] = (
+        #     ",".join([str(document.url) for document in tender.documents])
+        # )
+        # instruction_set = await TenderRuleAgent.tender_rule_agent(
+        #     {"messages": []}, config=tender_rule_agent_config
+        # )
+        # tender_rules = []
+        # for instruction in instruction_set.rules:
+        #     rule = TenderRule(content=instruction, tender=tender.id)
+        #     tender_rules.append(rule)
+        # await TenderRule.insert_many(tender_rules)
         return True
     except Exception as e:
         print("Technical Error: ", e)

@@ -1,4 +1,4 @@
-from beanie import Document, before_event, Insert
+from beanie import Document, before_event, Insert, after_event
 from pydantic import BaseModel, Field, field_validator
 from decimal import Decimal
 from bson.decimal128 import Decimal128
@@ -6,7 +6,9 @@ from typing import Literal, List, Optional
 from datetime import datetime, timezone
 from pnb.db.data_models import File
 from enum import Enum
-from pnb.db.utils import create_identifier
+from pnb.db.utils import create_identifier, handle_add_to_knowledge_graph
+from pnb import LOGGER
+import asyncio
 
 
 class TenderDomain(str, Enum):
@@ -56,6 +58,10 @@ class Tender(Document):
     @before_event(Insert)
     async def handle_indentifier(self):
         await create_identifier(self)
+
+    @after_event(Insert)
+    async def add_to_knowledge_graph(data: Document):
+        asyncio.create_task(handle_add_to_knowledge_graph(data=data))
 
     @field_validator("budget", "emd", mode="before")
     @classmethod
