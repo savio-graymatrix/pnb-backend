@@ -1,9 +1,11 @@
-from beanie import Document, Link
-from pydantic import Field, EmailStr, field_validator
+from beanie import Document, Link, before_event, after_event, Insert
+from pydantic import Field
 from enum import Enum
 from typing import List
 from datetime import datetime, timezone
 from .Customer import CustomerSegment
+import asyncio
+from pnb.db.utils import handle_add_to_knowledge_graph, create_identifier
 
 
 class ProductType(Enum):
@@ -25,3 +27,7 @@ class Product(Document):
 
     class Settings:
         name = "product"
+
+    @before_event(Insert)
+    async def handle_indentifier(self):
+        await create_identifier(self)

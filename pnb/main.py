@@ -8,6 +8,7 @@ from pnb.langgraph.procurement.workflows import compile_procurement_graphs
 from pnb.langgraph.sales.workflows import compile_sales_graphs
 from pnb import SETTINGS
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await MONGO_STORE.connect()
@@ -17,14 +18,14 @@ async def lifespan(app: FastAPI):
     yield
     await MONGO_STORE.disconnect()
 
-#Setup
+
 app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
-        CORSMiddleware,
-        allow_origins=SETTINGS.ALLOWED_HOSTS,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+    CORSMiddleware,
+    allow_origins=SETTINGS.ALLOWED_HOSTS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.include_router(api_router)

@@ -6,12 +6,13 @@ import asyncio
 import json
 
 
-async def send_whatsapp_message(message_text: str) -> Dict[str, Any]:
+async def send_whatsapp_message(message_text: str, phone_number: str) -> Dict[str, Any]:
     """
     Send a text message via the WhatsApp Business API.
 
     Args:
         message_text (str): The text content of the message.
+        phone_number (str): The phone number to send the message to.
 
     Returns:
         Dict[str, Any]: Result with success status and data or error message.
@@ -58,19 +59,22 @@ async def send_whatsapp_message(message_text: str) -> Dict[str, Any]:
 
 
 @tool
-async def handle_text_message(message_text: str) -> Dict[str, Any]:
+async def handle_text_message(message_text: str, phone_number: str) -> Dict[str, Any]:
     """
     Handle a WhatsApp text message request for an agent.
 
     Args:
         message_text (str): The text content to send.
+        phone_number (str): The phone number to send the message to.
 
     Returns:
         Dict[str, Any]: Result with success status and message.
     """
 
     try:
-        result = await send_whatsapp_message(message_text=message_text)
+        result = await send_whatsapp_message(
+            message_text=message_text, phone_number=phone_number
+        )
         if result["success"]:
             return {"status": "success", "message": "Message sent successfully"}
     except Exception as e:
