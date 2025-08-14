@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from beanie import Document
 from pnb.db.stores.MongoGraphStore import MONGO_GRAPH_STORE
 from langchain_core.documents import Document
+from pnb import LOGGER
 
 
 # Create Identifier
@@ -25,10 +26,8 @@ async def create_identifier(self):
 async def handle_add_to_knowledge_graph(data: Document):
     """ """
 
-    async def document_to_text(data: Document):
+    def document_to_text(data: Document):
         return "\n".join(f"{key}: {data}" for key, data in data.model_dump().items())
 
-    document = [
-        Document(page_content=await document_to_text(data), metadata={"id": data.id})
-    ]
+    document = [Document(page_content=document_to_text(data), metadata={"id": data.id})]
     MONGO_GRAPH_STORE.add_documents(document)

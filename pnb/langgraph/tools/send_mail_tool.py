@@ -6,7 +6,6 @@ import os
 from typing import Dict, Any, Optional
 from langchain_core.tools import tool
 from pnb import SETTINGS, LOGGER
-import asyncio
 
 
 async def send_mail(
@@ -88,9 +87,3 @@ async def handle_email(
     except Exception as e:
         LOGGER.error(str(e))
         return {"status": "error", "message": f"Error: {str(e)}"}
-
-
-# res = asyncio.run(
-#     handle_email.ainvoke({"subject": "test", "body": "test", "is_html": False})
-# )
-# print(res)
