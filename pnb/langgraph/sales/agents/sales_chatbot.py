@@ -51,7 +51,7 @@ class SalesChatbotagent:
             2) generate a personalized message for a customer in the data you will receive.
             3) Generate a pdf of the content you have created based on user request.
             4) Create whatsapp messages for the user based on the content you have created.
-            5) Create a mail for the user based on the content you have created.
+            5) Create a mail for the user based on the content you have created - use the HTML template as a default.
 
             **IMPORTANT**: The emails and whatsapp messages you will create (either personalized or generalized) should be
             created by analyzing the customer data from the knowledge graph by using the retriever tool.  
