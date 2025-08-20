@@ -25,16 +25,15 @@ def get_logger(name: str) -> logging.Logger:
             datefmt="%H:%M:%S",
         )
 
-        # ---- Rotating File Handler (with colors too) ----
+        # ---- Rotating File Handler (plain) ----
         file_handler = RotatingFileHandler(
             filename=os.path.join(LOG_DIR, LOG_FILE),
             maxBytes=MAX_LOG_SIZE,
             backupCount=BACKUP_COUNT,
             encoding="utf-8",
         )
-        file_formatter = coloredlogs.ColoredFormatter(
-            "%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S",
+        file_formatter = logging.Formatter(
+            "[%(asctime)s] %(levelname)s - %(name)s - %(message)s"
         )
         file_handler.setFormatter(file_formatter)
         logger.addHandler(file_handler)
