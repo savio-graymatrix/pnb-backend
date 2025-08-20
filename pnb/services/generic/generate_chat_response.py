@@ -55,6 +55,7 @@ async def generate_chat_responses(
         if event_type == "langgraph_node" and event["langgraph_node"] == "tools":
             continue
         if event_type in ["on_chat_model_stream", "on_chat_model_end"]:
+            print(event)
             if "chunk" not in event["data"]:
                 continue
             chunk_content = serialise_ai_message_chunk(event["data"]["chunk"])

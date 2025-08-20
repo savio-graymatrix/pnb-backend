@@ -27,7 +27,7 @@ class LeadStatus(Enum):
 
 class Lead(Document):
     # Lead basic info
-    name: Indexed[str]  # indexed for faster search
+    name: str  # indexed for faster search
     company: Optional[str] = None
     title: Optional[str] = None
 
@@ -48,7 +48,7 @@ class Lead(Document):
         use_state_management = True  # track changes automatically
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "name": "John Doe",
                 "company": "Acme Corp",
