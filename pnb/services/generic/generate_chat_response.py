@@ -3,6 +3,7 @@ from langchain_core.messages import AIMessageChunk, HumanMessage
 from typing import Optional
 from fastapi import HTTPException
 from langgraph.graph.state import CompiledStateGraph
+from pnb import LOGGER
 
 
 def serialise_ai_message_chunk(chunk):
@@ -55,8 +56,13 @@ async def generate_chat_responses(
         if event_type == "langgraph_node" and event["langgraph_node"] == "tools":
             continue
         if event_type in ["on_chat_model_stream", "on_chat_model_end"]:
-            print(event)
+
             if "chunk" not in event["data"]:
+                continue
+            if (
+                "langgraph_node" in event["metadata"]
+                and event["metadata"]["langgraph_node"] == "tools"
+            ):
                 continue
             chunk_content = serialise_ai_message_chunk(event["data"]["chunk"])
             safe_content = chunk_content.replace("'", "\\'").replace("\n", "\\n")
