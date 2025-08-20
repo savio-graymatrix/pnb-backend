@@ -11,6 +11,7 @@ from pnb.db.data_models.procurement.TenderRule import *
 from pnb.db.data_models.sales.Product import *
 from pnb.db.data_models.sales.Customer import *
 from pnb.db.data_models.sales.ProductPurchaseLink import *
+from pnb.db.data_models.sales.Lead import *
 
 
 DOCUMENT_MODELS = [
@@ -29,5 +30,6 @@ DOCUMENT_MODELS = [
     DocumentTemplate,
     Product,
     Customer,
-    ProductPurchaseLink
+    ProductPurchaseLink,
+    Lead,
 ]
