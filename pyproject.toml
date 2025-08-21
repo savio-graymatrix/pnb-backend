@@ -7,6 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "beanie>=1.30.0",
     "boto3>=1.39.2",
+    "coloredlogs>=15.0.1",
     "fastapi[standard]>=0.115.14",
     "jinja2>=3.1.6",
     "keybert>=0.9.0",
@@ -23,8 +24,14 @@ dependencies = [
     "pandas>=2.3.1",
     "pdf2image>=1.17.0",
     "pdfkit>=1.0.0",
+    "phonenumbers>=9.0.11",
     "pymupdf>=1.26.3",
     "pymupdf4llm>=0.0.26",
     "pytesseract>=0.3.13",
     "python-multipart>=0.0.20",
+]
+
+[dependency-groups]
+dev = [
+    "ipython>=9.4.0",
 ]

@@ -4,7 +4,7 @@
 
 set -e
 rm -rf /tmp/* && rm -rf /root/.cache
-apt update && apt install -y \
+apt update && apt install -y -qq \
     tesseract-ocr \
     poppler-utils \
     build-essential \

@@ -1,4 +1,4 @@
-from beanie import Document, before_event, Insert
+from beanie import Document, before_event, Insert, after_event
 from pydantic import BaseModel, Field, field_validator
 from decimal import Decimal
 from bson.decimal128 import Decimal128
@@ -6,7 +6,9 @@ from typing import Literal, List, Optional
 from datetime import datetime, timezone
 from pnb.db.data_models import File
 from enum import Enum
-from pnb.db.utils import create_identifier
+from pnb.db.utils import create_identifier, handle_add_to_knowledge_graph
+from pnb import LOGGER
+import asyncio
 
 
 class TenderDomain(str, Enum):
@@ -24,9 +26,11 @@ class TenderStatus(str, Enum):
     CORRINGENDUM = "Corrigendum"
     DRAFT = "Draft"
 
+
 class TenderType(str, Enum):
     OPEN_TENDER = "Open Tender"
     LIMITED_TENDER = "Limited Tender"
+
 
 class Tender(Document):
     series_id: Optional[str] = Field(default=None)
@@ -55,6 +59,10 @@ class Tender(Document):
     async def handle_indentifier(self):
         await create_identifier(self)
 
+    @after_event(Insert)
+    async def add_to_knowledge_graph(data: Document):
+        asyncio.create_task(handle_add_to_knowledge_graph(data=data))
+
     @field_validator("budget", "emd", mode="before")
     @classmethod
     def convert_decimal128(cls, v):
@@ -62,12 +70,10 @@ class Tender(Document):
             return v.to_decimal()
         return v
 
-    
-
 
 class UpdateTender(BaseModel):
     department: str = Field()
-    type: str = Literal["open_tender", "limited_tender"]
+    type: TenderType = Field(default=TenderType.OPEN_TENDER)
     requirement: str = Field()
     budget: Decimal = Field()
     mode_of_tender: Literal["online", "offline"] = Field()

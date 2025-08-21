@@ -33,5 +33,14 @@ class Settings(BaseModel):
         "CALL_ANALYSIS_OPENAI_MODEL", ""
     ).strip()
 
+    WHATSAPP_GM: str = os.getenv("WHATSAPP_GM", "").strip()
+    WHATSAPP_UAT: str = os.getenv("WHATSAPP_UAT", "").strip()
+    WHATSAPP_ACCESS_TOKEN: str = os.getenv("WHATSAPP_ACCESS_TOKEN", "").strip()
+    WHATSAPP_API: str = os.getenv("WHATSAPP_API", "").strip()
+    EMAIL_HOST: str = os.getenv("EMAIL_HOST", "").strip()
+    EMAIL_PORT: int = os.getenv("EMAIL_PORT", "").strip()
+    EMAIL_HOST_USER: str = os.getenv("EMAIL_HOST_USER", "").strip()
+    EMAIL_HOST_PASSWORD: str = os.getenv("EMAIL_HOST_PASSWORD", "").strip()
+    RECIPIENT_EMAIL: str = os.getenv("RECIPIENT_EMAIL", "").strip()
 
 SETTINGS = Settings()
