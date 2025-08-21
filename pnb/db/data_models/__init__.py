@@ -8,6 +8,7 @@ from pnb.db.data_models.procurement.Tender import *
 from pnb.db.data_models.procurement.Query import *
 from pnb.db.data_models.procurement.Bid import *
 from pnb.db.data_models.procurement.TenderRule import *
+from pnb.db.data_models.call_center.Session import *
 
 
 DOCUMENT_MODELS = [
@@ -23,5 +24,8 @@ DOCUMENT_MODELS = [
     Query,
     Bid,
     TenderRule,
-    DocumentTemplate
+    DocumentTemplate,
+    Session,
+    CustomerInfo,
+    Notes
 ]

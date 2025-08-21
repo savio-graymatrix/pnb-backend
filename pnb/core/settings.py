@@ -29,6 +29,9 @@ class Settings(BaseModel):
     GPTAMALGAMATION_ENDPOINT_URL: str = os.getenv(
         "GPTAMALGAMATION_ENDPOINT_URL", ""
     ).strip()
+    CALL_ANALYSIS_OPENAI_MODEL: str = os.getenv(
+        "CALL_ANALYSIS_OPENAI_MODEL", ""
+    ).strip()
 
 
 SETTINGS = Settings()
