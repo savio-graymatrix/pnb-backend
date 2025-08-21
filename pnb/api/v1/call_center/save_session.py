@@ -38,7 +38,7 @@ async def save_session(body=Body(...)):
             session_id=(body or {}).get("session_id", f"session-{uuid4()}"),
             customer_info=customer,
             transcript=transcript,
-            call_duration=(body or {}).get("call_duration", None) // 1000,
+            call_duration=str((body or {}).get("call_duration", None) // 1000),
             call_time=datetime.fromtimestamp((body or {}).get("timestamp", datetime.now(timezone.utc).timestamp()) / 1000, tz=timezone.utc),
         )
         await session.insert()
