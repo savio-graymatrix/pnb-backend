@@ -10,20 +10,22 @@ router = APIRouter(prefix="/save-session", tags=["Save Session"])
 @router.post("/")
 async def save_session(body=Body(...)):
     try:
+        customer = await CustomerInfo.find_one(CustomerInfo.phone_number == body.get("customer_info").get("phone_number"))
+        if not customer:
+            customer = CustomerInfo(
+                name=(body.get("customer_info") or {}).get("name", "Unknown"),
+                phone_number=(body.get("customer_info") or {}).get("phone_number", "Unknown")
+            )
+            await customer.insert()
 
-        customer = CustomerInfo(
-            name=(body.get("customer_info") or {}).get("name", "Unknown"),
-            phone_number=(body.get("customer_info") or {}).get("phone_number", "Unknown")
-        )
-        await customer.insert()
-
-        notes = [Notes(
-            cust_info=customer,
-            text=note,
-            timestamp=datetime.now(timezone.utc)
-        )
-            for note in body.get("notes")]
-        await Notes.insert_many(notes)
+        if body.get("notes"):
+            notes = [Notes(
+                cust_info=customer,
+                text=note,
+                timestamp=datetime.now(timezone.utc)
+            )
+                for note in body.get("notes")]
+            await Notes.insert_many(notes)
 
         transcript = [Message(
             id=(message or {}).get("id"),
