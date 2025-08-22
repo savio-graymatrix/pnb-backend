@@ -6,10 +6,12 @@ from langgraph.prebuilt import create_react_agent
 from langchain_openai import ChatOpenAI
 import os
 from pnb.langgraph.tools.save_jd_tool import save_jd_tool
+from pnb.langgraph.tools.web_search_tool import web_search_tool
 from pymongo import MongoClient
 from datetime import datetime
 from pnb import SETTINGS
 from dotenv import load_dotenv
+
 
 load_dotenv()
 
@@ -23,8 +25,9 @@ OPENAI_LLM = ChatOpenAI(
     model="gpt-4.1",
     api_key=os.getenv("OPENAI_API_KEY"),
     streaming=True,
-    verbose=True
+    verbose=True,
 )
+
 
 class ChatbotAgent:
     agent_name = "chatbot_agent"
@@ -32,27 +35,24 @@ class ChatbotAgent:
     @staticmethod
     async def chatbot(state: MessagesState, config: RunnableConfig) -> Command:
         id = config["configurable"].get("thread_id")
-        
-        tools_box = [save_jd_tool]
+
+        tools_box = [save_jd_tool, web_search_tool]
 
         # Get the collection for this specific thread
         thread_collection = client["jd_generator_chatbot"][f"conversation_{id}"]
 
         # Retrieve last 5 messages for this thread
-        recent_messages = list(
-            thread_collection.find().sort("timestamp", -1).limit(5)
-        )
+        recent_messages = list(thread_collection.find().sort("timestamp", -1).limit(5))
 
         history_context = []
         for entry in reversed(recent_messages):
             history_context.append({"role": "user", "content": entry["query"]})
             history_context.append({"role": "assistant", "content": entry["response"]})
 
-
         chatbot_agent = create_react_agent(
             model=OPENAI_LLM,
             tools=tools_box,
-            prompt = """
+            prompt="""
 You are an AI assistant specialized in creating professional **Job Descriptions (JDs)** for users.
 
 Use this `{id}` as the identifier to maintain and continue the conversation across turns.
@@ -74,12 +74,13 @@ This tool requires:
 
    * Make sure to collect **experience in years as a number** (float).
    * Ensure **skills and locations are provided as lists of items**.
-2. Once all details are collected, **generate a draft JD** and present it to the user.
+2. Once all details are collected, **generate a draft JD** and present it to the user. Provide two versions of the JDs. First is to be casual and second could be more professional
 3. **Ask the user if they want to make any changes or approve the draft.**
 
    * If the user requests changes, update the JD accordingly and show the new version.
    * If the user approves, then call the `save_jd` tool with the final details.
 4. Confirm to the user that their JD has been saved successfully.
+
 
 ---
 
@@ -109,26 +110,35 @@ This tool requires:
 
 Would you like me to save this JD, or make some changes first?”
 Don't use database word in your response.
-""".format(id=id),
+""".format(
+                id=id
+            ),
         )
 
         # Merge context history and current state
-        augmented_state = {
-            "messages": history_context + state["messages"]
-        }
+        augmented_state = {"messages": history_context + state["messages"]}
 
         # Invoke the chatbot logic
         result = await chatbot_agent.ainvoke(augmented_state)
 
         # Save current query-response to MongoDB
-        thread_collection.insert_one({
-            "thread_id": id,
-            "query": state["messages"][-1].content,
-            "response": result["messages"][-1].content,
-            "timestamp": datetime.now()
-        })
+        thread_collection.insert_one(
+            {
+                "thread_id": id,
+                "query": state["messages"][-1].content,
+                "response": result["messages"][-1].content,
+                "timestamp": datetime.now(),
+            }
+        )
 
         return Command(
-            update={"messages": [AIMessage(content=result["messages"][-1].content, name=ChatbotAgent.agent_name)]},
+            update={
+                "messages": [
+                    AIMessage(
+                        content=result["messages"][-1].content,
+                        name=ChatbotAgent.agent_name,
+                    )
+                ]
+            },
             goto=END,
         )
