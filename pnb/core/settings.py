@@ -29,6 +29,10 @@ class Settings(BaseModel):
     GPTAMALGAMATION_ENDPOINT_URL: str = os.getenv(
         "GPTAMALGAMATION_ENDPOINT_URL", ""
     ).strip()
+    CALL_ANALYSIS_OPENAI_MODEL: str = os.getenv(
+        "CALL_ANALYSIS_OPENAI_MODEL", ""
+    ).strip()
+
     WHATSAPP_GM: str = os.getenv("WHATSAPP_GM", "").strip()
     WHATSAPP_UAT: str = os.getenv("WHATSAPP_UAT", "").strip()
     WHATSAPP_ACCESS_TOKEN: str = os.getenv("WHATSAPP_ACCESS_TOKEN", "").strip()

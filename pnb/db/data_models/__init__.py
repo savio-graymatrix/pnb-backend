@@ -8,6 +8,7 @@ from pnb.db.data_models.procurement.Tender import *
 from pnb.db.data_models.procurement.Query import *
 from pnb.db.data_models.procurement.Bid import *
 from pnb.db.data_models.procurement.TenderRule import *
+from pnb.db.data_models.call_center.Session import *
 from pnb.db.data_models.sales.Product import *
 from pnb.db.data_models.sales.Customer import *
 from pnb.db.data_models.sales.ProductPurchaseLink import *
@@ -28,6 +29,9 @@ DOCUMENT_MODELS = [
     Bid,
     TenderRule,
     DocumentTemplate,
+    Session,
+    CustomerInfo,
+    Notes,
     Product,
     Customer,
     ProductPurchaseLink,
