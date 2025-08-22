@@ -52,6 +52,7 @@ class SalesChatbotagent:
             3) Generate a pdf of the content you have created based on user request.
             4) Create whatsapp messages for the user based on the content you have created.
             5) Create a mail for the user based on the content you have created - use the HTML template as a default.
+            6) If the query falls outside the sales assistant usecase , you can decline to perform the task. This can include general questions, non sales related questions, etc.
 
             **IMPORTANT**: The emails and whatsapp messages you will create (either personalized or generalized) should be
             created by analyzing the customer data from the knowledge graph by using the retriever tool.  
