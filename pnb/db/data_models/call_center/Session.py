@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Literal
 from beanie import Document, Link, Indexed, PydanticObjectId
 from pydantic import BaseModel, Field
@@ -28,7 +28,7 @@ class Session(Document):
     customer_info: Link[CustomerInfo]  # Reference to CustomerInfo document
     transcript: List[Message] = Field(default_factory=list)
 
-    call_time:     datetime
+    call_time:     datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     call_duration: str | None = None
     call_summary:  str | None = None
     compliance:    str | None = None
@@ -54,7 +54,7 @@ class Notes(Document):
     """Notes document with customer info reference"""
     cust_info: Link[CustomerInfo]  # Reference to CustomerInfo document
     text: str
-    timestamp: Indexed(datetime) = Field(default_factory=datetime.now())
+    timestamp: Indexed(datetime) = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     class Settings:
         name = "notes"

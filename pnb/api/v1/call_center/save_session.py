@@ -36,12 +36,14 @@ async def save_session(body=Body(...)):
         )
             for message in body.get("conversation")]
 
+        call_time = (body or {}).get("timestamp")
+
         session = Session(
             session_id=(body or {}).get("session_id", f"session-{uuid4()}"),
             customer_info=customer,
             transcript=transcript,
             call_duration=str((body or {}).get("call_duration", None) // 1000),
-            call_time=datetime.fromtimestamp((body or {}).get("timestamp", datetime.now(timezone.utc).timestamp()) / 1000, tz=timezone.utc),
+            call_time=datetime.fromtimestamp(call_time / 1000 if call_time else datetime.now(timezone.utc).timestamp(), tz=timezone.utc),
         )
         await session.insert()
 

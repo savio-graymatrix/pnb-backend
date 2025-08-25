@@ -1,5 +1,6 @@
 from pnb.db.data_models.call_center.Session import Session
 from pnb.langgraph.call_center.agents.call_analysis_agent import CallAnalysisAgent
+from pnb.core.utils import humanize_duration, humanize_date
 
 async def analyze_session(session: Session):
     transcript = session.transcript
@@ -34,8 +35,8 @@ Provide a comprehensive analysis including summary, compliance report, and quali
     call_summary_response = await call_analysis_agent.call_analysis(analysis_input, config)
 
     compliance = f'''## Call Analysis\n
-**Duration:** {session.call_duration}\n
-**Date:** {session.call_time}\n
+**Duration:** {humanize_duration(int(session.call_duration))}\n
+**Date:** {humanize_date(session.call_time)}\n
 **Handled By:** Call Center Agent (Assisted by AI Agent)\n
 **Customer Concern:** {call_summary_response.get('structured_response').compliance_report.customer_concern}'''
     compliance += '\n\n'.join([f'#### {i['name']}\n* {'\n* '.join(i['list_of_keys'])}' if isinstance(i, dict) else '' for i in call_summary_response.get('structured_response').compliance_report.model_dump().values()])
