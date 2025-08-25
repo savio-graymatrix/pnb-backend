@@ -6,6 +6,7 @@ load_dotenv()
 
 
 class Settings(BaseModel):
+    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY").strip()
     MONGO_URI: str = os.getenv("MONGO_URI", "mongodb://localhost:27017").strip()
     DB_NAME: str = os.getenv("MONGO_DB", "pnb").strip()
     OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4.1-mini").strip()
@@ -13,6 +14,7 @@ class Settings(BaseModel):
     AWS_ACCESS_KEY: str = os.getenv("AWS_ACCESS_KEY_ID", "").strip()
     AWS_REGION: str = os.getenv("AWS_REGION", "").strip()
     AWS_BUCKET: str = os.getenv("AWS_BUCKET_NAME", "").strip()
+    AWS_BUCKET_URL: str = os.getenv("AWS_BUCKET_URL", "").strip()
     S3_CDN_URL: str = os.getenv("AWS_BUCKET_URL", "").strip()
     LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO").strip()
     POPPLER_PATH: str = os.getenv("POPPLER_PATH", "").strip()
@@ -42,5 +44,6 @@ class Settings(BaseModel):
     EMAIL_HOST_USER: str = os.getenv("EMAIL_HOST_USER", "").strip()
     EMAIL_HOST_PASSWORD: str = os.getenv("EMAIL_HOST_PASSWORD", "").strip()
     RECIPIENT_EMAIL: str = os.getenv("RECIPIENT_EMAIL", "").strip()
+
 
 SETTINGS = Settings()
