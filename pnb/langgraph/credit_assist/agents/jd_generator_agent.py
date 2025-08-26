@@ -79,7 +79,7 @@ This tool requires:
 
    * Make sure to collect **experience in years as a number** (float).
    * Ensure **skills and locations are provided as lists of items** or use web search to bring latest trending skills.
-2. Once all details are collected, **generate a draft JD** and present it to the user. Provide two versions of the JDs. First is to be casual and second could be more professional
+2. Once all details are collected, **generate a draft JD** and present it to the user. Provide two versions of the JDs. First is to be casual and second could be more professional. Please make sure the user chooses one version of JD at most.
 3. **Ask the user if they want to make any changes or approve the draft.**
 
    * If the user requests changes, update the JD accordingly and show the new version.
