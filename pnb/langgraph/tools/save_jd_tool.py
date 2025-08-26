@@ -6,16 +6,24 @@ import aiohttp
 
 class SaveJDInput(BaseModel):
     role: str = Field(..., description="The job role (e.g., Software Engineer)")
-    experience: float = Field(..., description="Experience required in years (e.g., 2.0, 5.5)")
-    skills: List[str] = Field(..., description="List of skills required (e.g., ['Python', 'SQL', 'AWS'])")
-    location: List[str] = Field(..., description="List of job locations (e.g., ['Mumbai', 'Remote'])")
+    experience: float = Field(
+        ..., description="Experience required in years (e.g., 2.0, 5.5)"
+    )
+    skills: List[str] = Field(
+        ..., description="List of skills required (e.g., ['Python', 'SQL', 'AWS'])"
+    )
+    location: List[str] = Field(
+        ..., description="List of job locations (e.g., ['Mumbai', 'Remote'])"
+    )
     jd_text: str = Field(..., description="The complete Job Description text")
 
 
-API_URL = "https://qxv1b5zbuh.execute-api.us-east-1.amazonaws.com/dev/api/jobs/create-job-description"
+API_URL = "https://f570xwfso8.execute-api.ap-south-1.amazonaws.com/dev/api/jd/create"
 
 
-async def _save_jd_tool(role: str, experience: float, skills: List[str], location: List[str], jd_text: str) -> str:
+async def _save_jd_tool(
+    role: str, experience: float, skills: List[str], location: List[str], jd_text: str
+) -> str:
     """Async wrapper for saving JD into the external API instead of MySQL."""
     payload = {
         "role": role,
@@ -32,9 +40,11 @@ async def _save_jd_tool(role: str, experience: float, skills: List[str], locatio
                 if data.get("success") == 1:
                     return f"✅ Job description saved successfully! ID: {data['data']['id']}"
                 else:
-                    return f"❌ Failed to save JD: {data.get('message', 'Unknown error')}"
+                    return (
+                        f"❌ Failed to save JD: {data.get('message', 'Unknown error')}"
+                    )
             else:
-                return f"❌ API request failed with status {response.status}"
+                return f"❌ API request failed with status {response.status}\n\n{await response.json()}"
 
 
 save_jd_tool = StructuredTool.from_function(
