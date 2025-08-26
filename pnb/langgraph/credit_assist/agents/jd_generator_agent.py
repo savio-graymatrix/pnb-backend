@@ -7,6 +7,7 @@ from langchain_openai import ChatOpenAI
 import os
 from pnb.langgraph.tools.save_jd_tool import save_jd_tool
 from pnb.langgraph.tools.web_search_tool import web_search_tool
+from pnb.langgraph.tools.post_jd import post_jd
 from pymongo import MongoClient
 from datetime import datetime
 from pnb import SETTINGS
@@ -36,7 +37,7 @@ class ChatbotAgent:
     async def chatbot(state: MessagesState, config: RunnableConfig) -> Command:
         id = config["configurable"].get("thread_id")
 
-        tools_box = [save_jd_tool, web_search_tool]
+        tools_box = [save_jd_tool, web_search_tool, post_jd]
 
         # Get the collection for this specific thread
         thread_collection = client["jd_generator_chatbot"][f"conversation_{id}"]
@@ -64,6 +65,10 @@ This tool requires:
 * `experience` → The required experience in years (float, e.g., `2.0`, `5.5`)
 * `skills` → A **list of strings** (e.g., `["Python", "SQL", "AWS"]`)
 * `location` → A **list of strings** (e.g., `["Mumbai", "Remote"]`)
+* `jd_text` → The complete Job Description text (string)
+
+You also have the tool to send a post in LinkedIn with JD Text
+This tool requires:
 * `jd_text` → The complete Job Description text (string)
 
 ---
