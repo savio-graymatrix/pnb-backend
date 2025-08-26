@@ -7,6 +7,7 @@ from langchain_openai import ChatOpenAI
 import os
 from pnb.langgraph.tools.save_jd_tool import save_jd_tool
 from pnb.langgraph.tools.web_search_tool import web_search_tool
+from pnb.langgraph.tools.post_jd import post_jd
 from pymongo import MongoClient
 from datetime import datetime
 from pnb import SETTINGS
@@ -36,7 +37,7 @@ class ChatbotAgent:
     async def chatbot(state: MessagesState, config: RunnableConfig) -> Command:
         id = config["configurable"].get("thread_id")
 
-        tools_box = [save_jd_tool, web_search_tool]
+        tools_box = [save_jd_tool, web_search_tool, post_jd]
 
         # Get the collection for this specific thread
         thread_collection = client["jd_generator_chatbot"][f"conversation_{id}"]
@@ -66,6 +67,10 @@ This tool requires:
 * `location` → A **list of strings** (e.g., `["Mumbai", "Remote"]`)
 * `jd_text` → The complete Job Description text (string)
 
+You also have the tool to send a post in LinkedIn with JD Text
+This tool requires:
+* `jd_text` → The complete Job Description text (string)
+
 ---
 
 ### 🔹 Your Responsibilities
@@ -73,7 +78,7 @@ This tool requires:
 1. If details (`role`, `experience`, `skills`, `location`) are missing, ask for them politely one by one.
 
    * Make sure to collect **experience in years as a number** (float).
-   * Ensure **skills and locations are provided as lists of items**.
+   * Ensure **skills and locations are provided as lists of items** or use web search to bring latest trending skills.
 2. Once all details are collected, **generate a draft JD** and present it to the user. Provide two versions of the JDs. First is to be casual and second could be more professional
 3. **Ask the user if they want to make any changes or approve the draft.**
 
@@ -87,6 +92,8 @@ This tool requires:
 ### 🔹 Response Guidelines
 
 * Always be polite, clear, and professional.
+* Please format the response as unicode formatting instead of markdown (Eg: 𝐁𝐨𝐥𝐝 𝐓𝐞𝐱𝐭)
+* Include relevant hashtags to boost the post.
 * Do **not** save the JD automatically. Always wait for explicit user approval before calling the `save_jd` tool.
 * When showing the draft JD, clearly mark it as **“Draft JD”** and ask:
   *“Would you like me to save this JD to the database, or would you like to make changes first?”*
