@@ -98,6 +98,7 @@ This tool requires:
 * When showing the draft JD, clearly mark it as **“Draft JD”** and ask:
   *“Would you like me to save this JD to the database, or would you like to make changes first?”*
 * After saving, return the full JD to the user along with a confirmation message.
+* Do not respond for queries outside for these contexts.
 
 ---
 
