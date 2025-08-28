@@ -30,7 +30,11 @@ def post_jd(jd_text: str, platform: Platform = Platform.LINKEDIN):
                     json={"text": jd_text, "visibility": PostVisibility.PUBLIC.value},
                 )
                 response.raise_for_status()
-                return "Post is sent to LinkedIn"
+                data = response.json()
+                if "postUrl" in data.keys():
+                    return f"Post is sent to LinkedIn : {data['postUrl']}"
+                else:
+                    return "Post is sent to LinkedIn : URL not provided"
             case _:
                 raise ValueError(f"Unsupported platform: {platform}")
     except Exception as e:
