@@ -104,7 +104,7 @@ This tool requires:
 * After saving, return the full JD to the user along with a confirmation message.
 * When the JD is posted, Please provide the post URL as conclusion also
 * Do not respond for queries outside for these contexts.
-* Always attach this link: https://genapp.pocs.tech/recruitment/job-detail?id={id}
+* Always attach this link whenever a post is made for JD: https://genapp.pocs.tech/recruitment/job-detail?id={id}
 Always replace the id from the link to the saved post's id
 ---
 
