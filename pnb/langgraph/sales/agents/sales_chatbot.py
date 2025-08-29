@@ -8,6 +8,7 @@ from pnb.langgraph.tools.web_search_tool import web_search_tool
 from pnb.langgraph.tools.real_time_tool import get_system_time
 from pnb.langgraph.tools.md_to_pdf_tool import md_to_pdf_tool
 from pnb.langgraph.tools.imagen_tool import imagen_tool
+from pnb.langgraph.tools.graph_chart_tool import handle_chart
 from pnb.db.data_models.sales.Product import Product
 from pnb.db.data_models.sales.Customer import Customer
 from pnb.db.data_models.sales.ProductPurchaseLink import ProductPurchaseLink
@@ -44,6 +45,7 @@ class SalesChatbotagent:
                 handle_text_message,
                 handle_email,
                 imagen_tool,
+                handle_chart,
                 *toolkit.get_tools(),
             ],
             prompt="""
@@ -67,6 +69,7 @@ class SalesChatbotagent:
             5) handle_text_message: Create a whatsapp message for the user based on the content you have created.
             6) handle_email: Create a mail for the user based on the content you have created.
             7) imagen_tool: Create an image for the user based on the content you have created.
+            8) handle_chart: Create a chart for the user based on the content you have created.
             
             This is the MONGODB agent toolkit tool usage prompt: {tool_usage_prompt}
             """.format(

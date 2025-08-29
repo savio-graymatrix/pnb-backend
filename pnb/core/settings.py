@@ -10,6 +10,8 @@ class Settings(BaseModel):
     MONGO_URI: str = os.getenv("MONGO_URI", "mongodb://localhost:27017").strip()
     DB_NAME: str = os.getenv("MONGO_DB", "pnb").strip()
     OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4.1-mini").strip()
+    GEMINI_IMAGE_MODEL: str = os.getenv("GEMINI_IMAGE_MODEL", "").strip()
+    GEMINI_VIDEO_MODEL: str = os.getenv("GEMINI_VIDEO_MODEL", "").strip()
     AWS_SECRET_KEY: str = os.getenv("AWS_SECRET_ACCESS_KEY", "").strip()
     AWS_ACCESS_KEY: str = os.getenv("AWS_ACCESS_KEY_ID", "").strip()
     AWS_REGION: str = os.getenv("AWS_REGION", "").strip()

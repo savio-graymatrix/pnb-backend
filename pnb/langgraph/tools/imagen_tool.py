@@ -32,7 +32,7 @@ async def imagen_tool(prompt: str):
 
         client = genai.Client(api_key=GEMINI_API_KEY)
         response = client.models.generate_images(
-            model="imagen-3.0-generate-002",
+            model=SETTINGS.GEMINI_IMAGE_MODEL,
             prompt=prompt,
             config=types.GenerateImagesConfig(number_of_images=1),
         )
