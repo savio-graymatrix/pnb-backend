@@ -1,5 +1,5 @@
 from langchain_core.tools import tool
-from google import genai
+import google.genai as genai
 from google.genai import types
 from pnb import LOGGER, SETTINGS
 import uuid
