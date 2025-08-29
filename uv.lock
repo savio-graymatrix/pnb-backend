@@ -692,6 +692,25 @@ wheels = [
 ]
 
 [[package]]
+name = "google-genai"
+version = "1.32.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "anyio" },
+    { name = "google-auth" },
+    { name = "httpx" },
+    { name = "pydantic" },
+    { name = "requests" },
+    { name = "tenacity" },
+    { name = "typing-extensions" },
+    { name = "websockets" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/03/ab/e6cdd8fa957c647ef00c4da7c59d0e734354bd49ed8d98c860732d8e1944/google_genai-1.32.0.tar.gz", hash = "sha256:349da3f5ff0e981066bd508585fcdd308d28fc4646f318c8f6d1aa6041f4c7e3", size = 240802, upload-time = "2025-08-27T22:16:32.781Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/59/55/be09472f7a656af1208196d2ef9a3d2710f3cbcf695f51acbcbe28b9472b/google_genai-1.32.0-py3-none-any.whl", hash = "sha256:c0c4b1d45adf3aa99501050dd73da2f0dea09374002231052d81a6765d15e7f6", size = 241680, upload-time = "2025-08-27T22:16:31.409Z" },
+]
+
+[[package]]
 name = "google-generativeai"
 version = "0.8.5"
 source = { registry = "https://pypi.org/simple" }
@@ -2076,6 +2095,7 @@ dependencies = [
     { name = "coloredlogs" },
     { name = "fastapi", extra = ["standard"] },
     { name = "google" },
+    { name = "google-genai" },
     { name = "google-generativeai" },
     { name = "jinja2" },
     { name = "keybert" },
@@ -2113,6 +2133,7 @@ requires-dist = [
     { name = "coloredlogs", specifier = ">=15.0.1" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.14" },
     { name = "google", specifier = ">=3.0.0" },
+    { name = "google-genai", specifier = ">=1.32.0" },
     { name = "google-generativeai", specifier = ">=0.8.5" },
     { name = "jinja2", specifier = ">=3.1.6" },
     { name = "keybert", specifier = ">=0.9.0" },
