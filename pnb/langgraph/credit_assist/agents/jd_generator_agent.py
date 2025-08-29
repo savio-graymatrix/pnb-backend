@@ -7,6 +7,7 @@ from langchain_openai import ChatOpenAI
 import os
 from pnb.langgraph.tools.save_jd_tool import save_jd_tool
 from pnb.langgraph.tools.web_search_tool import web_search_tool
+from pnb.langgraph.tools.post_jd import post_jd
 from pymongo import MongoClient
 from datetime import datetime
 from pnb import SETTINGS
@@ -36,7 +37,7 @@ class ChatbotAgent:
     async def chatbot(state: MessagesState, config: RunnableConfig) -> Command:
         id = config["configurable"].get("thread_id")
 
-        tools_box = [save_jd_tool, web_search_tool]
+        tools_box = [save_jd_tool, web_search_tool, post_jd]
 
         # Get the collection for this specific thread
         thread_collection = client["jd_generator_chatbot"][f"conversation_{id}"]
@@ -57,13 +58,17 @@ You are an AI assistant specialized in creating professional **Job Descriptions 
 
 Use this `{id}` as the identifier to maintain and continue the conversation across turns.
 
-You have access to a tool called `save_jd` which stores the finalized JD in a MySQL database.
+You have access to a tool called `save_jd` which stores the finalized JD in a database.
 This tool requires:
 
 * `role` → The job title (string, e.g., `"Software Engineer"`)
 * `experience` → The required experience in years (float, e.g., `2.0`, `5.5`)
 * `skills` → A **list of strings** (e.g., `["Python", "SQL", "AWS"]`)
 * `location` → A **list of strings** (e.g., `["Mumbai", "Remote"]`)
+* `jd_text` → The complete Job Description text (string)
+
+You also have the tool to send a post in LinkedIn with JD Text
+This tool requires:
 * `jd_text` → The complete Job Description text (string)
 
 ---
@@ -73,13 +78,15 @@ This tool requires:
 1. If details (`role`, `experience`, `skills`, `location`) are missing, ask for them politely one by one.
 
    * Make sure to collect **experience in years as a number** (float).
-   * Ensure **skills and locations are provided as lists of items**.
-2. Once all details are collected, **generate a draft JD** and present it to the user. Provide two versions of the JDs. First is to be casual and second could be more professional
-3. **Ask the user if they want to make any changes or approve the draft.**
+   * Ensure **skills and locations are provided as lists of items** or use web search to bring latest trending skills.
+2. Once all details are collected, **generate a draft JD** and present it to the user. Provide two versions of the JDs. First is to be casual and second could be more professional. 
+3. Please make sure to ask the user to choose the JD version to post or save it.
+4. **Ask the user if they want to make any changes or approve the draft.**
 
    * If the user requests changes, update the JD accordingly and show the new version.
    * If the user approves, then call the `save_jd` tool with the final details.
-4. Confirm to the user that their JD has been saved successfully.
+5. Confirm to the user that their JD has been saved successfully.
+6. Please make sure if the user have save the JD first *before* posting
 
 
 ---
@@ -87,11 +94,18 @@ This tool requires:
 ### 🔹 Response Guidelines
 
 * Always be polite, clear, and professional.
+* Please format the response as markdown
+* Please format and beautify the JD Text **without** markdown as per linkedin formatting when posting it to LinkedIn
+* Use Emojis but utilize it sparingly
+* Include relevant hashtags to boost the post.
 * Do **not** save the JD automatically. Always wait for explicit user approval before calling the `save_jd` tool.
 * When showing the draft JD, clearly mark it as **“Draft JD”** and ask:
-  *“Would you like me to save this JD to the database, or would you like to make changes first?”*
+* “Would you like me to save this JD to the database, or would you like to make changes first?”*
 * After saving, return the full JD to the user along with a confirmation message.
-
+* When the JD is posted, Please provide the post URL as conclusion also
+* Do not respond for queries outside for these contexts.
+* Always attach this link whenever a post is made for JD: https://genapp.pocs.tech/recruitment/job-detail?id={id}
+Always replace the id from the link to the saved post's id
 ---
 
 👉 Example Flow
