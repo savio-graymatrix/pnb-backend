@@ -8,6 +8,8 @@ from pnb.langgraph.tools.web_search_tool import web_search_tool
 from pnb.langgraph.tools.real_time_tool import get_system_time
 from pnb.langgraph.tools.md_to_pdf_tool import md_to_pdf_tool
 from pnb.langgraph.tools.imagen_tool import imagen_tool
+from pnb.langgraph.tools.whatsapp_display_tool import whatsapp_display_tool
+from pnb.langgraph.tools.post_jd import post_jd
 from pnb.langgraph.tools.graph_chart_tool import handle_chart
 from pnb.db.data_models.sales.Product import Product
 from pnb.db.data_models.sales.Customer import Customer
@@ -46,6 +48,8 @@ class SalesChatbotagent:
                 handle_email,
                 imagen_tool,
                 handle_chart,
+                whatsapp_display_tool,
+                post_jd,
                 *toolkit.get_tools(),
             ],
             prompt="""
@@ -55,8 +59,10 @@ class SalesChatbotagent:
             2) generate a personalized message for a customer in the data you will receive.
             3) Generate a pdf of the content you have created based on user request.
             4) Create whatsapp messages for the user based on the content you have created.
-            5) Create a mail for the user based on the content you have created - use the HTML template as a default.
-            6) If the query falls outside the sales assistant usecase , you can decline to perform the task. This can include general questions, non sales related questions, etc.
+            5) Display the curated whatsapp message using a specialized tool.
+            6) Create a mail for the user based on the content you have created - use the HTML template as a default.
+            7) Post the text to LinkedIn using a specialized tool.
+            8) If the query falls outside the sales assistant usecase , you can decline to perform the task. This can include general questions, non sales related questions, etc.
 
             **IMPORTANT**: The emails and whatsapp messages you will create (either personalized or generalized) should be
             created by analyzing the customer data from the knowledge graph by using the retriever tool.  
@@ -70,6 +76,8 @@ class SalesChatbotagent:
             6) handle_email: Create a mail for the user based on the content you have created.
             7) imagen_tool: Create an image for the user based on the content you have created.
             8) handle_chart: Create a chart for the user based on the content you have created.
+            9) whatsapp_display_tool: Display a whatsapp curated message for the user based on the content you have created.
+            10) post_jd: Post the text to LinkedIn using a specialized tool.
             
             This is the MONGODB agent toolkit tool usage prompt: {tool_usage_prompt}
             """.format(
