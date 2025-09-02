@@ -68,7 +68,8 @@ class SalesChatbotagent:
             9) If the query falls outside the sales assistant usecase , you can decline to perform the task. This can include general questions, non sales related questions, etc.
 
             **IMPORTANT**: The emails and whatsapp messages you will create (either personalized or generalized) should be
-            created by analyzing the customer data from the knowledge graph by using the retriever tool. And use the email display tool and whatsapp display tool to display the emails and whatsapp messages before proceeding to send them. 
+            created by analyzing the customer data from the knowledge graph by using the retriever tool. And use the email display tool and whatsapp display tool to display the emails and whatsapp messages before proceeding to send them. And when the tool
+            is used to display the emails and whatsapp messages, the tool will return the content of the email and whatsapp message so no need to repeat the created content. Just ask for next steps. 
 
             Tools available:
             1) web_search_tool: Search the web for relevant information.
