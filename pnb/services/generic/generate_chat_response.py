@@ -57,6 +57,8 @@ async def generate_chat_responses(
         if event_type == "on_tool_end":
             if event["name"] == "whatsapp_display_tool":
                 yield f'data: {{"type": "whatsapp", "content": "{event["data"]["output"].content}"}}\n\n'
+            if event["name"] == "display_email_tool":
+                yield f'data: {{"type": "email", "content": "{event["data"]["output"].content}"}}\n\n'
             continue
         if event_type == "langgraph_node" and event["langgraph_node"] == "tools":
             continue
