@@ -50,8 +50,15 @@ async def generate_chat_responses(
         )
 
     async for event in events:
+        # LOGGER.debug(event)
         event_type = event["event"]
-        if event_type in ["on_tool_end", "on_tool_start"]:
+        if event_type == "on_tool_start":
+            continue
+        if event_type == "on_tool_end":
+            if event["name"] == "whatsapp_display_tool":
+                yield f'data: {{"type": "whatsapp", "content": "{event["data"]["output"].content.replace("'", "\\'").replace("\n", "\\n")}"}}\n\n'
+            if event["name"] == "display_email_tool":
+                yield f'data: {{"type": "email", "content": "{event["data"]["output"].content.replace("'", "\\'").replace("\n", "\\n")}"}}\n\n'
             continue
         if event_type == "langgraph_node" and event["langgraph_node"] == "tools":
             continue
