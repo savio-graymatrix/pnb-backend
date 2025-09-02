@@ -1,0 +1,33 @@
+from langchain_core.runnables import RunnableConfig
+from langgraph.graph import MessagesState
+from pnb.langgraph.utils import OPENAI_LLM
+from langchain_core.prompts import ChatPromptTemplate
+
+
+class TranscriptAgent:
+    agent_name = "transcript_summarizer_agent"
+
+    @staticmethod
+    async def agent(state: MessagesState):
+        transcript: str = state.get("transcript", "")
+
+        WORD_LIMIT = 30
+        system_prompt = """
+        You are a transcript summarization assistant.
+        Your task is to read a given transcript and produce a single concise one-line summary 
+        that captures the main idea or outcome of the conversation.
+        Do not include unnecessary details, filler words, or formatting.
+        Keep the summary short, clear, and focused.
+        The summary must be at most {word_limit} words.
+
+        Transcript:
+        {transcript}
+        """
+
+        prompt_template = ChatPromptTemplate.from_template(system_prompt)
+        prompt = prompt_template.invoke(
+            {"transcript": transcript, "word_limit": WORD_LIMIT}
+        )
+
+        summary = await OPENAI_LLM.ainvoke(prompt)
+        return {"summary": summary.content.strip()}
