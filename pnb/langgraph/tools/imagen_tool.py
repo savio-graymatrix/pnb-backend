@@ -58,6 +58,6 @@ async def upload_s3(image_bytes: bytes):
     )
     if not response:
         raise Exception("Image could not be uploaded")
-    return f"https://{SETTINGS.AWS_BUCKET_URL}/{image_filename}"
+    return f"{SETTINGS.AWS_BUCKET_URL}/{image_filename}"
 
     # return {"image_id": image_filename, "status": "generated"}
