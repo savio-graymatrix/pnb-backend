@@ -7,6 +7,6 @@ router = APIRouter(prefix="/summarizer", tags=["Debt Collection · Summarizer"])
 
 
 @router.post("/")
-async def summarize_transcript(transcript: List[dict]):
-    result = await TranscriptAgent.agent({"transcript": transcript})
+async def summarize_transcript(transcript: dict):
+    result = await TranscriptAgent.agent({"transcript": transcript["transcript"]})
     return JSONResponse(content=result.model_dump(), status_code=200)
