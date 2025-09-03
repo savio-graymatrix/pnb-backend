@@ -56,9 +56,11 @@ async def generate_chat_responses(
             continue
         if event_type == "on_tool_end":
             if event["name"] == "whatsapp_display_tool":
-                yield f'data: {{"type": "whatsapp", "content": "{event["data"]["output"].content}"}}\n\n'
+                yield f'data: {{"type": "whatsapp", "content": "{event["data"]["output"].content.replace("'", "\\'").replace("\n", "\\n")}"}}\n\n'
             if event["name"] == "display_email_tool":
-                yield f'data: {{"type": "email", "content": "{event["data"]["output"].content}"}}\n\n'
+                yield f'data: {{"type": "email", "content": "{event["data"]["output"].content.replace("'", "\\'").replace("\n", "\\n")}"}}\n\n'
+            if event["name"] == "button_tool":
+                yield f'data: {{"type": "button", "content": {event["data"]["output"].content.replace("'", "\\'").replace("\n", "\\n")}}}\n\n'
             continue
         if event_type == "langgraph_node" and event["langgraph_node"] == "tools":
             continue

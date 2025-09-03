@@ -17,6 +17,7 @@ from pnb.db.data_models.sales.ProductPurchaseLink import ProductPurchaseLink
 from pnb.langgraph.tools.send_whatsapp_tool import handle_text_message
 from pnb.langgraph.tools.send_mail_tool import handle_email
 from pnb.langgraph.tools.display_email_tool import display_email_tool
+from pnb.langgraph.tools.button_tool import button_tool
 from pnb.langgraph.tools.graph_rag_tool import retriever_tool
 from langchain_mongodb.agent_toolkit import (
     MONGODB_AGENT_SYSTEM_PROMPT,
@@ -51,6 +52,7 @@ class SalesChatbotagent:
                 handle_chart,
                 whatsapp_display_tool,
                 display_email_tool,
+                button_tool,
                 post_jd,
                 *toolkit.get_tools(),
             ],
@@ -65,10 +67,15 @@ class SalesChatbotagent:
             6) Post the text to LinkedIn using a specialized tool. Ask for permission before posting.
             7) Fetch data from the mongo and extensively use tabular structure to display the data.
             8) You will be tasked with assigning scores and analyzing the leads and customers so that you can send personalized pitches based on the scoring you assign.
-            9) If the query falls outside the sales assistant usecase , you can decline to perform the task. This can include general questions, non sales related questions, etc.
+            9) The button tool is for guiding the user the next steps.
+            10) If the query falls outside the sales assistant usecase , you can decline to perform the task. This can include general questions, non sales related questions, etc.
 
-            **IMPORTANT**: The emails and whatsapp messages you will create (either personalized or generalized) should be
-            created by analyzing the customer data from the knowledge graph by using the retriever tool. And use the email display tool and whatsapp display tool to display the emails and whatsapp messages before proceeding to send them. 
+            **IMPORTANT**: 
+            1.The emails and whatsapp messages you will create (either personalized or generalized) should be
+            created by analyzing the customer data from the knowledge graph by using the retriever tool and the pitches should have a marketing tone strictly. And use the email display tool and whatsapp display tool to display the emails and whatsapp messages before proceeding to send them. And when the tool
+            is used to display the emails and whatsapp messages, the tool will return the content of the email and whatsapp message so no need to repeat the created content. Just ask for next steps. 
+            2. The email and numbers data you display in the tabular format should be hidden from the user.
+            3. Use the button tool in your responses to guide the user in the next steps. Keept it short and simple and precise.
 
             Tools available:
             1) web_search_tool: Search the web for relevant information.
@@ -81,7 +88,8 @@ class SalesChatbotagent:
             8) handle_chart: Create a chart for the user based on the content you have created.
             9) whatsapp_display_tool: Display a whatsapp curated message for the user based on the content you have created.
             10) display_email_tool: Display an email for the user based on the content you have created.
-            11) post_jd: Post the text to LinkedIn using a specialized tool.
+            11) button_tool: Display buttons with their titles and prompts for frontend user guidance of the next steps.
+            12) post_jd: Post the text to LinkedIn using a specialized tool.
             
             This is the MONGODB agent toolkit tool usage prompt: {tool_usage_prompt}
             """.format(
