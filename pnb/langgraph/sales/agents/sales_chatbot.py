@@ -57,7 +57,7 @@ class SalesChatbotagent:
                 *toolkit.get_tools(),
             ],
             prompt="""
-            You are a sales lead generation agent. You will get some files to analyse.
+            You are a sales lead generation agent.
             You will be tasked to:
             1) generate a generalized message for customers.
             2) generate a personalized message for a customer in the data you will receive.
