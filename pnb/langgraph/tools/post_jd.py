@@ -21,7 +21,13 @@ CAREERS_LINKEDIN_API = (
 
 @tool
 def post_jd(jd_text: str, platform: Platform = Platform.LINKEDIN):
-    """ """
+    """Create a Post from JD Text based on the platform provided
+
+    :params:
+    jd_text (str): JD Text in Unicode
+    platform (Platform): Platform to post on
+
+    """
     try:
         match (platform):
             case Platform.LINKEDIN:

@@ -30,6 +30,7 @@ from beanie import PydanticObjectId
 from pnb.api.v1.file_upload import upload_files
 import json
 import traceback
+import asyncio
 
 router = APIRouter(
     prefix="/loan_application", tags=["Credit Assist · Loan Application"]
@@ -204,6 +205,17 @@ async def upload_page():
     return HTMLResponse(Template(loan_form_template).render())
 
 
+async def embed_documents_task(application_obj: LoanApplication):
+    """Background embedding job (runs asynchronously)."""
+    try:
+        for doc in application_obj.documents.model_dump().values():
+            await store_text_embedding(application_obj.id, str(doc))
+        await application_obj.insert()
+    except Exception:
+        print(f"[Embedding Task] Failed for application {application_obj.id}")
+        print(traceback.format_exc())
+
+
 @router.post("/upload/create")
 async def handle_loan_application(
     applicant_name: str = Form(...),
@@ -230,8 +242,7 @@ async def handle_loan_application(
             [aadhar_document, pan_document, loan_application_document]
         )
         file_response = json.loads(file_response.body)["files"]
-        print(file_response)
-        application_obj = await LoanApplication(
+        application_obj = LoanApplication(
             applicant_name=applicant_name,
             pan_no=pan_no,
             aadhar_no=aadhar_no,
@@ -252,9 +263,10 @@ async def handle_loan_application(
                 pan_document=file_response[1]["url"],
                 loan_application_document=file_response[2]["url"],
             ),
-        ).insert()
-        for document in application_obj.documents.model_dump().values():
-            await store_text_embedding(application_obj.id, str(document))
+        )
+        # for document in application_obj.documents.model_dump().values():
+        #     await store_text_embedding(application_obj.id, str(document))
+        asyncio.create_task(embed_documents_task(application_obj))
         return HTMLResponse(success_html)
     except Exception as e:
         print(traceback.format_exc())
