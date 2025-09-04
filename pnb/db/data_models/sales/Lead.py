@@ -1,8 +1,9 @@
 from typing import Optional, List
 from datetime import datetime, timezone
-from beanie import Document, before_event, Insert
+from beanie import Document, before_event, Insert, Link
 from pydantic import BaseModel, EmailStr, Field
 from enum import Enum
+from .Product import Product
 
 
 class LeadContact(BaseModel):
@@ -30,6 +31,8 @@ class Lead(Document):
     name: str  # indexed for faster search
     company: Optional[str] = None
     title: Optional[str] = None
+    product: Optional[Link[Product]] = None
+    conversations: Optional[List[str]] = []
 
     # Contact details
     contact: Optional[LeadContact] = None
