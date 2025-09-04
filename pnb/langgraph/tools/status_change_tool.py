@@ -1,0 +1,20 @@
+from langchain.tools import tool
+from pnb.db.data_models.sales.Lead import Lead, LeadStatus, LeadSource
+
+
+@tool
+async def change_status_tool(lead_id: str, status: LeadStatus, source: LeadSource):
+    """
+    Tool to change the status of a lead
+    Args:
+        lead_id (str): The mongodb objectId of the lead
+        status (LeadStatus): The new status of the lead - once message is sent to the lead, the status should be changed to contacted
+        source (LeadSource): The source of the lead - e.g. whatsapp, email
+    """
+    lead = await Lead.get(lead_id)
+    if not lead:
+        raise ValueError("Lead not found")
+    lead.status = status.value
+    lead.source = source.value
+    await lead.save()
+    return {"success": True, "message": "Lead status changed successfully"}
