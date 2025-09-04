@@ -1,6 +1,6 @@
 from typing import Optional, List
 from datetime import datetime, timezone
-from beanie import Document, before_event, Insert
+from beanie import Document, before_event, Insert, Link
 from pydantic import BaseModel, EmailStr, Field
 from enum import Enum
 from .Product import Product
