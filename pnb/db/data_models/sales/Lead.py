@@ -1,6 +1,6 @@
 from typing import Optional, List
 from datetime import datetime, timezone
-from beanie import Document, Indexed
+from beanie import Document, before_event, Insert
 from pydantic import BaseModel, EmailStr, Field
 from enum import Enum
 from .Product import Product
@@ -45,6 +45,11 @@ class Lead(Document):
     # Metadata
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+    @before_event(Insert)
+    async def validate_before_insert(self):
+        # Custom validation logic
+        pass
 
     class Settings:
         name = "lead"  # MongoDB collection name
