@@ -34,7 +34,7 @@ class Lead(Document):
     company: Optional[str] = None
     title: Optional[str] = None
     product: Optional[Union[str, Link[Product]]] = None
-    conversations: Optional[List[str]] = []
+    conversations: Optional[List] = []
 
     # Contact details
     contact: Optional[LeadContact] = None
