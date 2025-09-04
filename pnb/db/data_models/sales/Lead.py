@@ -20,7 +20,7 @@ class LeadSource(Enum):
 class LeadStatus(Enum):
     NEW = "new"
     CONTACTED = "contacted"
-    QUALIFIED = "qualified"
+    ACTIVE = "active"
     LOST = "lost"
     CONVERTED = "converted"
 
