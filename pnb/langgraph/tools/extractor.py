@@ -125,12 +125,12 @@ def extract_from_file(file_url: str):
             with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as tmp:
                 tmp.write(response.content)
                 tmp_path = tmp.name
-            pages = convert_from_path(
-                tmp_path, dpi=300, poppler_path=SETTINGS.POPPLER_PATH
-            )
-            texts = [pytesseract.image_to_string(img) for img in pages]
-            os.remove(tmp_path)
-            return texts
+                pages = convert_from_path(
+                    tmp_path, dpi=300, poppler_path=SETTINGS.POPPLER_PATH
+                )
+                texts = [pytesseract.image_to_string(img) for img in pages]
+                # os.remove(tmp_path)
+                return texts
         pages = convert_from_path(path, dpi=300, poppler_path=SETTINGS.POPPLER_PATH)
         texts = [pytesseract.image_to_string(img) for img in pages]
         return texts
