@@ -42,9 +42,8 @@ class Customer(Document):
         except phonenumbers.NumberParseException:
             raise ValueError("Invalid phone number format")
 
-    @after_event(Insert)
-    async def add_to_knowledge_graph(data: Document):
-        asyncio.create_task(handle_add_to_knowledge_graph(data=data))
+    class Settings:
+        name = "customer"
 
     @before_event(Insert)
     async def handle_indentifier(self):

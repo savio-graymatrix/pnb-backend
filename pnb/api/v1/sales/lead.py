@@ -47,10 +47,10 @@ async def get_all_leads(
 
 
 @router.get("/{lead_id}", response_model=Lead)
-async def get_review(lead_id: PydanticObjectId):
+async def get_lead(lead_id: PydanticObjectId):
     lead = await Lead.get(lead_id)
     if not lead:
-        raise HTTPException(status_code=404, detail="Instruction not found")
+        raise HTTPException(status_code=404, detail="Lead not found")
     return lead
 
 
