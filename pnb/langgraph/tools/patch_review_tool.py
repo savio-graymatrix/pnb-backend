@@ -7,16 +7,18 @@ import json
 from beanie import PydanticObjectId
 from pydantic import ValidationError
 from typing import Literal
+from pnb.db.data_models.credit_assist.Review import ReviewStatus
+
 
 @tool
-async def patch_review_tool(review_id: str, review_status: Literal["resolved", "rejected"]) -> dict:
+async def patch_review_tool(review_id: str, review_status: ReviewStatus) -> dict:
     """
     Updates the status of a review in the database to either 'resolved' or 'rejected'.
-    
+
     Args:
     review_id (str): The ID of the review to update.
-    review_status (Literal["resolved", "rejected"]): The status to set for the review.
-    
+    review_status (ReviewStatus): The status to set for the review.
+
     Returns:
     dict: A dictionary containing the updated review.
 
@@ -45,5 +47,3 @@ async def patch_review_tool(review_id: str, review_status: Literal["resolved", "
 
     # Return the updated review as a dictionary
     return review
-    
- 
