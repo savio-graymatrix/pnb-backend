@@ -283,7 +283,7 @@ async def create_application(applications: List[LoanApplication]):
         for document in application_obj.documents:
             await store_text_embedding(application_obj.id, str(document[1]))
         created_applications.append(application_obj)
-    LoanApplication.insert_many(created_applications)
+    await LoanApplication.insert_many(created_applications)
     return created_applications
 
 
