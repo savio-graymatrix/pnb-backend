@@ -2,7 +2,11 @@ from fastapi import APIRouter, HTTPException, Query, Depends, Body
 from typing import List
 from pnb.db.data_models import Lead
 from pnb.db.data_models.sales.Product import Product
-from pnb.db.utils import PagePaginationRequest, PagePaginationResponse
+from pnb.db.utils import (
+    PagePaginationRequest,
+    PagePaginationResponse,
+    PagePaginationMetadata,
+)
 from beanie import PydanticObjectId
 from typing import Optional
 from math import ceil
@@ -43,12 +47,14 @@ async def get_all_leads(
 
     return PagePaginationResponse[Lead](
         items=items,
-        currentPage=pagination.page,
-        itemsPerPage=pagination.page_size,
-        totalItems=total_items,
-        totalPages=total_pages,
-        hasNextPage=pagination.page < total_pages,
-        hasPreviousPage=pagination.page > 1,
+        pagination=PagePaginationMetadata(
+            currentPage=pagination.page,
+            itemsPerPage=pagination.page_size,
+            totalItems=total_items,
+            totalPages=total_pages,
+            hasNextPage=pagination.page < total_pages,
+            hasPreviousPage=pagination.page > 1,
+        ),
     )
 
 

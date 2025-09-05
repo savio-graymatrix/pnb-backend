@@ -15,11 +15,15 @@ class PagePaginationRequest(BaseModel):
     )
 
 
-class PagePaginationResponse(BaseModel, Generic[T]):
-    items: List[T]
+class PagePaginationMetadata(BaseModel):
     currentPage: int
     itemsPerPage: int
     totalItems: int
     totalPages: int
     hasNextPage: bool
     hasPreviousPage: bool
+
+
+class PagePaginationResponse(BaseModel, Generic[T]):
+    items: List[T]
+    pagination: PagePaginationMetadata

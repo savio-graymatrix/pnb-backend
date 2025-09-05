@@ -2,9 +2,7 @@ from fastapi import APIRouter, HTTPException, Query, Depends
 from pnb.db.data_models import Lead
 from pnb.db.data_models.sales.Customer import Customer
 from pnb.db.utils import (
-    CursorPaginationRequest,
-    CursorPaginationResponse,
-    parse_operator_filter,
+    PagePaginationMetadata,
     PagePaginationRequest,
     PagePaginationResponse,
 )
@@ -42,12 +40,14 @@ async def get_all_customers(
 
     return PagePaginationResponse[Customer](
         items=items,
-        currentPage=pagination.page,
-        itemsPerPage=pagination.page_size,
-        totalItems=total_items,
-        totalPages=total_pages,
-        hasNextPage=pagination.page < total_pages,
-        hasPreviousPage=pagination.page > 1,
+        pagination=PagePaginationMetadata(
+            currentPage=pagination.page,
+            itemsPerPage=pagination.page_size,
+            totalItems=total_items,
+            totalPages=total_pages,
+            hasNextPage=pagination.page < total_pages,
+            hasPreviousPage=pagination.page > 1,
+        ),
     )
 
 
