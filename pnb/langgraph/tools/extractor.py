@@ -14,6 +14,7 @@ from pnb import SETTINGS, LOGGER
 import requests
 import tempfile
 import traceback
+import boto3
 
 # Pre-requisites
 pytesseract.pytesseract.tesseract_cmd = SETTINGS.TESSERACT_PATH
@@ -41,7 +42,7 @@ async def store_text_embedding(parent_document_id: str, file_url: str) -> None:
         # Step 1: Load file
         file_path = file_url
         file_type = splitext(file_url)[-1]
-        documents = [Document(page_content="".join(extract_from_file(file_path)))]
+        # documents = [Document(page_content="".join(extract_from_file(file_path)))]
         if file_type == ".txt":
             loader = TextLoader(file_path, encoding="utf-8")
             documents = loader.load()
@@ -95,7 +96,25 @@ def extract_from_file(file_url: str):
     def fallback_ocr(path: str):
         print("Falling back to OCR...")
 
+        def start_document_text_detection(textract_client, bucket, document_key):
+            try:
+                response = textract_client.start_document_text_detection(
+                    DocumentLocation={
+                        "S3Object": {"Bucket": bucket, "Name": document_key}
+                    }
+                )
+                return response["JobId"]
+            except Exception as e:
+                print(f"Error starting Textract job: {e}")
+                return None
+
         if path.startswith("http"):
+            # textract_client = boto3.client("textract", region_name="ap-south-1")
+            # s3_client = boto3.client("s3", region_name="ap-south-1")
+            # jobId = start_document_text_detection(
+            #     textract_client, SETTINGS.AWS_BUCKET, ""
+            # )
+
             response = requests.get(path)
             response.raise_for_status()  # fail if URL is invalid
 
@@ -106,12 +125,12 @@ def extract_from_file(file_url: str):
             with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as tmp:
                 tmp.write(response.content)
                 tmp_path = tmp.name
-            pages = convert_from_path(
-                tmp_path, dpi=300, poppler_path=SETTINGS.POPPLER_PATH
-            )
-            texts = [pytesseract.image_to_string(img) for img in pages]
-            os.remove(tmp_path)
-            return texts
+                pages = convert_from_path(
+                    tmp_path, dpi=300, poppler_path=SETTINGS.POPPLER_PATH
+                )
+                texts = [pytesseract.image_to_string(img) for img in pages]
+                # os.remove(tmp_path)
+                return texts
         pages = convert_from_path(path, dpi=300, poppler_path=SETTINGS.POPPLER_PATH)
         texts = [pytesseract.image_to_string(img) for img in pages]
         return texts
@@ -125,10 +144,10 @@ def extract_from_file(file_url: str):
             with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as tmp:
                 tmp.write(response.content)
                 tmp_path = tmp.name
-            # os.remove(tmp_path)
-            chunks = pymupdf4llm.to_markdown(tmp_path, page_chunks=True)
-            os.remove(tmp_path)
-            texts = [c["text"] for c in chunks if c.get("text", "").strip()]
+                # os.remove(tmp_path)
+                chunks = pymupdf4llm.to_markdown(tmp_path, page_chunks=True)
+                # os.remove(tmp_path)
+                texts = [c["text"] for c in chunks if c.get("text", "").strip()]
             if texts:
                 return texts
         except Exception as e:
