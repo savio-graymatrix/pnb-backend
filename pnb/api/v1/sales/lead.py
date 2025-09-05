@@ -43,12 +43,12 @@ async def get_all_leads(
 
     return PagePaginationResponse[Lead](
         items=items,
-        page=pagination.page,
-        page_size=pagination.page_size,
-        total_items=total_items,
-        total_pages=total_pages,
-        has_next=pagination.page < total_pages,
-        has_prev=pagination.page > 1,
+        currentPage=pagination.page,
+        itemsPerPage=pagination.page_size,
+        totalItems=total_items,
+        totalPages=total_pages,
+        hasNextPage=pagination.page < total_pages,
+        hasPreviousPage=pagination.page > 1,
     )
 
 
