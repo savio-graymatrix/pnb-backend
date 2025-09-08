@@ -241,10 +241,24 @@ async def handle_loan_application(
     aadhar_document: UploadFile = FastAPIFile(...),
     pan_document: UploadFile = FastAPIFile(...),
     loan_application_document: UploadFile = FastAPIFile(...),
+    msme_document: UploadFile = FastAPIFile(...),
+    itr_document: UploadFile = FastAPIFile(...),
+    financials_document: UploadFile = FastAPIFile(...),
+    pnl_document: UploadFile = FastAPIFile(...),
+    gstin_document: UploadFile = FastAPIFile(...),
 ):
     try:
         file_response = await upload_files(
-            [aadhar_document, pan_document, loan_application_document]
+            [
+                aadhar_document,
+                pan_document,
+                loan_application_document,
+                msme_document,
+                itr_document,
+                financials_document,
+                pnl_document,
+                gstin_document,
+            ]
         )
         file_response = json.loads(file_response.body)["files"]
         application_obj = LoanApplication(
@@ -267,6 +281,11 @@ async def handle_loan_application(
                 aadhar_document=file_response[0]["url"],
                 pan_document=file_response[1]["url"],
                 loan_application_document=file_response[2]["url"],
+                msme_document=file_response[3]["url"],
+                itr_document=file_response[4]["url"],
+                financials_document=file_response[5]["url"],
+                pnl_document=file_response[6]["url"],
+                gstin_document=file_response[7]["url"],
             ),
         )
         # for document in application_obj.documents.model_dump().values():
