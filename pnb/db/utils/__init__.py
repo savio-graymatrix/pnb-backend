@@ -5,6 +5,7 @@ from beanie import Document
 from pnb.db.stores.MongoGraphStore import MONGO_GRAPH_STORE
 from langchain_core.documents import Document
 from pnb import LOGGER
+from pnb.db.utils.page_pagination import *
 
 
 # Create Identifier

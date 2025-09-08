@@ -2,23 +2,17 @@ from fastapi import APIRouter, HTTPException, Query, Depends, Body
 from typing import List
 from pnb.db.data_models import Lead
 from pnb.db.data_models.sales.Product import Product
-from pnb.db.utils import (
-    CursorPaginationRequest,
-    CursorPaginationResponse,
-    parse_operator_filter,
-)
+from pnb.db.utils import PagePaginationRequest, PagePaginationResponse
 from beanie import PydanticObjectId
 from typing import Optional
-from datetime import datetime, timezone
-from beanie.operators import Set
-
+from math import ceil
 
 router = APIRouter(prefix="/lead", tags=["Sales · Leads"])
 
 
 @router.get("/")
 async def get_all_leads(
-    pagination: CursorPaginationRequest = Depends(),
+    pagination: PagePaginationRequest = Depends(),
     status: Optional[str] = Query(None),
     source: Optional[str] = Query(None),
 ):
@@ -27,30 +21,42 @@ async def get_all_leads(
         query["status"] = status
     if source:
         query["source"] = source
+
     sort_field = pagination.sort_by or "created_at"
     sort_order = pagination.sort_order or -1
 
-    cursor = Lead.find(query).sort((sort_field, sort_order))
+    # total count for metadata
+    total_items = await Lead.find(query).count()
+    total_pages = ceil(total_items / pagination.page_size) if total_items > 0 else 1
 
-    if pagination.after_id:
-        after_bid = await Lead.get(pagination.after_id)
-        if after_bid:
-            after_value = getattr(after_bid, sort_field)
-            query[sort_field] = {"$lt" if sort_order == -1 else "$gt": after_value}
-            cursor = Lead.find(query).sort((sort_field, sort_order))
+    # calculate skip
+    skip = (pagination.page - 1) * pagination.page_size
 
-    items = await cursor.limit(pagination.limit).to_list()
+    # fetch leads
+    items = (
+        await Lead.find(query)
+        .sort((sort_field, sort_order))
+        .skip(skip)
+        .limit(pagination.page_size)
+        .to_list()
+    )
 
-    next_cursor = items[-1].id if len(items) == pagination.limit else None
-
-    return CursorPaginationResponse[Lead](items=items, next_cursor=next_cursor)
+    return PagePaginationResponse[Lead](
+        items=items,
+        page=pagination.page,
+        page_size=pagination.page_size,
+        total_items=total_items,
+        total_pages=total_pages,
+        has_next=pagination.page < total_pages,
+        has_prev=pagination.page > 1,
+    )
 
 
 @router.get("/{lead_id}", response_model=Lead)
-async def get_review(lead_id: PydanticObjectId):
+async def get_lead(lead_id: PydanticObjectId):
     lead = await Lead.get(lead_id)
     if not lead:
-        raise HTTPException(status_code=404, detail="Instruction not found")
+        raise HTTPException(status_code=404, detail="Lead not found")
     return lead
 
 

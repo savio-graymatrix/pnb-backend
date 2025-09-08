@@ -46,6 +46,9 @@ class Settings(BaseModel):
     EMAIL_HOST_USER: str = os.getenv("EMAIL_HOST_USER", "").strip()
     EMAIL_HOST_PASSWORD: str = os.getenv("EMAIL_HOST_PASSWORD", "").strip()
     RECIPIENT_EMAIL: str = os.getenv("RECIPIENT_EMAIL", "").strip()
+    DEV_SANDBOX_API_KEY: str = os.getenv("DEV_SANDBOX_API_KEY", "").strip()
+    DEV_SANDBOX_API_SECRET: str = os.getenv("DEV_SANDBOX_API_SECRET", "").strip()
+    SANDBOX_BASE_URL: str = os.getenv("SANDBOX_BASE_URL", "").strip()
 
 
 SETTINGS = Settings()
