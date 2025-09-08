@@ -20,7 +20,11 @@ from pnb.db.data_models import (
     DocumentChecklist,
     LoanApplicationDocuments,
 )
-from pnb.db.utils import CursorPaginationRequest, CursorPaginationResponse
+from pnb.db.utils import (
+    PagePaginationRequest,
+    PagePaginationResponse,
+    PagePaginationMetadata,
+)
 from datetime import datetime, timezone
 from beanie.operators import Set
 from pnb.langgraph.credit_assist.agents.credit_agent import CreditAgent
@@ -31,6 +35,7 @@ from pnb.api.v1.file_upload import upload_files
 import json
 import traceback
 import asyncio
+from math import ceil
 
 router = APIRouter(
     prefix="/loan_application", tags=["Credit Assist · Loan Application"]
@@ -287,31 +292,47 @@ async def create_application(applications: List[LoanApplication]):
     return created_applications
 
 
-# Get All Loan Instructions
+# Get All Loan Applications (Page Pagination)
 @router.get("/")
 async def get_all_applications(
-    pagination: CursorPaginationRequest = Depends(),
+    pagination: PagePaginationRequest = Depends(),
     created_at: Optional[str] = Query(None),
 ):
     query = {}
+    if created_at:
+        query["created_at"] = (
+            created_at  # adjust if you want range filter instead of exact match
+        )
+
     sort_field = pagination.sort_by or "created_at"
     sort_order = pagination.sort_order or -1
 
-    cursor = LoanApplication.find(query).sort((sort_field, sort_order))
+    # total count for metadata
+    total_items = await LoanApplication.find(query).count()
+    total_pages = ceil(total_items / pagination.page_size) if total_items > 0 else 1
 
-    if pagination.after_id:
-        after_bid = await LoanApplication.get(pagination.after_id)
-        if after_bid:
-            after_value = getattr(after_bid, sort_field)
-            query[sort_field] = {"$lt" if sort_order == -1 else "$gt": after_value}
-            cursor = LoanApplication.find(query).sort((sort_field, sort_order))
+    # calculate skip
+    skip = (pagination.page - 1) * pagination.page_size
 
-    items = await cursor.limit(pagination.limit).to_list()
+    # fetch applications
+    items = (
+        await LoanApplication.find(query)
+        .sort((sort_field, sort_order))
+        .skip(skip)
+        .limit(pagination.page_size)
+        .to_list()
+    )
 
-    next_cursor = items[-1].id if len(items) == pagination.limit else None
-
-    return CursorPaginationResponse[LoanApplication](
-        items=items, next_cursor=next_cursor
+    return PagePaginationResponse[LoanApplication](
+        items=items,
+        pagination=PagePaginationMetadata(
+            currentPage=pagination.page,
+            itemsPerPage=pagination.page_size,
+            totalItems=total_items,
+            totalPages=total_pages,
+            hasNextPage=pagination.page < total_pages,
+            hasPreviousPage=pagination.page > 1,
+        ),
     )
 
 
