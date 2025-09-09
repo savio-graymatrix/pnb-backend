@@ -4,7 +4,7 @@ from pnb.db.data_models import Review, UpdateReview
 from pnb.db.utils import (
     CursorPaginationRequest,
     CursorPaginationResponse,
-    parse_operator_filter,
+    parse_text_filter,
 )
 from beanie import PydanticObjectId
 from typing import Optional
@@ -26,7 +26,7 @@ async def get_all_reviews(
     if review_set_id:
         query["review_set_id"] = PydanticObjectId(review_set_id)
     if review_status:
-        query.update(parse_operator_filter("review_status", review_status))
+        query.update(parse_text_filter("review_status", review_status))
     sort_field = pagination.sort_by or "created_at"
     sort_order = pagination.sort_order or -1
 
