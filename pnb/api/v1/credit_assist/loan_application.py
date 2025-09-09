@@ -8,7 +8,7 @@ from fastapi import (
     File as FastAPIFile,
     Form,
 )
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, Response
 from typing import List, Optional
 from pnb.db.data_models import (
     LoanApplication,
@@ -19,6 +19,9 @@ from pnb.db.data_models import (
     AgentLifeCycle,
     DocumentChecklist,
     LoanApplicationDocuments,
+    LoanApplicationStatus,
+    LoanType,
+    UpdateLoanApplicationDocuments,
 )
 from pnb.db.utils import (
     PagePaginationRequest,
@@ -412,7 +415,6 @@ async def patch_application(
 
 @router.post("/review")
 async def review_loan_application(application: LoanApplication = Body(...)):
-    # print(application)
     config = {
         "configurable": {
             "thread_id": application.id,
@@ -445,3 +447,44 @@ async def review_loan_application(application: LoanApplication = Body(...)):
         await doc_obj.insert()
         credit_response.documents_checklist.append(doc_obj)
     return credit_response
+
+
+@router.patch("/upload_documents/{application_id}")
+async def update_documents(
+    application_id: str,
+    aadhar_document: UploadFile = FastAPIFile(...),
+    pan_document: UploadFile = FastAPIFile(...),
+    loan_application_document: UploadFile = FastAPIFile(...),
+    msme_document: UploadFile = FastAPIFile(...),
+    itr_document: UploadFile = FastAPIFile(...),
+    financials_document: UploadFile = FastAPIFile(...),
+    pnl_document: UploadFile = FastAPIFile(...),
+    gstin_document: UploadFile = FastAPIFile(...),
+):
+    loan_application = await LoanApplication.get(application_id)
+    if not loan_application:
+        raise HTTPException(status_code=404, detail="Loan Application not found")
+    file_response = await upload_files(
+        [
+            aadhar_document,
+            pan_document,
+            loan_application_document,
+            msme_document,
+            itr_document,
+            financials_document,
+            pnl_document,
+            gstin_document,
+        ]
+    )
+    file_response = json.loads(file_response.body)["files"]
+    loan_application.documents.aadhar_document = file_response[0]["url"]
+    loan_application.documents.pan_document = file_response[1]["url"]
+    loan_application.documents.loan_application_document = file_response[2]["url"]
+    loan_application.documents.msme_document = file_response[3]["url"]
+    loan_application.documents.itr_document = file_response[4]["url"]
+    loan_application.documents.financials_document = file_response[5]["url"]
+    loan_application.documents.pnl_document = file_response[6]["url"]
+    loan_application.documents.gstin_document = file_response[7]["url"]
+    await loan_application.save_changes()
+    asyncio.create_task(embed_documents_task(loan_application))
+    return Response(status_code=200)
