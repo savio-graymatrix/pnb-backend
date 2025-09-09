@@ -8,25 +8,37 @@ from enum import Enum
 
 
 class LoanApplicationDocuments(BaseModel):
-    aadhar_document: HttpUrl
-    loan_application_document: HttpUrl
-    pan_document: HttpUrl
-    msme_document: Optional[HttpUrl] = ""
-    itr_document: Optional[HttpUrl] = ""
-    financials_document: Optional[HttpUrl] = ""
-    pnl_document: Optional[HttpUrl] = ""
-    gstin_document: Optional[HttpUrl] = ""
+    aadhar_document: Optional[HttpUrl] = None
+    loan_application_document: Optional[HttpUrl] = None
+    pan_document: Optional[HttpUrl] = None
+    msme_document: Optional[HttpUrl] = None
+    itr_document: Optional[HttpUrl] = None
+    financials_document: Optional[HttpUrl] = None
+    pnl_document: Optional[HttpUrl] = None
+    gstin_document: Optional[HttpUrl] = None
+
+    @field_validator("*", mode="before")
+    def empty_str_to_none(cls, v):
+        if v == "":
+            return None
+        return v
 
 
 class UpdateLoanApplicationDocuments(BaseModel):
-    aadhar_document: Optional[HttpUrl]
-    loan_application_document: Optional[HttpUrl]
-    pan_document: Optional[HttpUrl]
-    msme_document: Optional[HttpUrl]
-    itr_document: Optional[HttpUrl]
-    financials_document: Optional[HttpUrl]
-    pnl_document: Optional[HttpUrl]
-    gstin_document: Optional[HttpUrl]
+    aadhar_document: Optional[str] = None
+    loan_application_document: Optional[str] = None
+    pan_document: Optional[str] = None
+    msme_document: Optional[str] = None
+    itr_document: Optional[str] = None
+    financials_document: Optional[str] = None
+    pnl_document: Optional[str] = None
+    gstin_document: Optional[str] = None
+
+    @field_validator("*", mode="before")
+    def empty_str_to_none(cls, v):
+        if v == "":
+            return None
+        return v
 
 
 class LoanApplicationStatus(Enum):
@@ -96,7 +108,7 @@ class UpdateLoanApplication(BaseModel):
     business_type: Optional[str]
     gstin: Optional[str]
     business_address: Optional[str]
-    loan_type: Optional[Literal["Retail", "Business"]]
+    loan_type: Optional[LoanType]
     loan_amount: Optional[Decimal] = Field(..., gt=0.0, decimal_places=2)
     loan_amount_applied: Optional[Decimal] = Field(..., gt=0.0)
     monthly_turnover: Optional[Decimal] = Field(..., gt=0.0, decimal_places=2)
