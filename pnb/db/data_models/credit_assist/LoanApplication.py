@@ -10,6 +10,11 @@ class LoanApplicationDocuments(BaseModel):
     aadhar_document: HttpUrl
     loan_application_document: HttpUrl
     pan_document: HttpUrl
+    msme_document: Optional[HttpUrl]
+    itr_document: Optional[HttpUrl]
+    financials_document: Optional[HttpUrl]
+    pnl_document: Optional[HttpUrl]
+    gstin_document: Optional[HttpUrl]
 
 
 class LoanApplication(Document):
@@ -78,4 +83,5 @@ class UpdateLoanApplication(BaseModel):
     updated_at: Optional[datetime] = Field(
         default_factory=datetime.now().astimezone(timezone.utc)
     )
-    gstin_document: Optional[PydanticObjectId]
+
+    documents: LoanApplicationDocuments
