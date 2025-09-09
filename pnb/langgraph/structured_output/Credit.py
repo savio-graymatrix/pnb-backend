@@ -42,12 +42,14 @@ class AgentLifeCycle(BaseModel):
 
 class DocumentChecklist(BaseModel):
     document_name: str
-    file_url: str = Field(description="URL of the source file")
+    file_url: str = Field(
+        description="URL of the source file from extracted content metadata"
+    )
     isVerified: bool = Field(
         description="True if the document is verified otherwise False"
     )
     file_name: str = Field(
-        description="Name of the file as received in the extracted contents"
+        description="Name of the file as received in the extracted contents metadata"
     )
 
 
