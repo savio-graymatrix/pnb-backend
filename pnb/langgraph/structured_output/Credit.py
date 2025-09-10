@@ -1,6 +1,7 @@
 # from turtle import title
 from pydantic import BaseModel, Field, HttpUrl
 from typing import List, Literal
+from enum import Enum
 
 
 class Review(BaseModel):
@@ -40,10 +41,22 @@ class AgentLifeCycle(BaseModel):
     )
 
 
+class DocumentType(Enum):
+    MSME_DOCUMENT = "msme_document"
+    PAN_DOCUMENT = "pan_document"
+    AADHAR_DOCUMENT = "aadhar_document"
+    GSTIN_DOCUMENT = "gstin_document"
+    ITR_DOCUMENT = "itr_document"
+    PNL_DOCUMENT = "pnl_document"
+    FINANCIAL_DOCUMENT = "financials_document"
+    LOAN_APPLICATION_DOCUMENT = "loan_application_document"
+
+
 class DocumentChecklist(BaseModel):
     document_name: str
+    document_type: DocumentType = Field(description="Id for the type of the document")
     file_url: str = Field(
-        description="URL of the source file from extracted content metadata"
+        description="Exact URL of the source file from extracted content metadata"
     )
     isVerified: bool = Field(
         description="True if the document is verified otherwise False"
