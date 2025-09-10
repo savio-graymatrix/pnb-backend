@@ -241,14 +241,14 @@ async def handle_loan_application(
     established_year: str = Form(...),
     loan_tenure: int = Form(...),
     interest_rate: float = Form(...),
-    aadhar_document: UploadFile = FastAPIFile(...),
-    pan_document: UploadFile = FastAPIFile(...),
-    loan_application_document: UploadFile = FastAPIFile(...),
-    msme_document: UploadFile = FastAPIFile(None),
-    itr_document: UploadFile = FastAPIFile(None),
-    financials_document: UploadFile = FastAPIFile(None),
-    pnl_document: UploadFile = FastAPIFile(None),
-    gstin_document: UploadFile = FastAPIFile(None),
+    aadhar_document: Optional[UploadFile] = FastAPIFile(...),
+    pan_document: Optional[UploadFile] = FastAPIFile(...),
+    loan_application_document: Optional[UploadFile] = FastAPIFile(...),
+    msme_document: Optional[UploadFile] = FastAPIFile(None),
+    itr_document: Optional[UploadFile] = FastAPIFile(None),
+    financials_document: Optional[UploadFile] = FastAPIFile(None),
+    pnl_document: Optional[UploadFile] = FastAPIFile(None),
+    gstin_document: Optional[UploadFile] = FastAPIFile(None),
 ):
     try:
         files_to_upload = {
