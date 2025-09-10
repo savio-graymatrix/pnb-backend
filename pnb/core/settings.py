@@ -49,6 +49,8 @@ class Settings(BaseModel):
     DEV_SANDBOX_API_KEY: str = os.getenv("DEV_SANDBOX_API_KEY", "").strip()
     DEV_SANDBOX_API_SECRET: str = os.getenv("DEV_SANDBOX_API_SECRET", "").strip()
     SANDBOX_BASE_URL: str = os.getenv("SANDBOX_BASE_URL", "").strip()
+    SANDBOX_PAN_URL: str = os.getenv("SANDBOX_PAN_URL", "").strip()
+    SANDBOX_GST_URL: str = os.getenv("SANDBOX_GST_URL", "").strip()
 
 
 SETTINGS = Settings()

@@ -9,6 +9,8 @@ from pnb.db.data_models import Instruction
 from bson import ObjectId
 from pnb.langgraph.tools.aadhar_tool import aadhar_tool
 from pnb.langgraph.tools.pan_tool import pan_tool
+from pnb.langgraph.tools.real_gst_tool import handle_gstin_search
+from pnb.langgraph.tools.real_pan_tool import handle_pan_verify
 from pnb.langgraph.structured_output.Credit import Credit
 from pnb import LOGGER
 from pnb.db.data_models import ExtractedDocument
@@ -55,7 +57,7 @@ class CreditAgent:
 
         credit_agent = create_react_agent(
             OPENAI_LLM,
-            tools=[aadhar_tool, pan_tool, verify_gst_number],
+            tools=[aadhar_tool, handle_pan_verify, handle_gstin_search],
             response_format=(Credit),
             prompt=(
                 """
@@ -65,8 +67,8 @@ class CreditAgent:
 
 
                 You will have {aadhar_no} which you will use the aadhar_tool to verify the aadhar number. If the tool returns true then it is verified.
-                You will have {pan_no} which you will use the pan_tool to verify the pan number. If the tool returns true then it is verified.
-                You will have {gstin} which you will use the gst_tool to verify the gst number. If the tool returns true then it is verified.
+                You will have {pan_no} which you will use the handle_pan_verify tool to verify the pan number by sending the pan number, name and dob. If the tool returns success then it is verified.
+                You will have {gstin} which you will use the handle_gstin_search tool to verify the gst number. If the tool returns success then it is verified.
                 You will have content available below which you will use to analyze the loan application and provide a structured response based on the instructions provided.
                 Extracted Content:\n{combined_content}
 
