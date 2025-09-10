@@ -282,8 +282,8 @@ async def handle_loan_application(
             established_year=established_year,
             loan_tenure=loan_tenure,
             interest_rate=interest_rate,
+            documents=LoanApplicationDocuments(),
         )
-        application_obj.documents = LoanApplicationDocuments()
         for (field, _), uploaded in zip(files_to_upload.items(), file_response):
             setattr(application_obj.documents, field, uploaded["url"])
         # for document in application_obj.documents.model_dump().values():
