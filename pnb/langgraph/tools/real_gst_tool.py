@@ -61,7 +61,7 @@ async def search_gstin(gstin: str, jwt_token: str) -> dict:
     Returns:
         dict: The GSTIN details or error information.
     """
-    gst_url = "https://api.sandbox.co.in/gst/compliance/public/gstin/search"
+    gst_url = SETTINGS.SANDBOX_GST_URL
     headers = {
         "Authorization": f"{jwt_token}",
         "x-api-key": f"{DEV_SANDBOX_API_KEY}",

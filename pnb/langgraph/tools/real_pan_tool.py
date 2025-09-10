@@ -63,7 +63,7 @@ async def verify_pan(pan: str, name: str, dob: str):
     Returns:
         Dict[str, Any]: PAN verification details or error message.
     """
-    pan_url = "https://api.sandbox.co.in/kyc/pan/verify"
+    pan_url = SETTINGS.SANDBOX_PAN_URL
     jwt_token = await get_jwt_token()
     headers = {
         "Authorization": f"{jwt_token}",
