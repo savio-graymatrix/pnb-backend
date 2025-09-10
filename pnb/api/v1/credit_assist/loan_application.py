@@ -282,19 +282,12 @@ async def handle_loan_application(
             established_year=established_year,
             loan_tenure=loan_tenure,
             interest_rate=interest_rate,
-            documents=LoanApplicationDocuments(
-                aadhar_document=file_response[0]["url"],
-                pan_document=file_response[1]["url"],
-                loan_application_document=file_response[2]["url"],
-                msme_document=file_response[3]["url"],
-                itr_document=file_response[4]["url"],
-                financials_document=file_response[5]["url"],
-                pnl_document=file_response[6]["url"],
-                gstin_document=file_response[7]["url"],
-            ),
         )
+        for (field, _), uploaded in zip(files_to_upload.items(), file_response):
+            setattr(application_obj.documents, field, uploaded["url"])
         # for document in application_obj.documents.model_dump().values():
         #     await store_text_embedding(application_obj.id, str(document))
+        await application_obj.insert()
         asyncio.create_task(embed_documents_task(application_obj))
         return HTMLResponse(success_html)
     except Exception as e:
