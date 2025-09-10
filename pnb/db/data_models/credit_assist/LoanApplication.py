@@ -4,23 +4,55 @@ from pydantic import BaseModel, Field, HttpUrl, field_validator
 from decimal import Decimal
 from bson.decimal128 import Decimal128
 from datetime import datetime, timezone
+from enum import Enum
 
 
 class LoanApplicationDocuments(BaseModel):
     aadhar_document: HttpUrl
     loan_application_document: HttpUrl
     pan_document: HttpUrl
+    msme_document: Optional[HttpUrl] = ""
+    itr_document: Optional[HttpUrl] = ""
+    financials_document: Optional[HttpUrl] = ""
+    pnl_document: Optional[HttpUrl] = ""
+    gstin_document: Optional[HttpUrl] = ""
+
+
+class UpdateLoanApplicationDocuments(BaseModel):
+    aadhar_document: Optional[HttpUrl]
+    loan_application_document: Optional[HttpUrl]
+    pan_document: Optional[HttpUrl]
+    msme_document: Optional[HttpUrl]
+    itr_document: Optional[HttpUrl]
+    financials_document: Optional[HttpUrl]
+    pnl_document: Optional[HttpUrl]
+    gstin_document: Optional[HttpUrl]
+
+
+class LoanApplicationStatus(Enum):
+    PENDING = "Pending"
+    PROCESSING = "Processing"
+    ACCEPTED = "Accepted"
+    REJECTED = "Rejected"
+
+
+class LoanType(Enum):
+    RETAIL = "Retail"
+    BUSINESS = "Business"
 
 
 class LoanApplication(Document):
     applicant_name: str
+    application_status: LoanApplicationStatus = Field(
+        default=LoanApplicationStatus.PROCESSING
+    )
     pan_no: str
     aadhar_no: str
     gstin: str
     business_name: str
     business_type: str
     business_address: str
-    loan_type: Literal["Retail", "Business"]
+    loan_type: LoanType
     loan_amount: Decimal = Field(..., gt=0.0, decimal_places=2)
     loan_amount_applied: Decimal = Field(..., gt=0.0)
     monthly_turnover: Decimal = Field(..., gt=0.0, decimal_places=2)
@@ -78,4 +110,5 @@ class UpdateLoanApplication(BaseModel):
     updated_at: Optional[datetime] = Field(
         default_factory=datetime.now().astimezone(timezone.utc)
     )
-    gstin_document: Optional[PydanticObjectId]
+
+    documents: LoanApplicationDocuments

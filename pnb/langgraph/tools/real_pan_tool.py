@@ -1,7 +1,12 @@
+from langchain_core.tools import tool
+from pnb.core.settings import SETTINGS
+from pnb import LOGGER
 import requests
 import json
-from langchain_core.tools import tool
-from pnb import SETTINGS, LOGGER
+import re
+import asyncio
+import hashlib
+import base64
 
 # Configuration (add to your SETTINGS object)
 DEV_SANDBOX_API_KEY = SETTINGS.DEV_SANDBOX_API_KEY
@@ -9,9 +14,9 @@ DEV_SANDBOX_API_SECRET = SETTINGS.DEV_SANDBOX_API_SECRET
 SANDBOX_BASE_URL = SETTINGS.SANDBOX_BASE_URL
 
 
-async def get_jwt_token():
+async def get_jwt_token() -> str:
     """
-    Authenticate with Sandbox API to obtain a JWT token.
+    Authenticate with Sandbox API to obtain a JWT token using SHA-256 hashed credentials.
 
     Returns:
         str: JWT token.
@@ -20,10 +25,22 @@ async def get_jwt_token():
         Exception: If authentication fails.
     """
     auth_url = f"{SANDBOX_BASE_URL}/authenticate"
-    headers = {"Content-Type": "application/json", "x-api-key": DEV_SANDBOX_API_KEY}
-    payload = {"api_key": DEV_SANDBOX_API_KEY, "api_secret": DEV_SANDBOX_API_SECRET}
+    # Ensure credentials are encoded as UTF-8 with no extra whitespace
+    credentials = f"{DEV_SANDBOX_API_KEY}:{DEV_SANDBOX_API_SECRET}".encode(
+        "utf-8"
+    ).strip()
+    hashed_credentials = hashlib.sha256(credentials).digest()
+    encoded_credentials = base64.b64encode(hashed_credentials).decode("utf-8").strip()
+    payload = {}
+
+    headers = {
+        "x-api-key": "key_test_c9ee0299cebb4f9683bcac15ab9aea29",
+        "Authorization": f"Token={encoded_credentials}",
+        "x-api-secret": "secret_test_0bf58d996a434ad6b9f538f1d1ddc9fa",
+    }
     try:
-        response = requests.post(auth_url, headers=headers, data=json.dumps(payload))
+        response = requests.request("POST", auth_url, headers=headers, data=payload)
+
         if response.status_code == 200:
             return response.json().get("access_token")
         else:
@@ -31,8 +48,7 @@ async def get_jwt_token():
                 f"Authentication failed: {response.status_code} - {response.text}"
             )
     except Exception as e:
-        LOGGER.error(f"Authentication error: {str(e)}")
-        raise
+        raise Exception(f"Authentication error: {str(e)}")
 
 
 async def verify_pan(pan: str, name: str, dob: str):
@@ -41,30 +57,30 @@ async def verify_pan(pan: str, name: str, dob: str):
 
     Args:
         pan (str): PAN number (e.g., ABCPV1234D).
-        name (str): Name as per PAN card.
-        dob (str): Date of birth in DD/MM/YYYY format.
+        name (str): Name on PAN card (e.g., John Doe).
+        dob (str): Date of birth in DD/MM/YYYY format (e.g., 01/01/2000).
 
     Returns:
         Dict[str, Any]: PAN verification details or error message.
     """
-    verify_url = f"{SANDBOX_BASE_URL}/kyc/pan/verify"
+    pan_url = "https://api.sandbox.co.in/kyc/pan/verify"
     jwt_token = await get_jwt_token()
     headers = {
-        "Authorization": f"Bearer {jwt_token}",
-        "x-api-key": DEV_SANDBOX_API_KEY,
-        "Accept": "application/json",
-        "Content-Type": "application/json",
+        "Authorization": f"{jwt_token}",
+        "x-api-key": f"{DEV_SANDBOX_API_KEY}",
+        "accept": "application/json",
+        "content-type": "application/json",
     }
     payload = {
         "@entity": "in.co.sandbox.kyc.pan_verification.request",
-        "pan": pan,
-        "name_as_per_pan": name,
-        "date_of_birth": dob,
+        "pan": f"{pan}",
+        "name_as_per_pan": f"{name}",
+        "date_of_birth": f"{dob}",
         "consent": "Y",
         "reason": "KYC verification",
     }
     try:
-        response = requests.post(verify_url, headers=headers, data=json.dumps(payload))
+        response = requests.post(pan_url, headers=headers, json=payload)
         if response.status_code == 200:
             return {"success": True, "data": response.json()}
         elif response.status_code == 422:
