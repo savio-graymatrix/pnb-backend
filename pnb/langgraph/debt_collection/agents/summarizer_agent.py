@@ -20,6 +20,7 @@ class TranscriptAgent:
         Do not include unnecessary details, filler words, or formatting.
         Keep the summary short, clear, and focused.
         The summary must be at most {word_limit} words.
+        In addition, Conclude with the overall current sentiment of the conversation (Positive, Neutral, or Negative), based on the latest tone and outcome.
         In addition, Provide next action based on the summary
 
 
