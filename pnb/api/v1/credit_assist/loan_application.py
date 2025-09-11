@@ -241,28 +241,30 @@ async def handle_loan_application(
     established_year: str = Form(...),
     loan_tenure: int = Form(...),
     interest_rate: float = Form(...),
-    aadhar_document: UploadFile = FastAPIFile(...),
-    pan_document: UploadFile = FastAPIFile(...),
-    loan_application_document: UploadFile = FastAPIFile(...),
-    msme_document: UploadFile = FastAPIFile(...),
-    itr_document: UploadFile = FastAPIFile(...),
-    financials_document: UploadFile = FastAPIFile(...),
-    pnl_document: UploadFile = FastAPIFile(...),
-    gstin_document: UploadFile = FastAPIFile(...),
+    aadhar_document: Optional[UploadFile] = FastAPIFile(...),
+    pan_document: Optional[UploadFile] = FastAPIFile(...),
+    loan_application_document: Optional[UploadFile] = FastAPIFile(...),
+    msme_document: Optional[UploadFile] = FastAPIFile(None),
+    itr_document: Optional[UploadFile] = FastAPIFile(None),
+    financials_document: Optional[UploadFile] = FastAPIFile(None),
+    pnl_document: Optional[UploadFile] = FastAPIFile(None),
+    gstin_document: Optional[UploadFile] = FastAPIFile(None),
 ):
     try:
-        file_response = await upload_files(
-            [
-                aadhar_document,
-                pan_document,
-                loan_application_document,
-                msme_document,
-                itr_document,
-                financials_document,
-                pnl_document,
-                gstin_document,
-            ]
-        )
+        files_to_upload = {
+            "aadhar_document": aadhar_document,
+            "pan_document": pan_document,
+            "loan_application_document": loan_application_document,
+            "msme_document": msme_document,
+            "itr_document": itr_document,
+            "financials_document": financials_document,
+            "pnl_document": pnl_document,
+            "gstin_document": gstin_document,
+        }
+
+        # Collect only provided files
+        files_to_upload = {k: v for k, v in files_to_upload.items() if v is not None}
+        file_response = await upload_files(list(files_to_upload.values()))
         file_response = json.loads(file_response.body)["files"]
         application_obj = LoanApplication(
             applicant_name=applicant_name,
@@ -280,19 +282,13 @@ async def handle_loan_application(
             established_year=established_year,
             loan_tenure=loan_tenure,
             interest_rate=interest_rate,
-            documents=LoanApplicationDocuments(
-                aadhar_document=file_response[0]["url"],
-                pan_document=file_response[1]["url"],
-                loan_application_document=file_response[2]["url"],
-                msme_document=file_response[3]["url"],
-                itr_document=file_response[4]["url"],
-                financials_document=file_response[5]["url"],
-                pnl_document=file_response[6]["url"],
-                gstin_document=file_response[7]["url"],
-            ),
+            documents=LoanApplicationDocuments(),
         )
+        for (field, _), uploaded in zip(files_to_upload.items(), file_response):
+            setattr(application_obj.documents, field, uploaded["url"])
         # for document in application_obj.documents.model_dump().values():
         #     await store_text_embedding(application_obj.id, str(document))
+        await application_obj.insert()
         asyncio.create_task(embed_documents_task(application_obj))
         return HTMLResponse(success_html)
     except Exception as e:
@@ -486,8 +482,23 @@ async def update_documents(
     file_response = await upload_files(list(files_to_upload.values()))
     file_response = json.loads(file_response.body)["files"]
 
+    review_set = (
+        await ReviewSet.find(
+            ReviewSet.application_id == PydanticObjectId(application_id)
+        )
+        .sort("-created_at")
+        .limit(1)
+        .to_list()
+    )
+    if len(review_set) == 0:
+        # TODO: Workaround. Put appropriate status code: 404
+        raise HTTPException(status_code=404, detail=dict())
+
     # Map back URLs to correct fields
     for (field, _), uploaded in zip(files_to_upload.items(), file_response):
+        await DocumentChecklist.find_one(
+            {"review_set_id": review_set[0].id, "document_type": field}
+        ).set({"isVerified": True})
         setattr(loan_application.documents, field, uploaded["url"])
 
     print(loan_application.documents)
