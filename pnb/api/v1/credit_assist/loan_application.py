@@ -452,39 +452,48 @@ async def review_loan_application(application: LoanApplication = Body(...)):
 @router.patch("/upload_documents/{application_id}")
 async def update_documents(
     application_id: str,
-    aadhar_document: UploadFile = FastAPIFile(...),
-    pan_document: UploadFile = FastAPIFile(...),
-    loan_application_document: UploadFile = FastAPIFile(...),
-    msme_document: UploadFile = FastAPIFile(...),
-    itr_document: UploadFile = FastAPIFile(...),
-    financials_document: UploadFile = FastAPIFile(...),
-    pnl_document: UploadFile = FastAPIFile(...),
-    gstin_document: UploadFile = FastAPIFile(...),
+    aadhar_document: UploadFile = FastAPIFile(None),
+    pan_document: UploadFile = FastAPIFile(None),
+    loan_application_document: UploadFile = FastAPIFile(None),
+    msme_document: UploadFile = FastAPIFile(None),
+    itr_document: UploadFile = FastAPIFile(None),
+    financials_document: UploadFile = FastAPIFile(None),
+    pnl_document: UploadFile = FastAPIFile(None),
+    gstin_document: UploadFile = FastAPIFile(None),
 ):
     loan_application = await LoanApplication.get(application_id)
     if not loan_application:
         raise HTTPException(status_code=404, detail="Loan Application not found")
-    file_response = await upload_files(
-        [
-            aadhar_document,
-            pan_document,
-            loan_application_document,
-            msme_document,
-            itr_document,
-            financials_document,
-            pnl_document,
-            gstin_document,
-        ]
-    )
+
+    files_to_upload = {
+        "aadhar_document": aadhar_document,
+        "pan_document": pan_document,
+        "loan_application_document": loan_application_document,
+        "msme_document": msme_document,
+        "itr_document": itr_document,
+        "financials_document": financials_document,
+        "pnl_document": pnl_document,
+        "gstin_document": gstin_document,
+    }
+
+    # Collect only provided files
+    files_to_upload = {k: v for k, v in files_to_upload.items() if v is not None}
+
+    if not files_to_upload:
+        raise HTTPException(status_code=400, detail="No documents provided to update")
+
+    # Upload only provided files
+    file_response = await upload_files(list(files_to_upload.values()))
     file_response = json.loads(file_response.body)["files"]
-    loan_application.documents.aadhar_document = file_response[0]["url"]
-    loan_application.documents.pan_document = file_response[1]["url"]
-    loan_application.documents.loan_application_document = file_response[2]["url"]
-    loan_application.documents.msme_document = file_response[3]["url"]
-    loan_application.documents.itr_document = file_response[4]["url"]
-    loan_application.documents.financials_document = file_response[5]["url"]
-    loan_application.documents.pnl_document = file_response[6]["url"]
-    loan_application.documents.gstin_document = file_response[7]["url"]
-    await loan_application.save_changes()
+
+    # Map back URLs to correct fields
+    for (field, _), uploaded in zip(files_to_upload.items(), file_response):
+        setattr(loan_application.documents, field, uploaded["url"])
+
+    print(loan_application.documents)
+    await loan_application.save()
+
+    # Run embeddings in background
     asyncio.create_task(embed_documents_task(loan_application))
-    return Response(status_code=200)
+
+    return loan_application

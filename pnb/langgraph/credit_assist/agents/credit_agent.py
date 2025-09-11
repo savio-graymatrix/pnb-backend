@@ -46,7 +46,7 @@ class CreditAgent:
 
         # Concatenate contents with newlines
         combined_content = "\n".join(
-            f"{doc.content}\nMetadata for above chunk : {doc.metadata}"
+            f"{doc.content}\nMetadata for above chunk : {"\n".join(doc.metadata.model_dump().items())}"
             for doc in cursor
         )
 
