@@ -107,8 +107,8 @@ async def handle_pan_verify(pan: str, name: str, dob: str):
 
     Args:
         pan (str): PAN number (e.g., ABCPV1234D).
-        name (str): Name as per PAN card.
-        dob (str): Date of birth in DD/MM/YYYY format.
+        name (str): Name as per PAN card. (e.g., John Doe)
+        dob (str): Date of birth in DD/MM/YYYY format. (e.g., 01/01/2000)
 
     Returns:
         Dict[str, Any]: Result with success status and PAN details or error message.

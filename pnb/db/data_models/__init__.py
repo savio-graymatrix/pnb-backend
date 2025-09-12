@@ -13,6 +13,8 @@ from pnb.db.data_models.sales.Product import *
 from pnb.db.data_models.sales.Customer import *
 from pnb.db.data_models.sales.ProductPurchaseLink import *
 from pnb.db.data_models.sales.Lead import *
+from pnb.db.data_models.sales.Transaction import *
+from pnb.db.data_models.sales.Communication import *
 
 
 DOCUMENT_MODELS = [
@@ -36,4 +38,6 @@ DOCUMENT_MODELS = [
     Customer,
     ProductPurchaseLink,
     Lead,
+    Transaction,
+    Communication,
 ]
