@@ -3,6 +3,7 @@ from typing import Optional, Literal, List
 from pydantic import Field, BaseModel
 from datetime import datetime, timezone
 from enum import Enum
+from pnb.langgraph.structured_output.Credit import DocumentType
 
 
 REVIEW_STATUSES = ["resolved", "rejected"]
@@ -104,6 +105,7 @@ class AgentLifeCycle(Document):
 
 class DocumentChecklist(Document):
     review_set_id: PydanticObjectId = Field(description="Parent Review Set ID")
+    document_type: DocumentType
     document_name: str
     file_url: str
     # file_name : Optional[str]
