@@ -20,6 +20,7 @@ class Customer(Document):
     products_held: Optional[List[str]] = None
     credit_score: Optional[int] = None
     preferred_channel: Optional[str] = None
+    contacted: Optional[bool] = False
 
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
