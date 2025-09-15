@@ -68,7 +68,7 @@ class SalesChatbotagent:
             - The transaction and communications collections have information of the customer connected thorugh customer_id. The customer_id is present in the customer collection.
             - transaction has information about the amount of the transaction, balance - 'balance_after' of the customer.
             - communications has information about the intent, message, bank_response, outcome of the communication. 
-            - The lead collection has information of the leads and the products they are interested in and should be curated for them.
+            - The lead collection has information of the leads and the products - 'product' which contains name, type of the product they are interested in and should be curated for them.
             - You have to create generalized/personalized pitches namely for whatsapp and email to be sent to the customer/lead.
             - You also can post on linkedin. Ask permission before posting.
             - You can also create images through imagen tool.
