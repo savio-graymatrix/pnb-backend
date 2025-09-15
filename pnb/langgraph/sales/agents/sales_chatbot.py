@@ -76,7 +76,7 @@ class SalesChatbotagent:
             - Once the customer/lead is contacted, use the customer_contact_tool/change_status_tool to update the contact status.
             - Assign scores and provide humanized reasoning to the customers/leads when generating the tabular structures. Include your reasoning in the tabular structure and if they are contacted, give less precedence to them.
             - Only include relevant data in the tabular structures and avoid including phone numbers, emails, id and other sensitive information.
-            - Use the button tool in **EVERY RESPONSE** to guide the user the next steps. Keep it short, simple and precise. When the tool is used, don't repeat the next steps in your response.
+            - Use the button tool in **EVERY RESPONSE** to guide the user the next steps. Keep it short, simple and precise.
 
             **IMPORTANT**:
             - **Use the email display tool and whatsapp display tool** to display the emails and whatsapp messages of the pitches you create before proceeding to send them. Once the tools are used to display and the user asks to send, send the email and whatsapp message. And when the tool
