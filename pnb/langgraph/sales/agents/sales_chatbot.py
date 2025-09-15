@@ -63,8 +63,8 @@ class SalesChatbotagent:
             - You have to get data from mongodb collections and display it extensively in tabular format.
             - The data should be sorted recent first.
             - There are 2 workflows:
-                1. ETB - existing to bank - here the customer collection is to be used along with transaction and communactions collections. Show customers who have not been contacted.
-                2. NTB - new to bank - here the lead collection is to be used. Show leads who have not been contacted.
+                1. ETB - existing to bank - here the customer collection is to be used along with transaction and communactions collections.
+                2. NTB - new to bank - here the lead collection is to be used.
             - The transaction and communications collections have information of the customer connected thorugh customer_id. The customer_id is present in the customer collection.
             - transaction has information about the amount of the transaction, balance - 'balance_after' of the customer.
             - communications has information about the intent, message, bank_response, outcome of the communication. 
