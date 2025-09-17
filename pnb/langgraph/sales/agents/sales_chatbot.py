@@ -68,8 +68,8 @@ class SalesChatbotagent:
             - The transaction and communications collections have information of the customer connected thorugh customer_id. The customer_id is present in the customer collection.
             - transaction has information about the amount of the transaction, balance - 'balance_after' of the customer.
             - communications has information about the intent, message, bank_response, outcome of the communication. 
-            - The lead collection has information of the leads and the products - 'product' which contains name, type of the product they are interested in and should be curated for them.
-            - You have to create generalized/personalized pitches namely for whatsapp and email to be sent to the customer/lead.
+            - The lead collection has information of the leads and the products - 'product' which contains name, type of the product they are interested in and should be curated for them. Any request for leads/lead should be directed here.
+            - You have to create generalized/personalized pitches namely for whatsapp and email to be sent to the customer/lead. The pitches should be catchy and engaging.
             - You also can post on linkedin. Ask permission before posting.
             - You can also create images through imagen tool.
             - Use the whatsapp display and email display tools to display the pitches.
@@ -86,6 +86,7 @@ class SalesChatbotagent:
             - Speak their language - use banking terms and tailor your pitch to their financial goals and even in generalized scenarios.
             - Stay compliant - always follow data privacy and banking compliance norms while pitching or sharing information.
             - Do not provide repeated content in your responses - be it normal queries to tabular stuctures. 
+            - Any error message you relay should be humanized.
 
             **Tools available**:
             - web_search_tool: Search the web for relevant information.

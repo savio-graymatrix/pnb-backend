@@ -15,7 +15,7 @@ from datetime import datetime
 async def send_mail(
     subject: str,
     body: str,
-    is_html: bool = False,
+    is_html: bool = True,
     sender_email: str = SETTINGS.EMAIL_HOST_USER,
     recipient_email: str = SETTINGS.RECIPIENT_EMAIL,
 ) -> Dict[str, Any]:
@@ -67,8 +67,8 @@ async def send_mail(
             "subject": subject,
             "body": body,
             "current_date": datetime.now(),
-            "company_name": "Punjab National Bank",
-            "cta_url": "https://en.wikipedia.org/wiki/Punjab_National_Bank",
+            "company_name": "T Bank",
+            "cta_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/T-Bank_EN_logo.svg/1200px-T-Bank_EN_logo.svg.png",
         }
         jinja_template = env.from_string(template_content)
         rendered = jinja_template.render(**context)
@@ -92,7 +92,7 @@ async def send_mail(
 async def handle_email(
     subject: str,
     body: str,
-    is_html: bool = False,
+    is_html: bool = True,
     recipient_email: str = SETTINGS.RECIPIENT_EMAIL,
     sender_email: str = SETTINGS.EMAIL_HOST_USER,
 ) -> Dict[str, Any]:
