@@ -15,6 +15,7 @@ from pnb.langgraph.structured_output.Credit import Credit
 from pnb import LOGGER
 from pnb.db.data_models import ExtractedDocument
 from pnb.langgraph.tools.gst_tool import verify_gst_number
+from pnb.langgraph.tools.pan_tool import pan_tool
 
 
 class CreditAgent:
@@ -58,7 +59,12 @@ class CreditAgent:
 
         credit_agent = create_react_agent(
             OPENAI_LLM,
-            tools=[aadhar_tool, handle_pan_verify, handle_gstin_search],
+            tools=[
+                aadhar_tool,
+                # handle_pan_verify,
+                handle_gstin_search,
+                pan_tool,
+            ],
             response_format=(Credit),
             prompt=(
                 """
