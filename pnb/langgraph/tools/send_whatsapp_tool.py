@@ -64,7 +64,21 @@ async def handle_text_message(message_text: str, phone_number: str) -> Dict[str,
     Handle a WhatsApp text message request for an agent.
 
     Args:
-        message_text (str): The text content to send.
+        message_text (str): The markdown text content to send. (Eg: **Hi Mamta!** 👋
+
+Thank you for your interest in **T Bank's Premium Home Loan** -- where your dream home becomes a reality with **exclusive low rates**, **flexible repayment options**, and **dedicated expert support** every step of the way.
+
+✨ With our Home Loan, you can:\
+✅ Secure your dream home easily\
+✅ Enjoy attractive interest rates\
+✅ Customize your repayment plan as per your convenience
+
+📞 Would you like to **know more** or **schedule a free call** 📲 with our Home Loan Specialist?
+
+Just reply to this message, and we'll take care of the rest! 😊
+
+**Best regards,**\
+**T Bank**)
         phone_number (str): The phone number to send the message to.
 
     Returns:
