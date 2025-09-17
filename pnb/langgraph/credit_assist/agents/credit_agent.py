@@ -38,15 +38,16 @@ class CreditAgent:
         ]
 
         link_to_id = config["configurable"]["thread_id"]
-        collection = ExtractedDocument.find({"link_to.$id": ObjectId(link_to_id)})
+        collection = ExtractedDocument.find({"link_to.$id": link_to_id})
         cursor = await collection.to_list()
+        print([x.metadata for x in cursor])
 
         # Extract content from each document
         # contents = [doc["content"]  for doc in cursor.to_list()]
 
         # Concatenate contents with newlines
         combined_content = "\n".join(
-            f"{doc.content}\nMetadata for above chunk : {"\n".join(doc.metadata.model_dump().items())}"
+            f"{doc.content}\nMetadata for above chunk : {"\n".join([f"{key}:{data}" for key,data in doc.metadata.model_dump().items()])}"
             for doc in cursor
         )
 
@@ -131,7 +132,7 @@ risk_grade: "A+", "A", "B", or "C".
 recommendation: "Loan can be processed" or "Loan cannot be processed".
 justification: Brief explanation of the recommendation, referencing the instruction_set.
 Agents lifecycle used: Document Verification agent,  Tax data agent, Company Financial agent, complaince reviewer agent, credit_assist_agent. 
-Documents used: Aadhar, Pan, GSTIN, MSME Udhyam Regitration, ITR records, Company Financial records, Profit and Loss records, Loan Application - whatever is received in the extracted contents and analyzed put as verified otherwise unverified if document data is not available (strictly). Provide the file name in the document checklist.
+Documents used: Aadhar, PAN, GSTIN, MSME Udhyam Regitration, ITR records, Company Financial Records, Profit and Loss Records, Loan Application - whatever is received in the extracted contents and analyzed put as verified otherwise unverified if document data is not available (strictly). Provide the file name in the document checklist.
 Filenames: **The filenames present in the extracted content which you can refer**
 Ensure the output is clear, concise and free of errors
                 """.format(

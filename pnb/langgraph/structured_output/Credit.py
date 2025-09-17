@@ -52,9 +52,20 @@ class DocumentType(Enum):
     LOAN_APPLICATION_DOCUMENT = "loan_application_document"
 
 
+class DocumentName(Enum):
+    MSME_DOCUMENT = "Aadhaar"
+    PAN_DOCUMENT = "PAN"
+    AADHAR_DOCUMENT = "GSTIN"
+    GSTIN_DOCUMENT = "MSME Udhyam Registration"
+    ITR_DOCUMENT = "ITR Records"
+    PNL_DOCUMENT = "Company Financial Records"
+    FINANCIAL_DOCUMENT = "Profit And Loss Records"
+    LOAN_APPLICATION_DOCUMENT = "Loan Application"
+
+
 class DocumentChecklist(BaseModel):
-    document_name: str
-    document_type: DocumentType = Field(description="Id for the type of the document")
+    document_name: DocumentName | str
+    # document_type: DocumentType = Field(description="Id for the type of the document")
     file_url: str = Field(
         description="Exact URL of the source file from extracted content metadata"
     )
