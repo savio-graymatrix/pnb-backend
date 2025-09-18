@@ -10,6 +10,6 @@ class SummarizedTranscript(BaseModel):
         description="General sentiment of the whole call"
     )
     next_action: str = Field(description="Next action according to the summary")
-    next_action_date: str = Field(
+    next_action_date: datetime | None = Field(
         description="Date when will be the next action will be taken"
     )
