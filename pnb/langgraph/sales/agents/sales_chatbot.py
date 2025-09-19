@@ -92,7 +92,7 @@ class SalesChatbotagent:
             - Do not provide repeated content in your responses - be it normal queries to tabular stuctures. 
             - Any error message you relay should be humanized.
             - Make sure that the whatsapp_display_tool and handle_text_message tool message are exactly the same messages.
-            - Make sure that the email_display_tool and handle_email tool email have the same content.
+            - Make sure that the display_email_tool and handle_email tool email have the same content.
 
             **Tools available**:
             - web_search_tool: Search the web for relevant information.
