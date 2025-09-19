@@ -61,6 +61,20 @@ async def generate_chat_responses(
                 yield f'data: {{"type": "email", "content": "{event["data"]["output"].content.replace("'", "\\'").replace("\n", "\\n")}"}}\n\n'
             if event["name"] == "button_tool":
                 yield f'data: {{"type": "button", "content": {event["data"]["output"].content.replace("'", "\\'").replace("\n", "\\n")}}}\n\n'
+            if event["name"] == "imagen_tool":
+                yield f'data: {{"type": "generating_image"}}\n\n'
+            if event["name"] == "handle_chart":
+                yield f'data: {{"type": "generating_chart"}}\n\n'
+            if event["name"] == "handle_text_message":
+                yield f'data: {{"type": "sending_whatsapp"}}\n\n'
+            if event["name"] == "handle_email":
+                yield f'data: {{"type": "sending_email"}}\n\n'
+            if event["name"] == "md_to_pdf_tool":
+                yield f'data: {{"type": "generating_pdf"}}\n\n'
+            if event["name"] == "get_system_time":
+                yield f'data: {{"type": "fetching_time_for_context"}}\n\n'
+            if event["name"] == "web_search_tool":
+                yield f'data: {{"type": "searching_web"}}\n\n'
             continue
         if event_type == "langgraph_node" and event["langgraph_node"] == "tools":
             continue
