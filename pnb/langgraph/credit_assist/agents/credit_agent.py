@@ -62,7 +62,7 @@ class CreditAgent:
             tools=[
                 aadhar_tool,
                 # handle_pan_verify,
-                handle_gstin_search,
+                # handle_gstin_search,
                 pan_tool,
             ],
             response_format=(Credit),

@@ -7,14 +7,15 @@ from langchain.tools import tool
 import os
 import pymupdf4llm
 from pdf2image import convert_from_path
-from PIL import Image
+from PIL import Image, ImageEnhance
 import pytesseract
 from langchain_core.documents import Document
 from pnb import SETTINGS, LOGGER
 import requests
 import tempfile
 import traceback
-import boto3
+import cv2
+import numpy as np
 
 # Pre-requisites
 pytesseract.pytesseract.tesseract_cmd = SETTINGS.TESSERACT_PATH
@@ -83,6 +84,20 @@ async def store_text_embedding(parent_document_id: str, file_url: str) -> None:
         )
 
 
+def enhance_image(cv_img: np.ndarray) -> np.ndarray:
+    """Sharpen and increase contrast using only OpenCV."""
+    gray = cv2.cvtColor(cv_img, cv2.COLOR_RGB2GRAY)
+
+    # Sharpen
+    kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
+    sharp = cv2.filter2D(gray, -1, kernel)
+
+    # Boost contrast
+    contrast = cv2.convertScaleAbs(sharp, alpha=2.0, beta=0)
+
+    return contrast
+
+
 @tool
 def extract_from_file(file_url: str):
     """Extracts content from files"""
@@ -96,25 +111,7 @@ def extract_from_file(file_url: str):
     def fallback_ocr(path: str):
         print("Falling back to OCR...")
 
-        def start_document_text_detection(textract_client, bucket, document_key):
-            try:
-                response = textract_client.start_document_text_detection(
-                    DocumentLocation={
-                        "S3Object": {"Bucket": bucket, "Name": document_key}
-                    }
-                )
-                return response["JobId"]
-            except Exception as e:
-                print(f"Error starting Textract job: {e}")
-                return None
-
         if path.startswith("http"):
-            # textract_client = boto3.client("textract", region_name="ap-south-1")
-            # s3_client = boto3.client("s3", region_name="ap-south-1")
-            # jobId = start_document_text_detection(
-            #     textract_client, SETTINGS.AWS_BUCKET, ""
-            # )
-
             response = requests.get(path)
             response.raise_for_status()  # fail if URL is invalid
 
@@ -128,11 +125,12 @@ def extract_from_file(file_url: str):
                 pages = convert_from_path(
                     tmp_path, dpi=300, poppler_path=SETTINGS.POPPLER_PATH
                 )
-                texts = [pytesseract.image_to_string(img) for img in pages]
-                # os.remove(tmp_path)
+                texts = [
+                    pytesseract.image_to_string(enhance_image(img)) for img in pages
+                ]
                 return texts
         pages = convert_from_path(path, dpi=300, poppler_path=SETTINGS.POPPLER_PATH)
-        texts = [pytesseract.image_to_string(img) for img in pages]
+        texts = [pytesseract.image_to_string(enhance_image(img)) for img in pages]
         return texts
 
     def structured_pdf_parser(path: str):

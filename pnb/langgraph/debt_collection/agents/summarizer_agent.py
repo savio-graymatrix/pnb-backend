@@ -22,6 +22,7 @@ class TranscriptAgent:
         The summary must be at most {word_limit} words.
         In addition, Conclude with the overall current sentiment of the conversation (Positive, Neutral, or Negative), based on the latest tone and outcome.
         In addition, Provide next action based on the summary
+        In addition, Provide when will be the next action will be taken. If date is not determined, Please provide `None`
 
 
         Transcript:
