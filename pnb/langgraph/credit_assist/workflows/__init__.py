@@ -21,7 +21,7 @@ async def compile_credit_assist_graphs():
     for key, graph in CREDIT_ASSIST_GRAPHS.items():
         os.makedirs(f"{os.getcwd()}/docs", exist_ok=True)
         os.makedirs(f"{os.getcwd()}/docs/images", exist_ok=True)
-        graph.get_graph().draw_mermaid_png(output_file_path=f"docs/images/{key}.png")
+        # graph.get_graph().draw_mermaid_png(output_file_path=f"docs/images/{key}.png")
     LOGGER.info(
         f"Credit Assist Graphs initialized:\n{"\n".join([f"{key}:{graph}" for key,graph in CREDIT_ASSIST_GRAPHS.items()])}"
     )
