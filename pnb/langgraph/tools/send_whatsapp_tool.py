@@ -6,13 +6,16 @@ import asyncio
 import json
 
 
-async def send_whatsapp_message(message_text: str, phone_number: str) -> Dict[str, Any]:
+async def send_whatsapp_message(
+    message_text: str, phone_number: str, image_url: str = None
+) -> Dict[str, Any]:
     """
     Send a text message via the WhatsApp Business API.
 
     Args:
         message_text (str): The text content of the message.
         phone_number (str): The phone number to send the message to.
+        image_url (str, optional): The URL of the image to attach to the message.
 
     Returns:
         Dict[str, Any]: Result with success status and data or error message.
@@ -57,6 +60,13 @@ async def send_whatsapp_message(message_text: str, phone_number: str) -> Dict[st
         ],
         "platform": "WhatsApp",
     }
+
+    # Add attachment if image_url is provided
+    if image_url:
+        payload["message"][0]["message"]["template"]["elements"]["attachment"] = {
+            "is_download": False,
+            "url": image_url,
+        }
     try:
         response = requests.post(
             f"{SETTINGS.WHATSAPP_API}",
@@ -75,7 +85,9 @@ async def send_whatsapp_message(message_text: str, phone_number: str) -> Dict[st
 
 
 @tool
-async def handle_text_message(message_text: str, phone_number: str) -> Dict[str, Any]:
+async def handle_text_message(
+    message_text: str, phone_number: str, image_url: str = None
+) -> Dict[str, Any]:
     """
     Handle a WhatsApp text message request for an agent.
 
@@ -101,6 +113,7 @@ Just reply to this message, and we'll take care of the rest! 😊
 *Best regards,*\
 *T Bank*)
         phone_number (str): The phone number to send the message to.
+        image_url (str, optional): The URL of the image to attach to the message.
 
     Returns:
         Dict[str, Any]: Result with success status and message.
@@ -108,7 +121,7 @@ Just reply to this message, and we'll take care of the rest! 😊
 
     try:
         result = await send_whatsapp_message(
-            message_text=message_text, phone_number=phone_number
+            message_text=message_text, phone_number=phone_number, image_url=image_url
         )
         if result["success"]:
             return {"status": "success", "message": "Message sent successfully"}
