@@ -33,7 +33,23 @@ async def send_whatsapp_message(message_text: str, phone_number: str) -> Dict[st
             {
                 "message": {
                     "template": {
-                        "elements": {"title": message_text.strip()},
+                        "elements": {
+                            "title": message_text.strip(),
+                            "buttons": [
+                                {
+                                    "title": "Buy Now",
+                                    "payload": "/buy_now_gold_pnb",
+                                    "type": "postback",
+                                    "mode": "disable_text_box",
+                                },
+                                {
+                                    "title": "I have question",
+                                    "payload": "I have question regarding how to buy gold",
+                                    "type": "close_chat",
+                                    "mode": "disable_text_box",
+                                },
+                            ],
+                        },
                         "type": "Card",
                     }
                 }
