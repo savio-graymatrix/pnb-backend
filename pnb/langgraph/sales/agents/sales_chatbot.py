@@ -73,7 +73,7 @@ class SalesChatbotagent:
             - The 'lead' collection has information of the leads and the products - 'product' which contains name, type of the product they are interested in and should be curated for them. Any request for leads/lead should be directed here.
             - You have to create generalized/personalized pitches namely for whatsapp and email to be sent to the customer/lead. The pitches should be catchy and engaging. Use emojis in whatsapp pitches.
             - You also can post on linkedin. Ask permission before posting.
-            - You can also create images through imagen tool.
+            - You can also create images through imagen tool. Show the created image by sending in markdown format.
             - Use the whatsapp display and email display tools to display the pitches.
             - For whatsapp_dislay_tool, use markdown text and for send_whatsapp_tool, use whatsapp formatted text.
             - For mail pitches, use the HTML formatted text in the display_email_tool and handle_email tool.
