@@ -32,6 +32,7 @@ class Scorecard(BaseModel):
     quality_control: KeyTitleWithScore
     ticket_updates: KeyTitleWithScore
     solution_cause: KeyTitleWithScore
+    customer_satisfaction_reason: KeyTitleWithScore
 
 
 class CallAnalysisResult(BaseModel):
@@ -40,4 +41,5 @@ class CallAnalysisResult(BaseModel):
     compliance_report: ComplianceReport = Field(description="Structured compliance report as proper markdown format")
     scorecard: Scorecard = Field(description="Quality scorecard with scores as proper markdown format")
     overall_score: int = Field(ge=1, le=100, description="Overall score 1-100")
+    customer_satisfaction_score: int = Field(ge=1, le=100, description="Customer satisfaction score 1-100")
     call_status: CallStatus = Field(description="Overall sentiment of the call")
