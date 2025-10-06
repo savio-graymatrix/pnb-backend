@@ -35,7 +35,7 @@ Provide a comprehensive analysis including summary, compliance report, quality s
     call_summary_response = await call_analysis_agent.call_analysis(analysis_input, config)
 
     compliance = f'''## Call Analysis\n
-**Duration:** {humanize_duration(int(session.call_duration))}\n
+**Duration:** {humanize_duration(int(session.call_duration)) if session.call_duration else 'N/A'}\n
 **Date:** {humanize_date(session.call_time)}\n
 **Handled By:** Call Center Agent (Assisted by AI Agent)\n
 **Customer Concern:** {call_summary_response.get('structured_response').compliance_report.customer_concern}'''
