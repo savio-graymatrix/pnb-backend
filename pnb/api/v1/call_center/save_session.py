@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+import asyncio
 from fastapi import APIRouter, Body
 from fastapi.responses import JSONResponse
 from pnb.db.data_models.call_center.Session import Session, Message, CustomerInfo, Notes
@@ -53,7 +54,7 @@ async def save_session(body=Body(...)):
 
         await session.insert()
 
-        analyze_session(session)
+        asyncio.create_task(analyze_session(session))
 
         return JSONResponse(content={"message": "Session saved successfully"})
 
