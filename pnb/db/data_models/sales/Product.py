@@ -14,6 +14,10 @@ class ProductType(Enum):
     FIXED_DEPOSIT = "Fixed Deposit"
     PERSONAL_LOAN = "Personal Loan"
     HOME_LOAN = "Home Loan"
+    SECURED_LOAN = "Secured Loan"
+    LOAN = "Loan"
+    GOLD_COIN = "Gold Coin"
+    DEPOSIT = "Deposit"
 
 
 class Product(Document):
