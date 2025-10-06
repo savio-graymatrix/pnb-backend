@@ -37,9 +37,10 @@ class Scorecard(BaseModel):
 
 class CallAnalysisResult(BaseModel):
     """Structured output for call analysis results"""
-    summary: str = Field(description="Comprehensive paragraph summary as proper markdown format")
+    summary: str = Field(description="Comprehensive bullet-point summary as proper markdown format")
     compliance_report: ComplianceReport = Field(description="Structured compliance report as proper markdown format")
     scorecard: Scorecard = Field(description="Quality scorecard with scores as proper markdown format")
     overall_score: int = Field(ge=1, le=100, description="Overall score 1-100")
     customer_satisfaction_score: int = Field(ge=1, le=100, description="Customer satisfaction score 1-100")
+    call_improvement_suggestions: str = Field(description="list of suggestions for improving the call and the customer experience as proper markdown format")
     call_status: CallStatus = Field(description="Overall sentiment of the call")
