@@ -53,7 +53,9 @@ async def save_session(body=Body(...)):
 
         await session.insert()
 
-        await analyze_session(session)
+        analyze_session(session)
+
+        return JSONResponse(content={"message": "Session saved successfully"})
 
     except Exception as e:
         print("Error saving session:", str(e))
