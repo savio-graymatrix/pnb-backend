@@ -113,7 +113,7 @@ Just reply to this message, and we'll take care of the rest! 😊
 *Best regards,*\
 *T Bank*)
         phone_number (str): The phone number to send the message to.
-        image_url (str, optional): The URL of the image to attach to the message.
+        image_url (str, optional): The URL of the image from the imagen tool to attach to the message.
 
     Returns:
         Dict[str, Any]: Result with success status and message.
