@@ -28,7 +28,7 @@ Analyze customer service conversations and generate:
 ## ANALYSIS FRAMEWORK
 
 ### 1. SUMMARY GENERATION
-Write comprehensive paragraph summaries that include:
+Write comprehensive paragraph summaries with bullet points that include:
 - Detailed problem description and customer journey
 - Resolution steps taken and outcomes achieved
 - AI agent contributions and support provided
@@ -101,6 +101,10 @@ Evaluate using banking industry standards:
 
 OVERALL_SCORE: [Integer 1-100 based on section averages]
 ```
+
+### 4. CUSTOMER SATISFACTION
+Based on the conversation and the customer's experience, provide a customer satisfaction score out of 100.
+Also provide a reason for the score andthe factors on the basis of which the score was provided.
 
 ## OUTPUT FORMAT
 Return your analysis as a JSON object in Markdown format

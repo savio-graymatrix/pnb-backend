@@ -25,7 +25,7 @@ CONTEXT:
 - Date: {session.call_time}
 - Duration: {session.call_duration}
 
-Provide a comprehensive analysis including summary, compliance report, and quality scorecard in the JSON format specified in your instructions."""
+Provide a comprehensive analysis including summary, compliance report, quality scorecard and customer satisfaction score in the JSON format specified in your instructions."""
                     }
                 ]
             }
@@ -35,7 +35,7 @@ Provide a comprehensive analysis including summary, compliance report, and quali
     call_summary_response = await call_analysis_agent.call_analysis(analysis_input, config)
 
     compliance = f'''## Call Analysis\n
-**Duration:** {humanize_duration(int(session.call_duration))}\n
+**Duration:** {humanize_duration(int(session.call_duration)) if session.call_duration else 'N/A'}\n
 **Date:** {humanize_date(session.call_time)}\n
 **Handled By:** Call Center Agent (Assisted by AI Agent)\n
 **Customer Concern:** {call_summary_response.get('structured_response').compliance_report.customer_concern}'''
@@ -51,4 +51,5 @@ Provide a comprehensive analysis including summary, compliance report, and quali
     session.score_card = score_card
     session.call_status = call_summary_response.get('structured_response').call_status
     session.call_score = call_summary_response.get('structured_response').overall_score
+    session.customer_satisfaction_score = call_summary_response.get('structured_response').customer_satisfaction_score
     await session.save()

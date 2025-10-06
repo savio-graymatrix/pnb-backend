@@ -28,26 +28,27 @@ class Session(Document):
     customer_info: Link[CustomerInfo]  # Reference to CustomerInfo document
     transcript: List[Message] = Field(default_factory=list)
 
-    call_time:     datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    call_duration: str | None = None
-    call_summary:  str | None = None
-    compliance:    str | None = None
-    score_card:    str | None = None
-    call_status:   str | None = None
-    call_score:    int | None = None
-
+    call_time:                      datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    call_duration:                  str | None = None
+    call_summary:                   str | None = None
+    compliance:                     str | None = None
+    score_card:                     str | None = None
+    call_status:                    str | None = None
+    call_score:                     int | None = None
+    customer_satisfaction_score:    int | None = None
 
     class Settings:
         name = "sessions"
 
 
 class UpdateSession(BaseModel):
-    session_id:   str
-    call_summary: str | None = None
-    compliance:   str | None = None
-    score_card:   str | None = None
-    call_status:  str | None = None
-    call_score:   int | None = None
+    session_id:                     str
+    call_summary:                   str | None = None
+    compliance:                     str | None = None
+    score_card:                     str | None = None
+    call_status:                    str | None = None
+    call_score:                     int | None = None
+    customer_satisfaction_score:    int | None = None
 
 
 class Notes(Document):
