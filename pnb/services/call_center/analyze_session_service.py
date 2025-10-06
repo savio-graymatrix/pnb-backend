@@ -52,4 +52,5 @@ Provide a comprehensive analysis including summary, compliance report, quality s
     session.call_status = call_summary_response.get('structured_response').call_status
     session.call_score = call_summary_response.get('structured_response').overall_score
     session.customer_satisfaction_score = call_summary_response.get('structured_response').customer_satisfaction_score
+    session.call_improvement_suggestions = call_summary_response.get('structured_response').call_improvement_suggestions
     await session.save()

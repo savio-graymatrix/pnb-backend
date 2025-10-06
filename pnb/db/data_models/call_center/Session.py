@@ -36,6 +36,7 @@ class Session(Document):
     call_status:                    str | None = None
     call_score:                     int | None = None
     customer_satisfaction_score:    int | None = None
+    call_improvement_suggestions:   str | None = None
 
     class Settings:
         name = "sessions"
@@ -49,6 +50,7 @@ class UpdateSession(BaseModel):
     call_status:                    str | None = None
     call_score:                     int | None = None
     customer_satisfaction_score:    int | None = None
+    call_improvement_suggestions:   str | None = None
 
 
 class Notes(Document):
