@@ -1,7 +1,8 @@
 import json
 import tempfile
 from uuid import uuid4
-from datetime import datetime, timezone
+import re
+from datetime import datetime, timezone, timedelta
 import openai
 
 from fastapi import APIRouter, Body, File, UploadFile
@@ -34,6 +35,9 @@ async def call_analysis(body=Body(...)):
 @router.post("/upload")
 async def upload_call_analysis(file: UploadFile = File(...)):
     filename = file.filename.lower()
+    tempname = filename.split(".")
+    if len(tempname) > 1:
+        name, number = tempname[0].split("_")
     if not (filename.endswith(".mp3") or filename.endswith(".json") or filename.endswith(".txt")):
         raise HTTPException(status_code=400, detail="Only .mp3, .json, or .txt files are supported.")
 
@@ -47,25 +51,77 @@ async def upload_call_analysis(file: UploadFile = File(...)):
                 body = json.loads(contents.decode("utf-8"))
             else:
                 # If it's a txt file, we just wrap it into a pseudo body
-                transcript_text = json.loads(contents.decode("utf-8"))
+                contents = contents.decode('utf-8')
+                lines = contents.split('\r\n')
+
+                # Prepare to extract conversation
+                conversation = []
+                current_speaker = None
+                current_text = []
+
+                # Time of the call
+                call_time = datetime.now(timezone.utc)
+                current_time = call_time
+
+                # Regular expression to identify speaker and message
+                speaker_pattern = re.compile(r"(Agent|Customer).*:(.*)")
+
+                for line in lines:
+                    line = line.strip()
+                    if not line:
+                        continue
+
+                    # Check if the line contains a speaker (Agent or Customer)
+                    match = speaker_pattern.match(line)
+                    if match:
+                        # Increment timestamp based on text length (1 sec per 10 chars)
+                        seconds_to_add = max(1, len(" ".join(current_text).strip()) // 10)
+                        current_time += timedelta(seconds=seconds_to_add)
+
+                        # If there's a current conversation text, save it first
+                        if current_speaker:
+
+                            conversation.append({
+                                "speaker": current_speaker,
+                                "text": " ".join(current_text).strip(),
+                                "timestamp": int(current_time.timestamp() * 1000)
+                            })
+
+
+                        # Reset current text and update speaker
+                        current_speaker = match.group(1).lower()
+                        current_text = [match.group(2).strip()]
+                    else:
+                        # If the line is a continuation of the conversation, append it
+                        current_text.append(line)
+
+                # Don't forget to append the last conversation line
+                if current_speaker:
+                    conversation.append({
+                        "speaker": current_speaker,
+                        "text": " ".join(current_text).strip(),
+                        "timestamp": int(current_time.timestamp() * 1000)
+                    })
+
+                # Construct the final structure
                 body = {
-                    "session_id": f"session-{uuid4()}",
+                    "session_id": f"session-{uuid4()}",  # Generate a unique session ID
                     "customer_info": {
-                        "name": transcript_text.get("customer_info").get("name", "Unknown"),
-                        "phone_number": transcript_text.get("customer_info").get("phone_number", "Unknown")
+                        "name": name.title() or "Unknown",  # Add a default or extracted name if available
+                        "phone_number": number or "Unknown"  # Add a default or extracted phone number if available
                     },
                     "conversation": [
                         {
                             "id": str(i),
                             "type": "transcript",
-                            "timestamp": tt.get("timestamp") or int(datetime.now(timezone.utc).timestamp() * 1000),
+                            "timestamp": tt.get("timestamp"),
                             "speaker": tt.get("speaker"),
                             "text": tt.get("text").strip()
                         }
-                        for i, tt in enumerate(transcript_text.get("conversation"))
+                        for i, tt in enumerate(conversation)
                     ],
-                    "timestamp": int(datetime.now(timezone.utc).timestamp() * 1000),
-                    "call_duration": transcript_text.get("call_duration") or None
+                    "timestamp": int(call_time.timestamp() * 1000),
+                    "call_duration": int(call_time.timestamp() * 1000) - int(call_time.timestamp() * 1000),  # Add a duration if available
                 }
 
         except Exception as e:

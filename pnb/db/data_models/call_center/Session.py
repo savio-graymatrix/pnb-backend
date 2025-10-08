@@ -17,7 +17,7 @@ class Message(BaseModel):
     """Individual message within a transcript"""
     id: str
     type: Literal['transcript', 'suggestion']
-    timestamp: datetime
+    timestamp: datetime | None
     speaker: Literal['customer', 'agent', 'assistant']
     text: str
 
