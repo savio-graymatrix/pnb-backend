@@ -31,7 +31,7 @@ async def send_whatsapp_message(
     # }
     payload = {
         "access_token": "OfRqofjLdVUUikdj",
-        "session": SETTINGS.WHATSAPP_GM,
+        "session": phone_number,
         "message": [
             {
                 "message": {
@@ -112,7 +112,7 @@ Just reply to this message, and we'll take care of the rest! 😊
 
 *Best regards,*\
 *T Bank*)
-        phone_number (str): The phone number to send the message to.
+        phone_number (str): The phone number to send the message to. (Eg. 917977093841)
         image_url (str, optional): The URL of the image from the imagen tool to attach to the message.
 
     Returns:
@@ -121,7 +121,11 @@ Just reply to this message, and we'll take care of the rest! 😊
 
     try:
         result = await send_whatsapp_message(
-            message_text=message_text, phone_number=phone_number, image_url=image_url
+            message_text=message_text,
+            phone_number=(
+                phone_number if len(phone_number) == 12 else "91" + phone_number
+            ),
+            image_url=image_url,
         )
         if result["success"]:
             return {"status": "success", "message": "Message sent successfully"}
