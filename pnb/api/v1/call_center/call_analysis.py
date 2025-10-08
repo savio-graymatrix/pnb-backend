@@ -107,7 +107,7 @@ async def upload_call_analysis(file: UploadFile = File(...)):
                 body = {
                     "session_id": f"session-{uuid4()}",  # Generate a unique session ID
                     "customer_info": {
-                        "name": name or "Unknown",  # Add a default or extracted name if available
+                        "name": name.title() or "Unknown",  # Add a default or extracted name if available
                         "phone_number": number or "Unknown"  # Add a default or extracted phone number if available
                     },
                     "conversation": [

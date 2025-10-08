@@ -46,7 +46,11 @@ Provide a comprehensive analysis including summary, compliance report, quality s
         [f'#### {i['name']}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{i['score']}`\n* {'\n* '.join(i['list_of_keys'])}'
             for i in call_summary_response.get('structured_response').scorecard.model_dump().values()])
 
-    session.call_summary = call_summary_response.get('structured_response').summary
+    call_summary = call_summary_response.get('structured_response').summary
+    call_summary_gist = call_summary_response.get('structured_response').call_summary_gist
+
+    session.call_summary = call_summary + '\n\n' + '**Gist:** ' + call_summary_gist
+
     session.compliance = compliance
     session.score_card = score_card
     session.call_status = call_summary_response.get('structured_response').call_status
