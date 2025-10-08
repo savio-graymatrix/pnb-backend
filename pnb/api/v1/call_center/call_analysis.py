@@ -75,7 +75,7 @@ async def upload_call_analysis(file: UploadFile = File(...)):
                     match = speaker_pattern.match(line)
                     if match:
                         # Increment timestamp based on text length (1 sec per 10 chars)
-                        seconds_to_add = max(1, len(current_text) // 10)
+                        seconds_to_add = max(1, len(" ".join(current_text).strip()) // 10)
                         current_time += timedelta(seconds=seconds_to_add)
 
                         # If there's a current conversation text, save it first
