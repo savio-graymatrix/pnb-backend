@@ -66,7 +66,7 @@ class SalesChatbotagent:
                 1. ETB - existing to bank - here the 'customer' collection is to be used along with transaction and communactions collections.
                 2. NTB - new to bank - here the 'lead' collection is to be used.
             - The 'transaction' and 'communications' collections have information of the customer connected thorugh customer_id. The customer_id is present in the customer collection. From the name of the customer, you can get the customer_id from the 'customer' collection and use that to get the data from the 'transaction' and 'communications' collections.
-            - 'customer' collection has name, age, gender, city, occupation, income, segment, credit_score, contact. If asked for recommendation to pitch Gold Coins, use these data to recommend customers with reasoning.
+            - 'customer' collection has name, age, gender, city, occupation, income, segment, credit_score, contact. If asked for recommendation to pitch Gold Coins, use these attributes to recommend customers with reasoning.
             - 'transaction' has information about the amount of the transaction, balance - 'balance_after' of the customer.
             - 'communications' has information about the intent, message, bank_response, outcome of the communication. 
             - If you are enquired about transactions or spending patterns of a customer, use the 'transaction' collection to get the data and present your analysis. It is not necessary to show the transaction data explicitly. 
