@@ -43,4 +43,5 @@ class CallAnalysisResult(BaseModel):
     overall_score: int = Field(ge=1, le=100, description="Overall score 1-100")
     customer_satisfaction_score: int = Field(ge=1, le=100, description="Customer satisfaction score 1-100")
     call_improvement_suggestions: str = Field(description="list of suggestions for improving the call and the customer experience as proper markdown format")
+    call_summary_gist: str = Field(description="one liner summary of the call as proper markdown format in italics")
     call_status: CallStatus = Field(description="Overall sentiment of the call")

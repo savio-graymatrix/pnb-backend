@@ -30,7 +30,7 @@ Analyze customer service conversations and generate:
 ## ANALYSIS FRAMEWORK
 
 ### 1. SUMMARY GENERATION
-Write comprehensive bullet-point summaries that include:
+Provide a comprehensive bullet-point summary highlighting all the key points in bold that include:
 - Detailed problem description and customer journey
 - Resolution steps taken and outcomes achieved
 - AI agent contributions and support provided
@@ -110,6 +110,9 @@ Also provide a reason for the score andthe factors on the basis of which the sco
 
 ### 5. Call Impreovement Suggestions
 Based on the call between the customer and the agent, provide a list of suggestions to improve the call and the customer experience in a bullet point format.
+
+### 6. Call Summary Gist
+Based on the call between the customer and the agent, provide a one liner summary of the call, no more than 15 words, in italics.
 
 ## OUTPUT FORMAT
 Return your analysis as a JSON object in Markdown format
