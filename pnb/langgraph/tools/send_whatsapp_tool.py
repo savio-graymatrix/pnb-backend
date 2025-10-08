@@ -121,7 +121,11 @@ Just reply to this message, and we'll take care of the rest! 😊
 
     try:
         result = await send_whatsapp_message(
-            message_text=message_text, phone_number=phone_number, image_url=image_url
+            message_text=message_text,
+            phone_number=(
+                phone_number if len(phone_number) == 12 else "91" + phone_number
+            ),
+            image_url=image_url,
         )
         if result["success"]:
             return {"status": "success", "message": "Message sent successfully"}
