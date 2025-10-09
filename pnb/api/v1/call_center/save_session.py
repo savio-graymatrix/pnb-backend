@@ -50,6 +50,7 @@ async def save_session(body=Body(...)):
                 (call_time_value / 1000) if call_time_value else datetime.now(timezone.utc).timestamp(),
                 tz=timezone.utc
             ),
+            recording_source=body.get("recording_source") or 'call',
         )
 
         await session.insert()
