@@ -1,9 +1,11 @@
+import io
 import json
 import tempfile
 from uuid import uuid4
 import re
 from datetime import datetime, timezone, timedelta
 import openai
+import assemblyai as aai
 
 from fastapi import APIRouter, Body, File, UploadFile
 from fastapi.exceptions import HTTPException
@@ -12,8 +14,11 @@ from fastapi.responses import JSONResponse
 from pnb.db.data_models.call_center.Session import Session
 from pnb.services.call_center.analyze_session_service import analyze_session
 from pnb.api.v1.call_center.save_session import save_session
+from pnb.core.utils import identify_speakers_with_ai
 
-router = APIRouter(prefix="/call-analysis", tags=["Call Analysis"])
+router = APIRouter(prefix="/call-analysis", tags=["Call Summarizer Agent"])
+
+aai.settings.api_key = "0769fdab99b947a5bdc243e00aa504d4"
 
 @router.post("/")
 async def call_analysis(body=Body(...)):
@@ -35,9 +40,7 @@ async def call_analysis(body=Body(...)):
 @router.post("/upload")
 async def upload_call_analysis(file: UploadFile = File(...)):
     filename = file.filename.lower()
-    tempname = filename.split(".")
-    if len(tempname) > 1:
-        name, number = tempname[0].split("_")
+
     if not (filename.endswith(".mp3") or filename.endswith(".json") or filename.endswith(".txt")):
         raise HTTPException(status_code=400, detail="Only .mp3, .json, or .txt files are supported.")
 
@@ -45,10 +48,15 @@ async def upload_call_analysis(file: UploadFile = File(...)):
 
     if filename.endswith(".json") or filename.endswith(".txt"):
         # --- handle JSON or text transcripts ---
+        tempname = filename.split(".")
+        if len(tempname) > 1:
+            name, number = tempname[0].split("_")
+
         contents = await file.read()
         try:
             if filename.endswith(".json"):
                 body = json.loads(contents.decode("utf-8"))
+                body["recording_source"] = "json"
             else:
                 # If it's a txt file, we just wrap it into a pseudo body
                 contents = contents.decode('utf-8')
@@ -122,6 +130,7 @@ async def upload_call_analysis(file: UploadFile = File(...)):
                     ],
                     "timestamp": int(call_time.timestamp() * 1000),
                     "call_duration": int(call_time.timestamp() * 1000) - int(call_time.timestamp() * 1000),  # Add a duration if available
+                    "recording_source": "txt"
                 }
 
         except Exception as e:
@@ -129,20 +138,56 @@ async def upload_call_analysis(file: UploadFile = File(...)):
 
     elif filename.endswith(".mp3"):
         # --- handle MP3 transcription ---
-        # TODO: refine
-        try:
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp:
-                tmp.write(await file.read())
-                tmp.flush()
-                tmp_path = tmp.name
 
-            # Transcribe with Whisper
-            transcript = openai.audio.transcriptions.create(
-                model="gpt-4o-transcribe",
-                file=open(tmp_path, "rb")
+        mp3_bytes = await file.read()
+
+        try:
+            # Save to temporary file
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp_file:
+                tmp_file.write(mp3_bytes)
+                tmp_file_path = tmp_file.name
+
+            # Configure transcription with speaker diarization
+            config = aai.TranscriptionConfig(
+                speaker_labels=True,
+                speakers_expected=2
             )
 
-            transcript_text = transcript.text
+            # Transcribe the audio
+            transcriber = aai.Transcriber()
+
+            transcript = transcriber.transcribe(tmp_file_path, config=config)
+
+            # Check if transcription was successful
+            if transcript.status == aai.TranscriptStatus.error:
+                raise HTTPException(status_code=500, detail=f"Transcription failed: {transcript.error}")
+
+            # Use AI to intelligently identify speakers
+            speaker_map = identify_speakers_with_ai(transcript.utterances)
+
+            print(f"Identified speakers: {speaker_map}")
+
+            # Process the utterances to create conversation
+            call_time = datetime.now(timezone.utc)
+            conversation = []
+
+            for i, utterance in enumerate(transcript.utterances):
+                # Use the intelligently identified speaker role
+                speaker_role = speaker_map.get(utterance.speaker, "unknown")
+
+                # Calculate timestamp (utterance.start is in milliseconds)
+                timestamp = int(call_time.timestamp() * 1000) + utterance.start
+
+                conversation.append({
+                    "id": str(i),
+                    "type": "transcript",
+                    "timestamp": timestamp,
+                    "speaker": speaker_role,
+                    "text": utterance.text.strip()
+                })
+
+            # Calculate call duration
+            call_duration = transcript.utterances[-1].end if transcript.utterances else 0
 
             body = {
                 "session_id": f"session-{uuid4()}",
@@ -150,25 +195,20 @@ async def upload_call_analysis(file: UploadFile = File(...)):
                     "name": "Unknown",
                     "phone_number": "Unknown"
                 },
-                "conversation": [
-                    {
-                        "id": "1",
-                        "type": "transcript",
-                        "timestamp": int(datetime.now(timezone.utc).timestamp() * 1000),
-                        "speaker": "customer",
-                        "text": transcript_text
-                    }
-                ],
-                "timestamp": int(datetime.now(timezone.utc).timestamp() * 1000),
-                "call_duration": 0
+                "conversation": conversation,
+                "timestamp": int(call_time.timestamp() * 1000),
+                "call_duration": call_duration,
+                "recording_source": "mp3"
             }
 
         except Exception as e:
+            print(f'Transcription error: {e}')
             raise HTTPException(status_code=500, detail=f"Failed to transcribe audio: {str(e)}")
 
     # --- pass to save_session logic ---
     if body:
+        # print(body)
         response = await save_session(body=body)
         return response
 
-    raise HTTPException(status_code=400, detail="Could not build session object from file")
+    # raise HTTPException(status_code=400, detail="Could not build session object from file")

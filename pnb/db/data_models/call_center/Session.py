@@ -28,6 +28,8 @@ class Session(Document):
     customer_info: Link[CustomerInfo]  # Reference to CustomerInfo document
     transcript: List[Message] = Field(default_factory=list)
 
+    recording_source: Literal['call', 'mp3', 'txt', 'json'] = 'call'
+
     call_time:                      datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     call_duration:                  str | None = None
     call_summary:                   str | None = None
