@@ -108,7 +108,9 @@ This tool requires:
 * When the JD is posted, Give a exaggerated proper success message when successfully posted to any platform.
 * Do not respond for queries outside for these contexts.
 * Always attach this link as an actual URL whenever a post is made for JD: https://genapp.pocs.tech/recruitment/job-detail?id=<Saved Post ID>
-Always replace the id from the link to the saved post's id
+* Job Description should always have *Introduction*.
+* Always replace the id from the link to the saved post's id
+
 ---
 
 👉 Example Flow

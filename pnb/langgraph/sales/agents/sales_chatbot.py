@@ -12,10 +12,12 @@ from pnb.langgraph.tools.whatsapp_display_tool import whatsapp_display_tool
 from pnb.langgraph.tools.post_jd import post_jd
 from pnb.langgraph.tools.graph_chart_tool import handle_chart
 from pnb.langgraph.tools.status_change_tool import change_status_tool
-from pnb.langgraph.tools.send_whatsapp_tool import handle_text_message
+
+# from pnb.langgraph.tools.send_whatsapp_tool import handle_text_message
 from pnb.langgraph.tools.send_mail_tool import handle_email
 from pnb.langgraph.tools.display_email_tool import display_email_tool
 from pnb.langgraph.tools.button_tool import button_tool
+from pnb.langgraph.tools.send_w_message import handle_text_message
 from pnb.langgraph.tools.customer_contect_tool import customer_contact_tool
 from langchain_mongodb.agent_toolkit import (
     MONGODB_AGENT_SYSTEM_PROMPT,
@@ -63,20 +65,26 @@ class SalesChatbotagent:
             - You have to get data from mongodb collections and display it extensively in tabular format.
             - The data should be sorted recent first.
             - There are 2 workflows:
-                1. ETB - existing to bank - here the customer collection is to be used along with transaction and communactions collections.
-                2. NTB - new to bank - here the lead collection is to be used.
-            - The 'transaction' and 'communications' collections have information of the customer connected thorugh customer_id. The customer_id is present in the customer collection. From the name of the customer, you can get the customer_id from the 'customer' collection and use that to get the data from the 'transaction' and 'communications' collections.
+                1. ETB - existing to bank - here the 'customer' collection is to be used along with transaction and communactions collections.
+                2. NTB - new to bank - here the 'lead' collection is to be used.
+            - The 'transaction' and 'communications' collections have information of the customer connected through customer_id. The customer_id is present in the customer collection. From the name of the customer, you can get the customer_id from the 'customer' collection and use that to get the data from the 'transaction' and 'communications' collections.
+            - 'customer' collection has name, age, gender, city, occupation, income, segment, credit_score, contact.
             - 'transaction' has information about the amount of the transaction, balance - 'balance_after' of the customer.
             - 'communications' has information about the intent, message, bank_response, outcome of the communication. 
             - If you are enquired about transactions or spending patterns of a customer, use the 'transaction' collection to get the data and present your analysis. It is not necessary to show the transaction data explicitly. 
             - if you are enquired about the communication history of a customer, use the 'communications' collection to get the data and present your analysis.
             - The 'lead' collection has information of the leads and the products - 'product' which contains name, type of the product they are interested in and should be curated for them. Any request for leads/lead should be directed here.
+            - You can be tasked to recommend customers who can be pitched/offered Gold Coins/Credit cards/Debit cards/Loans. You need to use the 'customer' collection to get the fields available, create your reasoning and then present your analysis. 
+            (Example queries: Can you recommend me customers to whom we can pitch gold coins, Show me customers, Show me customers whom we can offer Home loans, etc)
+            - When recommending customers, keep in mind the age and gender of the customer and the products they are pitched.
             - You have to create generalized/personalized pitches namely for whatsapp and email to be sent to the customer/lead. The pitches should be catchy and engaging. Use emojis in whatsapp pitches.
             - You also can post on linkedin. Ask permission before posting.
-            - You can also create images through imagen tool. Show the created image by sending in markdown format.
+            - You can also create images through imagen tool. The text in the image should strictly be in English. Show the created image by sending in markdown format.
             - Use the whatsapp display and email display tools to display the pitches.
             - For whatsapp_dislay_tool, use markdown text and for send_whatsapp_tool, use whatsapp formatted text.
             - For mail pitches, use the HTML formatted text in the display_email_tool and handle_email tool.
+            - When using the handle_text_message to send whatsapp pitches to customers, send the 'id' of the customer, message text and the 'Customer' db. You will get id from the customer collection.
+            - When using the handle_text_message to send whatsapp pitches to leads, send the 'id' of the lead, , message text and the 'Lead' db. You will get id from the lead collection.
             - Once the customer/lead is contacted, use the customer_contact_tool/change_status_tool to update the contact status.
             - Assign scores and provide humanized reasoning to the customers/leads when generating the tabular structures. Include your reasoning in the tabular structure and if they are contacted, give less precedence to them.
             - Only include relevant data in the tabular structures and avoid including phone numbers, emails, id and other sensitive information.

@@ -2,6 +2,9 @@ import requests
 from typing import Dict, Any
 from pnb import SETTINGS, LOGGER
 from langchain_core.tools import tool
+from pnb.db.data_models.sales.Customer import Customer
+from pnb.db.data_models.sales.Lead import Lead
+from beanie import PydanticObjectId
 import asyncio
 import json
 
@@ -20,8 +23,8 @@ async def send_whatsapp_message(
     Returns:
         Dict[str, Any]: Result with success status and data or error message.
     """
-    print(SETTINGS.WHATSAPP_GM)
-    print(type(SETTINGS.WHATSAPP_GM))
+    # print(SETTINGS.WHATSAPP_GM)
+    # print(type(SETTINGS.WHATSAPP_GM))
     # payload = {
     #     "messaging_product": "whatsapp",
     #     "recipient_type": "individual",
@@ -86,13 +89,13 @@ async def send_whatsapp_message(
 
 @tool
 async def handle_text_message(
-    message_text: str, phone_number: str, image_url: str = None
-) -> Dict[str, Any]:
+    message_text: str, id: str, db: str, image_url: str = None
+):
     """
-    Handle a WhatsApp text message request for an agent.
+    Tool to send whatsapp message after retrieving contact details from the db
 
     Args:
-        message_text (str): The markdown text content to send. 
+        message_text: str
         Markdown standards for the whatsapp text to send:
         - Use * for bold text
         - Use _ for italic text
@@ -112,27 +115,32 @@ Just reply to this message, and we'll take care of the rest! 😊
 
 *Best regards,*\
 *T Bank*)
-        phone_number (str): The phone number to send the message to. (Eg. 917977093841)
-        image_url (str, optional): The URL of the image from the imagen tool to attach to the message.
+        id: str (The _id of the Lead or Customer document)
+        db: str (Lead or Customer)
+        image_url: str (optional)
 
-    Returns:
-        Dict[str, Any]: Result with success status and message.
     """
-
-    try:
-        result = await send_whatsapp_message(
-            message_text=message_text,
-            phone_number=(
-                phone_number if len(phone_number) == 12 else "91" + phone_number
-            ),
-            image_url=image_url,
-        )
-        if result["success"]:
-            return {"status": "success", "message": "Message sent successfully"}
-    except Exception as e:
-        LOGGER.error(str(e))
-        return {"status": "error", "message": str(e)}
-
-
-# res = asyncio.run(handle_text_message.ainvoke("Hello"))
-# print(res)
+    if db == "Lead":
+        lead = await Lead.get(PydanticObjectId(id))
+        # print("lead details: ", lead)
+        phone_number = lead.contact.phone
+        # print(phone_number)
+        try:
+            result = await send_whatsapp_message(message_text, phone_number, image_url)
+            if result["success"]:
+                return {"status": "success", "message": "Message sent successfully"}
+        except Exception as e:
+            LOGGER.error(str(e))
+            return {"status": "error", "message": str(e)}
+    elif db == "Customer":
+        customer = await Customer.get(PydanticObjectId(id))
+        # print("customer details: ", customer)
+        phone_number = customer.contact
+        # print(phone_number)
+        try:
+            result = await send_whatsapp_message(message_text, phone_number, image_url)
+            if result["success"]:
+                return {"status": "success", "message": "Message sent successfully"}
+        except Exception as e:
+            LOGGER.error(str(e))
+            return {"status": "error", "message": str(e)}
