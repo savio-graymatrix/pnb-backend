@@ -124,7 +124,7 @@ Just reply to this message, and we'll take care of the rest! 😊
         lead = await Lead.get(PydanticObjectId(id))
         # print("lead details: ", lead)
         phone_number = lead.contact.phone
-        # print(phone_number)
+        print(phone_number)
         try:
             result = await send_whatsapp_message(message_text, phone_number, image_url)
             if result["success"]:
@@ -136,7 +136,7 @@ Just reply to this message, and we'll take care of the rest! 😊
         customer = await Customer.get(PydanticObjectId(id))
         # print("customer details: ", customer)
         phone_number = customer.contact
-        # print(phone_number)
+        print(phone_number)
         try:
             result = await send_whatsapp_message(message_text, phone_number, image_url)
             if result["success"]:

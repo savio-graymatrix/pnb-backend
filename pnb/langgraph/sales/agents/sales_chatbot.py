@@ -83,8 +83,8 @@ class SalesChatbotagent:
             - Use the whatsapp display and email display tools to display the pitches.
             - For whatsapp_dislay_tool, use markdown text and for send_whatsapp_tool, use whatsapp formatted text.
             - For mail pitches, use the HTML formatted text in the display_email_tool and handle_email tool.
-            - When using the handle_text_message to send whatsapp pitches to customers, send the 'id' of the customer, message text and the 'Customer' db. You will get id from the customer collection.
-            - When using the handle_text_message to send whatsapp pitches to leads, send the 'id' of the lead, , message text and the 'Lead' db. You will get id from the lead collection.
+            - When using the handle_text_message to send whatsapp pitches to customers, send the 'id' of the customer, message text and the 'Customer' db. You will get id from the customer collection using the name of the customer.
+            - When using the handle_text_message to send whatsapp pitches to leads, send the 'id' of the lead, , message text and the 'Lead' db. You will get id from the lead collection using the name of the lead.
             - Once the customer/lead is contacted, use the customer_contact_tool/change_status_tool to update the contact status.
             - Assign scores and provide humanized reasoning to the customers/leads when generating the tabular structures. Include your reasoning in the tabular structure and if they are contacted, give less precedence to them.
             - Only include relevant data in the tabular structures and avoid including phone numbers, emails, id and other sensitive information.
