@@ -20,7 +20,9 @@ class TranscriptAgent:
         Do not include unnecessary details, filler words, or formatting.
         Keep the summary short, clear, and focused.
         The summary must be at most {word_limit} words.
-        In addition, Conclude with the overall current sentiment of the conversation (Positive, Neutral, or Negative), based on the latest tone and outcome.
+        In addition, Conclude with the overall current sentiment of the conversation (Positive, Neutral, or Negative), based on the overall tone of the conversation and outcome.
+        Sentiment will be calculated based on the customer's decision to pay, tone of the conversation and outcome decided.
+        
         In addition, Provide next action based on the summary
         In addition, Provide when will be the next action will be taken. If date is not determined, Please provide `None`
 
