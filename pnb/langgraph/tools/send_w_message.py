@@ -23,8 +23,8 @@ async def send_whatsapp_message(
     Returns:
         Dict[str, Any]: Result with success status and data or error message.
     """
-    print(SETTINGS.WHATSAPP_GM)
-    print(type(SETTINGS.WHATSAPP_GM))
+    # print(SETTINGS.WHATSAPP_GM)
+    # print(type(SETTINGS.WHATSAPP_GM))
     # payload = {
     #     "messaging_product": "whatsapp",
     #     "recipient_type": "individual",
