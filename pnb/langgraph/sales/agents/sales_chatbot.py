@@ -19,13 +19,13 @@ from pnb.langgraph.tools.display_email_tool import display_email_tool
 from pnb.langgraph.tools.button_tool import button_tool
 from pnb.langgraph.tools.send_w_message import handle_text_message
 from pnb.langgraph.tools.customer_contect_tool import customer_contact_tool
-from langchain_mongodb.agent_toolkit import (
-    MONGODB_AGENT_SYSTEM_PROMPT,
-    MongoDBDatabase,
-    MongoDBDatabaseToolkit,
+from pnb.langgraph.tools.mongo_tools import (
+    list_mongo_collections,
+    describe_mongo_schema,
+    query_mongo_collection,
+    query_customer_view,
+    query_lead_pipeline,
 )
-from langchain_openai import ChatOpenAI
-from pnb import SETTINGS
 
 
 class SalesChatbotagent:
@@ -33,12 +33,6 @@ class SalesChatbotagent:
 
     @staticmethod
     async def sales_chatbot(state: MessagesState, config: RunnableConfig):
-
-        id = config["configurable"]["thread_id"]
-        db_wrapper = MongoDBDatabase.from_connection_string(
-            SETTINGS.MONGO_URI, database=SETTINGS.DB_NAME
-        )
-        toolkit = MongoDBDatabaseToolkit(db=db_wrapper, llm=ChatOpenAI(model="gpt-4o"))
 
         sales_chatbot_agent = create_react_agent(
             OPENAI_LLM,
@@ -56,7 +50,11 @@ class SalesChatbotagent:
                 button_tool,
                 customer_contact_tool,
                 post_jd,
-                *toolkit.get_tools(),
+                list_mongo_collections,
+                describe_mongo_schema,
+                query_mongo_collection,
+                query_customer_view,
+                query_lead_pipeline,
             ],
             prompt="""
             You are a sales assistant agent.
@@ -67,7 +65,7 @@ class SalesChatbotagent:
             - There are 2 workflows:
                 1. ETB - existing to bank - here the 'customer' collection is to be used along with transaction and communactions collections.
                 2. NTB - new to bank - here the 'lead' collection is to be used.
-            - The 'transaction' and 'communications' collections have information of the customer connected through customer_id. The customer_id is present in the customer collection. From the name of the customer, you can get the customer_id from the 'customer' collection and use that to get the data from the 'transaction' and 'communications' collections.
+            - The 'transaction' and 'communications' collections have information of the customer connected through `customer_id`. The `customer_id` is present in the `customer` collection. From the name of the customer, you can get the `customer_id` from the `customer` collection and use that to get the data from the `transaction` and `communications` collections.
             - 'customer' collection has name, age, gender, city, occupation, income, segment, credit_score, contact.
             - 'transaction' has information about the amount of the transaction, balance - 'balance_after' of the customer.
             - 'communications' has information about the intent, message, bank_response, outcome of the communication. 
@@ -88,7 +86,6 @@ class SalesChatbotagent:
             - Once the customer/lead is contacted, use the customer_contact_tool/change_status_tool to update the contact status.
             - Assign scores and provide humanized reasoning to the customers/leads when generating the tabular structures. Include your reasoning in the tabular structure and if they are contacted, give less precedence to them.
             - Only include relevant data in the tabular structures and avoid including phone numbers, emails, id and other sensitive information.
-            - Use the button tool in **EVERY RESPONSE** to guide the user the next steps. Keep it short, simple and precise.
 
             **IMPORTANT**:
             - **Use the email display tool and whatsapp display tool** to display the emails and whatsapp messages of the pitches you create before proceeding to send them. Once the tools are used to display and the user asks to send, send the email and whatsapp message. And when the tool
@@ -102,26 +99,15 @@ class SalesChatbotagent:
             - Make sure that the whatsapp_display_tool and handle_text_message tool message are exactly the same messages.
             - Make sure that the display_email_tool and handle_email tool email have the same content.
 
-            **Tools available**:
-            - web_search_tool: Search the web for relevant information.
-            - get_system_time: Get the current system time.
-            - md_to_pdf_tool: Create a pdf of the content you have created based on user request.
-            - whatsapp_display_tool: Display a whatsapp curated message for the user based on the content you have created.
-            - handle_text_message: send the created whatsapp message to the user based on the content you have created.
-            - display_email_tool: Display an email for the user based on the content you have created.
-            - handle_email: send the created email to the user based on the content you have created.
-            - change_status_tool: Change the status of the tool once the message/email is sent to the user.
-            - imagen_tool: Create an image for the user based on the content you have created.
-            - handle_chart: Create a chart for the user based on the content you have created.
-            - button_tool: Display buttons with their titles and prompts for frontend user guidance of the next steps.
-            - post_jd: Post the text to LinkedIn using a specialized tool.
-            - customer_contact_tool: Update the contact status of a customer.
-
-
-            This is the MONGODB agent toolkit tool usage prompt: {tool_usage_prompt}
-            """.format(
-                tool_usage_prompt=MONGODB_AGENT_SYSTEM_PROMPT.format(top_k=5)
-            ),
+            - Use the MongoDB tools provided to discover schemas and retrieve data safely:
+                * `list_mongo_collections` → list collections available in the Lead, Customer, Communication, Transaction, Product logical databases.
+                * `describe_mongo_schema` → inspect fields and foreign-key relationships before writing queries.
+                * `query_mongo_collection` → run filtered lookups (allowed operators: $eq, $gte, $lte, $in, $regex) with recent-first sorting.
+                * `query_customer_view` → fetch customer profiles, transactions, or communications using `customer_id` or name.
+                * `query_lead_pipeline` → segment leads by product interest or status.
+            - Returned Mongo results hide direct contact details. Continue to redact PII in your tables.
+            - Retrieve `customer_id` or lead identifiers before calling tools that send communications or update status.
+            """,
         )
 
         result = await sales_chatbot_agent.ainvoke(state)

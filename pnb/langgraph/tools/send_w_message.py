@@ -9,6 +9,44 @@ import asyncio
 import json
 
 
+async def _resolve_customer(identifier: str) -> Customer | None:
+    if not identifier:
+        return None
+
+    # Try MongoDB ObjectId first
+    try:
+        customer = await Customer.get(PydanticObjectId(identifier))
+        if customer:
+            return customer
+    except Exception:
+        pass
+
+    # Fall back to business-facing identifiers
+    customer = await Customer.find_one({"customer_id": identifier})
+    if customer:
+        return customer
+
+    return await Customer.find_one({"name": {"$regex": f"^{identifier}$", "$options": "i"}})
+
+
+async def _resolve_lead(identifier: str) -> Lead | None:
+    if not identifier:
+        return None
+
+    try:
+        lead = await Lead.get(PydanticObjectId(identifier))
+        if lead:
+            return lead
+    except Exception:
+        pass
+
+    lead = await Lead.find_one({"name": {"$regex": f"^{identifier}$", "$options": "i"}})
+    if lead:
+        return lead
+
+    return await Lead.find_one({"contact.phone": identifier})
+
+
 async def send_whatsapp_message(
     message_text: str, phone_number: str, image_url: str = None
 ) -> Dict[str, Any]:
@@ -121,10 +159,12 @@ Just reply to this message, and we'll take care of the rest! 😊
 
     """
     if db == "Lead":
-        lead = await Lead.get(PydanticObjectId(id))
+        lead = await _resolve_lead(id)
         # print("lead details: ", lead)
+        if not lead or not lead.contact or not lead.contact.phone:
+            return {"status": "error", "message": "Lead contact details unavailable"}
+
         phone_number = lead.contact.phone
-        print(phone_number)
         try:
             result = await send_whatsapp_message(message_text, phone_number, image_url)
             if result["success"]:
@@ -133,10 +173,12 @@ Just reply to this message, and we'll take care of the rest! 😊
             LOGGER.error(str(e))
             return {"status": "error", "message": str(e)}
     elif db == "Customer":
-        customer = await Customer.get(PydanticObjectId(id))
+        customer = await _resolve_customer(id)
         # print("customer details: ", customer)
+        if not customer or not customer.contact:
+            return {"status": "error", "message": "Customer contact details unavailable"}
+
         phone_number = customer.contact
-        print(phone_number)
         try:
             result = await send_whatsapp_message(message_text, phone_number, image_url)
             if result["success"]:
