@@ -107,6 +107,21 @@ wheels = [
 ]
 
 [[package]]
+name = "assemblyai"
+version = "0.44.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pydantic" },
+    { name = "typing-extensions" },
+    { name = "websockets" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/58/65/822b113d62aca2a8fae6271d86bcb2ea557ccbfd6a251199da66a32abc8a/assemblyai-0.44.3.tar.gz", hash = "sha256:182bc48ebe9562a9bf8cd6cd08570e07094cf56dd5b90ebe42da8025936488bb", size = 54134, upload-time = "2025-09-18T07:30:44.745Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/36/e6/6cb158123cd353825121a2fe711e485090231c746a739531486eb1413c67/assemblyai-0.44.3-py3-none-any.whl", hash = "sha256:40fe849dc86eb5b158a46692eed36b59001c3c16f491c470c2f84de2f1ab1dff", size = 50208, upload-time = "2025-09-18T07:30:43.54Z" },
+]
+
+[[package]]
 name = "asttokens"
 version = "3.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2104,6 +2119,7 @@ name = "pnb-backend"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "assemblyai" },
     { name = "beanie" },
     { name = "boto3" },
     { name = "coloredlogs" },
@@ -2143,6 +2159,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "assemblyai", specifier = ">=0.44.3" },
     { name = "beanie", specifier = ">=1.30.0" },
     { name = "boto3", specifier = ">=1.39.2" },
     { name = "coloredlogs", specifier = ">=15.0.1" },
