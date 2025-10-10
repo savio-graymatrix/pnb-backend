@@ -51,6 +51,7 @@ async def save_session(body=Body(...)):
                 tz=timezone.utc
             ),
             recording_source=body.get("recording_source") or 'call',
+            recording_url=body.get("recording_url") or None,
         )
 
         await session.insert()
