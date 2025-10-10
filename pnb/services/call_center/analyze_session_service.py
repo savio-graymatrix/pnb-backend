@@ -46,7 +46,7 @@ Provide a comprehensive analysis including summary, compliance report, quality s
         [f'#### {i['name']}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{i['score']}`\n* {'\n* '.join(i['list_of_keys'])}'
             for i in call_summary_response.get('structured_response').scorecard.model_dump().values()])
 
-    call_summary = call_summary_response.get('structured_response').summary
+    call_summary = call_summary_response.get('structured_response').summary.replace('•', '-')
     call_summary_gist = call_summary_response.get('structured_response').call_summary_gist
 
     session.call_summary = call_summary + '\n\n' + '**Gist:** ' + call_summary_gist
@@ -56,5 +56,5 @@ Provide a comprehensive analysis including summary, compliance report, quality s
     session.call_status = call_summary_response.get('structured_response').call_status
     session.call_score = call_summary_response.get('structured_response').overall_score
     session.customer_satisfaction_score = call_summary_response.get('structured_response').customer_satisfaction_score
-    session.call_improvement_suggestions = call_summary_response.get('structured_response').call_improvement_suggestions
+    session.call_improvement_suggestions = call_summary_response.get('structured_response').call_improvement_suggestions.replace('•', '-')
     await session.save()

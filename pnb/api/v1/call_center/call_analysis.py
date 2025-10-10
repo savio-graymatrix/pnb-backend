@@ -15,6 +15,7 @@ from pnb.db.data_models.call_center.Session import Session
 from pnb.services.call_center.analyze_session_service import analyze_session
 from pnb.api.v1.call_center.save_session import save_session
 from pnb.core.utils import identify_speakers_with_ai
+from pnb.services.generic.upload_to_s3 import upload_to_s3
 
 router = APIRouter(prefix="/call-analysis", tags=["Call Summarizer Agent"])
 
@@ -138,7 +139,6 @@ async def upload_call_analysis(file: UploadFile = File(...)):
 
     elif filename.endswith(".mp3"):
         # --- handle MP3 transcription ---
-
         mp3_bytes = await file.read()
 
         try:
@@ -189,8 +189,14 @@ async def upload_call_analysis(file: UploadFile = File(...)):
             # Calculate call duration
             call_duration = transcript.utterances[-1].end if transcript.utterances else 0
 
+            # Common sessionid for file and session
+            session_id = f"session-{uuid4()}"
+
+            # Upload file to s3 for later retrieval
+            s3_url = upload_to_s3(mp3_bytes, f"{session_id}.mp3", "audio/mpeg")
+
             body = {
-                "session_id": f"session-{uuid4()}",
+                "session_id": f"{session_id}",
                 "customer_info": {
                     "name": "Unknown",
                     "phone_number": "Unknown"
@@ -198,7 +204,8 @@ async def upload_call_analysis(file: UploadFile = File(...)):
                 "conversation": conversation,
                 "timestamp": int(call_time.timestamp() * 1000),
                 "call_duration": call_duration,
-                "recording_source": "mp3"
+                "recording_source": "mp3",
+                "recording_url": s3_url
             }
 
         except Exception as e:
@@ -211,4 +218,4 @@ async def upload_call_analysis(file: UploadFile = File(...)):
         response = await save_session(body=body)
         return response
 
-    # raise HTTPException(status_code=400, detail="Could not build session object from file")
+    raise HTTPException(status_code=400, detail="Could not build session object from file")
