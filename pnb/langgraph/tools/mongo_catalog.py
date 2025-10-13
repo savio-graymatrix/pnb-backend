@@ -55,6 +55,7 @@ SCHEMA_REGISTRY: Mapping[str, List[CollectionSchema]] = {
                 "contacted": "Whether recently contacted",
                 "created_at": "Creation timestamp (UTC)",
                 "updated_at": "Last update timestamp (UTC)",
+                "contact": "Contact details - Phone number",
             },
         )
     ],

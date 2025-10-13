@@ -13,7 +13,7 @@ _service = DomainQueryService(catalog=_catalog)
 
 @tool("list_mongo_collections")
 def list_mongo_collections(
-    logical_db: Literal["Lead", "Customer", "Communication", "Transaction", "Product"]
+    logical_db: Literal["Lead", "Customer", "Communication", "Transaction", "Product"],
 ) -> dict:
     """List collections and schema hints for the specified logical database."""
 
@@ -69,6 +69,7 @@ def query_customer_view(
 
 @tool("query_lead_pipeline")
 def query_lead_pipeline(
+    name: Optional[str] = None,
     product_type: Optional[str] = None,
     status: Optional[str] = None,
     limit: int = 25,
@@ -76,6 +77,7 @@ def query_lead_pipeline(
     """Retrieve leads filtered by product interest and/or status."""
 
     return _service.lead_overview(
+        name=name,
         product_type=product_type,
         status=status,
         limit=limit,
