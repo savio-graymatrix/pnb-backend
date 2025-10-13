@@ -74,7 +74,7 @@ def query_lead_pipeline(
     status: Optional[str] = None,
     limit: int = 25,
 ) -> dict:
-    """Retrieve leads filtered by product interest and/or status."""
+    """Retrieve leads filtered by name, product interest and/or status."""
 
     return _service.lead_overview(
         name=name,
