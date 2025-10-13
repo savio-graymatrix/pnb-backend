@@ -32,7 +32,9 @@ class QueryResult:
 class DomainQueryService:
     """Validates and executes domain-aware MongoDB queries with redaction and joins."""
 
-    def __init__(self, catalog: MongoCatalog, client: Optional[MongoClient] = None) -> None:
+    def __init__(
+        self, catalog: MongoCatalog, client: Optional[MongoClient] = None
+    ) -> None:
         self._catalog = catalog
         self._client = client or MongoClient(SETTINGS.MONGO_URI)
 
@@ -72,7 +74,11 @@ class DomainQueryService:
             .limit(limit)
         )
         rows = [self._redact(collection, row) for row in cursor]
-        fields_out = list(rows[0].keys()) if rows else list(projection_doc.keys() if projection_doc else [])
+        fields_out = (
+            list(rows[0].keys())
+            if rows
+            else list(projection_doc.keys() if projection_doc else [])
+        )
         return QueryResult(
             rows=rows,
             fields=fields_out,
@@ -115,11 +121,14 @@ class DomainQueryService:
 
     def lead_overview(
         self,
+        name: Optional[str] = None,
         product_type: Optional[str] = None,
         status: Optional[str] = None,
         limit: int = DEFAULT_LIMIT,
     ) -> Dict[str, Any]:
         filters: Dict[str, Any] = {}
+        if name:
+            filters["name"] = {"$regex": name, "$options": "i"}
         if product_type:
             filters["product"] = {"$regex": product_type, "$options": "i"}
         if status:

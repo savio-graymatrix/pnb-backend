@@ -104,7 +104,7 @@ class SalesChatbotagent:
                 * `describe_mongo_schema` → inspect fields and foreign-key relationships before writing queries.
                 * `query_mongo_collection` → run filtered lookups (allowed operators: $eq, $gte, $lte, $in, $regex) with recent-first sorting.
                 * `query_customer_view` → fetch customer profiles, transactions, or communications using `customer_id` or name.
-                * `query_lead_pipeline` → segment leads by product interest or status.
+                * `query_lead_pipeline` → segment leads by name, product interest or status.
             - Returned Mongo results hide direct contact details. Continue to redact PII in your tables.
             - Retrieve `customer_id` or lead identifiers before calling tools that send communications or update status.
             """,
