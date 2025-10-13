@@ -11,7 +11,7 @@ async def get_recordings():
         return sessions
 
     except Exception as e:
-        print("Error forwarding to AI service:", e)
+        print("Error getting recordings:", e)
         return JSONResponse(
             status_code=500,
             content={"error": "Failed to get recordings."}
