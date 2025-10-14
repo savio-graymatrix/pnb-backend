@@ -70,15 +70,19 @@ def query_customer_view(
 @tool("query_lead_pipeline")
 def query_lead_pipeline(
     name: Optional[str] = None,
+    product_name: Optional[str] = None,
     product_type: Optional[str] = None,
+    product_id: Optional[str] = None,
     status: Optional[str] = None,
     limit: int = 25,
 ) -> dict:
-    """Retrieve leads filtered by name, product interest and/or status."""
+    """Retrieve leads filtered by name, product, product id, product interest and/or status."""
 
     return _service.lead_overview(
         name=name,
+        product_name=product_name,
         product_type=product_type,
+        product_id=product_id,
         status=status,
         limit=limit,
     )

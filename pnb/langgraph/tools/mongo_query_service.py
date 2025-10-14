@@ -9,8 +9,8 @@ from pymongo import MongoClient
 from pnb import SETTINGS
 from pnb.langgraph.tools.mongo_catalog import MongoCatalog
 
-SAFE_OPERATORS = {"$eq", "$gte", "$lte", "$in", "$regex"}
-DEFAULT_LIMIT = 25
+SAFE_OPERATORS = {"$eq", "$gte", "$lte", "$in", "$regex", "$options"}
+DEFAULT_LIMIT = 15
 SORT_MAP = {
     "communications": [("date", -1), ("created_at", -1)],
     "transaction": [("date", -1), ("created_at", -1)],
@@ -122,15 +122,21 @@ class DomainQueryService:
     def lead_overview(
         self,
         name: Optional[str] = None,
+        product_name: Optional[str] = None,
         product_type: Optional[str] = None,
+        product_id: Optional[str] = None,
         status: Optional[str] = None,
         limit: int = DEFAULT_LIMIT,
     ) -> Dict[str, Any]:
         filters: Dict[str, Any] = {}
         if name:
             filters["name"] = {"$regex": name, "$options": "i"}
+        if product_name:
+            filters["product.name"] = {"$regex": product_name, "$options": "i"}
         if product_type:
-            filters["product"] = {"$regex": product_type, "$options": "i"}
+            filters["product.type"] = {"$regex": product_type, "$options": "i"}
+        if product_id:
+            filters["product.product_id"] = {"$regex": product_id, "$options": "i"}
         if status:
             filters["status"] = {"$regex": status, "$options": "i"}
         return self.query("Lead", "lead", filters=filters, limit=limit).__dict__
