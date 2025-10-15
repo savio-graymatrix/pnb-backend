@@ -50,8 +50,6 @@ class SalesChatbotagent:
                 button_tool,
                 customer_contact_tool,
                 post_jd,
-                list_mongo_collections,
-                describe_mongo_schema,
                 query_mongo_collection,
                 query_customer_view,
                 query_lead_pipeline,
@@ -100,11 +98,9 @@ class SalesChatbotagent:
             - Make sure that the display_email_tool and handle_email tool email have the same content.
 
             - Use the MongoDB tools provided to discover schemas and retrieve data safely:
-                * `list_mongo_collections` → list collections available in the Lead, Customer, Communication, Transaction, Product logical databases.
-                * `describe_mongo_schema` → inspect fields and foreign-key relationships before writing queries.
                 * `query_mongo_collection` → run filtered lookups (allowed operators: $eq, $gte, $lte, $in, $regex) with recent-first sorting.
                 * `query_customer_view` → fetch customer profiles, transactions, or communications using `customer_id` or name.
-                * `query_lead_pipeline` → segment leads by name, product, product id, product type, product name, product interest, conversation role, conversation text or status.
+                * `query_lead_pipeline` → segment leads by name, product, product id, product type, product name, product interest, conversations role, conversations text or status.
             - Returned Mongo results hide direct contact details. Continue to redact PII in your tables.
             - Retrieve `customer_id` or lead identifiers before calling tools that send communications or update status.
             """,
