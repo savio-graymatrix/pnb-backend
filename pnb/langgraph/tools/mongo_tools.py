@@ -73,16 +73,20 @@ def query_lead_pipeline(
     product_name: Optional[str] = None,
     product_type: Optional[str] = None,
     product_id: Optional[str] = None,
+    conversation_role: Optional[str] = None,
+    conversation_text: Optional[str] = None,
     status: Optional[str] = None,
     limit: int = 25,
 ) -> dict:
-    """Retrieve leads filtered by name, product, product id, product interest and/or status."""
+    """Retrieve leads filtered by name, product, product id, product interest, conversation role, conversation text and/or status."""
 
     return _service.lead_overview(
         name=name,
         product_name=product_name,
         product_type=product_type,
         product_id=product_id,
+        conversation_role=conversation_role,
+        conversation_text=conversation_text,
         status=status,
         limit=limit,
     )
