@@ -77,6 +77,9 @@ def query_lead_pipeline(
     conversation_text: Optional[str] = None,
     status: Optional[str] = None,
     limit: int = 10,
+    car_model: Optional[str] = None,
+    car_type: Optional[str] = None,
+    year_of_manufacture: Optional[int] = None,
 ) -> dict:
     """Retrieve leads filtered by name, product, product id, product interest, conversation role, conversation text and/or status."""
 
@@ -89,4 +92,7 @@ def query_lead_pipeline(
         conversation_text=conversation_text,
         status=status,
         limit=limit,
+        car_model=car_model,
+        car_type=car_type,
+        year_of_manufacture=year_of_manufacture,
     )

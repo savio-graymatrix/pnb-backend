@@ -126,6 +126,9 @@ class DomainQueryService:
         product_name: Optional[str] = None,
         product_type: Optional[str] = None,
         product_id: Optional[str] = None,
+        car_model: Optional[str] = None,
+        car_type: Optional[str] = None,
+        year_of_manufacture: Optional[int] = None,
         conversation_role: Optional[str] = None,
         conversation_text: Optional[str] = None,
         status: Optional[str] = None,
@@ -140,6 +143,21 @@ class DomainQueryService:
             filters["product.type"] = {"$regex": product_type, "$options": "i"}
         if product_id:
             filters["product.product_id"] = {"$regex": product_id, "$options": "i"}
+        if car_model:
+            filters["contact.vehicle_info.car_model"] = {
+                "$regex": car_model,
+                "$options": "i",
+            }
+        if car_type:
+            filters["contact.vehicle_info.car_type"] = {
+                "$regex": car_type,
+                "$options": "i",
+            }
+        if year_of_manufacture:
+            filters["contact.vehicle_info.year_of_manufacture"] = {
+                "$regex": year_of_manufacture,
+                "$options": "i",
+            }
         if conversation_role:
             filters["conversations.role"] = {
                 "$regex": conversation_role,
