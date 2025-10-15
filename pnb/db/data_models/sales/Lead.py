@@ -6,10 +6,17 @@ from enum import Enum
 from .Product import Product
 
 
+class VehicleInfo(BaseModel):
+    car_model: Optional[str] = None
+    year_of_manufacture: Optional[int] = None
+    car_type: Optional[str] = None
+
+
 class LeadContact(BaseModel):
     email: Optional[EmailStr] = None
     phone: Optional[str] = None
     address: Optional[str] = None
+    vehicle_info: Optional[VehicleInfo] = None
 
 
 class LeadSource(Enum):

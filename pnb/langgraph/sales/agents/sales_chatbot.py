@@ -100,7 +100,7 @@ class SalesChatbotagent:
             - Use the MongoDB tools provided to discover schemas and retrieve data safely:
                 * `query_mongo_collection` → run filtered lookups (allowed operators: $eq, $gte, $lte, $in, $regex) with recent-first sorting.
                 * `query_customer_view` → fetch customer profiles, transactions, or communications using `customer_id` or name.
-                * `query_lead_pipeline` → segment leads by name, product, product id, product type, product name, product interest, conversations role, conversations text or status.
+                * `query_lead_pipeline` → segment leads by name, product, product id, product type, product name, product interest, conversations role, conversations text, car model, car type, year of manufacture or status.
             - Returned Mongo results hide direct contact details. Continue to redact PII in your tables.
             - Retrieve `customer_id` or lead identifiers before calling tools that send communications or update status.
             """,
