@@ -18,6 +18,7 @@ class ProductType(Enum):
     LOAN = "Loan"
     GOLD_COIN = "Gold Coin"
     DEPOSIT = "Deposit"
+    INSURANCE = "Insurance"
 
 
 class Product(Document):
