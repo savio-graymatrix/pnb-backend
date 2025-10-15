@@ -8,9 +8,10 @@ from pymongo import MongoClient
 
 from pnb import SETTINGS
 from pnb.langgraph.tools.mongo_catalog import MongoCatalog
+import re
 
 SAFE_OPERATORS = {"$eq", "$gte", "$lte", "$in", "$regex", "$options"}
-DEFAULT_LIMIT = 15
+DEFAULT_LIMIT = 10
 SORT_MAP = {
     "communications": [("date", -1), ("created_at", -1)],
     "transaction": [("date", -1), ("created_at", -1)],
@@ -182,6 +183,8 @@ class DomainQueryService:
                 sanitized[key] = {
                     op: val for op, val in value.items() if op in SAFE_OPERATORS
                 }
+            elif isinstance(value, str):
+                sanitized[key] = {"$regex": re.escape(value), "$options": "i"}
             else:
                 sanitized[key] = value
         return sanitized
