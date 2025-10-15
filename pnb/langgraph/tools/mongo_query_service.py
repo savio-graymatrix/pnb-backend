@@ -140,12 +140,12 @@ class DomainQueryService:
         if product_id:
             filters["product.product_id"] = {"$regex": product_id, "$options": "i"}
         if conversation_role:
-            filters["conversation.role"] = {
+            filters["conversations.role"] = {
                 "$regex": conversation_role,
                 "$options": "i",
             }
         if conversation_text:
-            filters["conversation.text"] = {
+            filters["conversations.text"] = {
                 "$regex": conversation_text,
                 "$options": "i",
             }
