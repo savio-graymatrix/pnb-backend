@@ -36,7 +36,7 @@ def query_mongo_collection(
     collection: str,
     filters: Optional[dict] = None,
     projection: Optional[list[str]] = None,
-    limit: int = 25,
+    limit: int = 10,
 ) -> dict:
     """Execute a filtered query against a collection."""
 
@@ -55,7 +55,7 @@ def query_customer_view(
     name: Optional[str] = None,
     customer_id: Optional[str] = None,
     view: Literal["profile", "transactions", "communications"] = "profile",
-    limit: int = 25,
+    limit: int = 10,
 ) -> dict:
     """Retrieve customer profile, transaction, or communication data."""
 
@@ -76,7 +76,7 @@ def query_lead_pipeline(
     conversation_role: Optional[str] = None,
     conversation_text: Optional[str] = None,
     status: Optional[str] = None,
-    limit: int = 25,
+    limit: int = 10,
 ) -> dict:
     """Retrieve leads filtered by name, product, product id, product interest, conversation role, conversation text and/or status."""
 
