@@ -125,6 +125,8 @@ class DomainQueryService:
         product_name: Optional[str] = None,
         product_type: Optional[str] = None,
         product_id: Optional[str] = None,
+        conversation_role: Optional[str] = None,
+        conversation_text: Optional[str] = None,
         status: Optional[str] = None,
         limit: int = DEFAULT_LIMIT,
     ) -> Dict[str, Any]:
@@ -137,6 +139,16 @@ class DomainQueryService:
             filters["product.type"] = {"$regex": product_type, "$options": "i"}
         if product_id:
             filters["product.product_id"] = {"$regex": product_id, "$options": "i"}
+        if conversation_role:
+            filters["conversation.role"] = {
+                "$regex": conversation_role,
+                "$options": "i",
+            }
+        if conversation_text:
+            filters["conversation.text"] = {
+                "$regex": conversation_text,
+                "$options": "i",
+            }
         if status:
             filters["status"] = {"$regex": status, "$options": "i"}
         return self.query("Lead", "lead", filters=filters, limit=limit).__dict__
