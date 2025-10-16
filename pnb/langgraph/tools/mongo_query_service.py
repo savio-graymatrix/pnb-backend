@@ -10,7 +10,7 @@ from pnb import SETTINGS
 from pnb.langgraph.tools.mongo_catalog import MongoCatalog
 import re
 
-SAFE_OPERATORS = {"$eq", "$gte", "$lte", "$in", "$regex", "$options"}
+SAFE_OPERATORS = {"$eq", "$gte", "$lte", "$in", "$regex", "$options", "$or"}
 DEFAULT_LIMIT = 10
 SORT_MAP = {
     "communications": [("date", -1), ("created_at", -1)],
@@ -140,7 +140,13 @@ class DomainQueryService:
         if product_name:
             filters["product.name"] = {"$regex": product_name, "$options": "i"}
         if product_type:
-            filters["product.type"] = {"$regex": product_type, "$options": "i"}
+            filters.setdefault("$or", []).extend(
+                [
+                    {"product.name": {"$regex": product_type, "$options": "i"}},
+                    {"product.type": {"$regex": product_type, "$options": "i"}},
+                ]
+            )
+            # filters["product.type"] = {"$regex": product_type, "$options": "i"}
         if product_id:
             filters["product.product_id"] = {"$regex": product_id, "$options": "i"}
         if car_model:
