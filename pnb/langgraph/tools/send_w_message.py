@@ -26,7 +26,9 @@ async def _resolve_customer(identifier: str) -> Customer | None:
     if customer:
         return customer
 
-    return await Customer.find_one({"name": {"$regex": f"^{identifier}$", "$options": "i"}})
+    return await Customer.find_one(
+        {"name": {"$regex": f"^{identifier}$", "$options": "i"}}
+    )
 
 
 async def _resolve_lead(identifier: str) -> Lead | None:
@@ -152,7 +154,7 @@ Thank you for your interest in *T Bank's Premium Home Loan* -- where your dream 
 Just reply to this message, and we'll take care of the rest! 😊
 
 *Best regards,*\
-*T Bank*)
+*T Solutions*)
         id: str (The _id of the Lead or Customer document)
         db: str (Lead or Customer)
         image_url: str (optional)
@@ -176,7 +178,10 @@ Just reply to this message, and we'll take care of the rest! 😊
         customer = await _resolve_customer(id)
         # print("customer details: ", customer)
         if not customer or not customer.contact:
-            return {"status": "error", "message": "Customer contact details unavailable"}
+            return {
+                "status": "error",
+                "message": "Customer contact details unavailable",
+            }
 
         phone_number = customer.contact
         try:
