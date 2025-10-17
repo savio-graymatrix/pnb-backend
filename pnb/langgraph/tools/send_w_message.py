@@ -84,7 +84,7 @@ async def send_whatsapp_message(
                             "buttons": [
                                 {
                                     "title": "Buy Now",
-                                    "payload": "/buy_now_gold_pnb",
+                                    "payload": "/buy_now_car_insurance",
                                     "type": "postback",
                                     "mode": "disable_text_box",
                                 },
