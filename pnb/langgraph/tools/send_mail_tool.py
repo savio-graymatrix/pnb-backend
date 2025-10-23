@@ -67,7 +67,7 @@ async def send_mail(
             "subject": subject,
             "body": body,
             "current_date": datetime.now(),
-            "company_name": "T Bank",
+            "company_name": "T Solution",
             "cta_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/T-Bank_EN_logo.svg/1200px-T-Bank_EN_logo.svg.png",
         }
         jinja_template = env.from_string(template_content)

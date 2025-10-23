@@ -99,7 +99,7 @@ async def handle_text_message(
 
         (Eg: *Hi Mamta!* 👋
 
-Thank you for your interest in *T Bank's Premium Home Loan* -- where your dream home becomes a reality with *exclusive low rates*, *flexible repayment options*, and *dedicated expert support* every step of the way.
+Thank you for your interest in *k's Premium Home Loan* -- where your dream home becomes a reality with *exclusive low rates*, *flexible repayment options*, and *dedicated expert support* every step of the way.
 
 ✨ With our Home Loan, you can:\
 ✅ Secure your dream home easily\
@@ -111,7 +111,7 @@ Thank you for your interest in *T Bank's Premium Home Loan* -- where your dream 
 Just reply to this message, and we'll take care of the rest! 😊
 
 *Best regards,*\
-*T Bank*)
+*k*)
         phone_number (str): The phone number to send the message to. (Eg. 917977093841)
         image_url (str, optional): The URL of the image from the imagen tool to attach to the message.
 

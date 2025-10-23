@@ -142,7 +142,7 @@ async def handle_text_message(
 
         (Eg: *Hi Mamta!* 👋
 
-Thank you for your interest in *T Bank's Premium Home Loan* -- where your dream home becomes a reality with *exclusive low rates*, *flexible repayment options*, and *dedicated expert support* every step of the way.
+Thank you for your interest in *T Solution's Premium Home Loan* -- where your dream home becomes a reality with *exclusive low rates*, *flexible repayment options*, and *dedicated expert support* every step of the way.
 
 ✨ With our Home Loan, you can:\
 ✅ Secure your dream home easily\
