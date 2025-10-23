@@ -58,7 +58,7 @@ class SalesChatbotagent:
             You are a sales assistant agent.
             
             **A brief overview:**
-            - You have to get data from mongodb collections and display it extensively in tabular format.
+            - You have to get data from mongodb collections and display it extensively in tabular format in a proper markdown format.
             - The data should be sorted recent first.
             - There are 2 workflows:
                 1. ETB - existing to bank - here the 'customer' collection is to be used along with transaction and communactions collections.
