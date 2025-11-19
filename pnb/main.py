@@ -1,6 +1,30 @@
-def main():
-    print("Hello from pnb-backend!")
+from fastapi import FastAPI
+from contextlib import asynccontextmanager
+from fastapi.middleware.cors import CORSMiddleware
+from pnb.api import router as api_router
+from pnb.db.stores.MongoStore import MONGO_STORE
+from pnb.langgraph.credit_assist.workflows import compile_credit_assist_graphs
+from pnb.langgraph.procurement.workflows import compile_procurement_graphs
+from pnb.langgraph.sales.workflows import compile_sales_graphs
+from pnb import SETTINGS
 
 
-if __name__ == "__main__":
-    main()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await MONGO_STORE.connect()
+    await compile_credit_assist_graphs()
+    await compile_procurement_graphs()
+    await compile_sales_graphs()
+    yield
+    await MONGO_STORE.disconnect()
+
+app = FastAPI(lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=SETTINGS.ALLOWED_HOSTS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+app.include_router(api_router)

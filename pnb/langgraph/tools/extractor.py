@@ -1,0 +1,164 @@
+from os.path import splitext
+from langchain.document_loaders import TextLoader
+import hashlib
+from keybert import KeyBERT
+from pnb.db.data_models import ExtractedDocument, ExtractedDocumentMetadata
+from langchain.tools import tool
+import os
+import pymupdf4llm
+from pdf2image import convert_from_path
+from PIL import Image, ImageEnhance
+import pytesseract
+from langchain_core.documents import Document
+from pnb import SETTINGS, LOGGER
+import requests
+import tempfile
+import traceback
+import cv2
+import numpy as np
+
+# Pre-requisites
+pytesseract.pytesseract.tesseract_cmd = SETTINGS.TESSERACT_PATH
+kw_model = KeyBERT()
+
+
+class FileTypeNotSupportedException(Exception):
+    pass
+
+
+async def store_text_embedding(parent_document_id: str, file_url: str) -> None:
+    """
+    Store Text Embeddings for the file to the Vector Storage
+
+    :params:
+    file_name (str): Document Name in Static Storage
+
+    :returns:
+    None
+
+    :raises:
+    FileTypeNotSupported
+    """
+    try:
+        # Step 1: Load file
+        file_path = file_url
+        file_type = splitext(file_url)[-1]
+        # documents = [Document(page_content="".join(extract_from_file(file_path)))]
+        if file_type == ".txt":
+            loader = TextLoader(file_path, encoding="utf-8")
+            documents = loader.load()
+        elif file_type in [".pdf", ".jpeg", ".jfif", ".jpg"]:
+            documents = [Document(page_content="".join(extract_from_file(file_path)))]
+        else:
+            raise FileTypeNotSupportedException
+
+        # Step 3: Add metadata (e.g. file name, hash)
+        file_hash = hashlib.sha256(
+            "".join([x.page_content for x in documents]).encode("utf-8")
+        ).hexdigest()
+        extracted_documents = list()
+        for i, doc in enumerate(documents):
+            extracted_document_obj = ExtractedDocument(
+                name=file_url,
+                content=doc.page_content,
+                link_to=parent_document_id,
+                metadata=ExtractedDocumentMetadata(
+                    filename=file_url,
+                    filetype=file_type,
+                    chunk_index=i,
+                    hash=file_hash,
+                    tags=[
+                        t[0]
+                        for t in kw_model.extract_keywords(doc.page_content, top_n=5)
+                    ],
+                ),
+            )
+            extracted_documents.append(extracted_document_obj)
+        await ExtractedDocument.insert_many(extracted_documents)
+    except:
+        LOGGER.error(
+            f"""Parameters: \
+                    \nparent_document_id: {parent_document_id}\n  \
+                    file_url: {file_url}  \
+                    \n\nTraceback:{traceback.format_exc()}"""
+        )
+
+
+def enhance_image(cv_img: np.ndarray) -> np.ndarray:
+    """Sharpen and increase contrast using only OpenCV."""
+    gray = cv2.cvtColor(cv_img, cv2.COLOR_RGB2GRAY)
+
+    # Sharpen
+    kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
+    sharp = cv2.filter2D(gray, -1, kernel)
+
+    # Boost contrast
+    contrast = cv2.convertScaleAbs(sharp, alpha=2.0, beta=0)
+
+    return contrast
+
+
+@tool
+def extract_from_file(file_url: str):
+    """Extracts content from files"""
+    file, ext = os.path.splitext(file_url)
+    file_path = (
+        f"{os.getcwd()}/logs/files/{file_url}"
+        if not file_url.startswith("http")
+        else file_url
+    )
+
+    def fallback_ocr(path: str):
+        print("Falling back to OCR...")
+
+        if path.startswith("http"):
+            response = requests.get(path)
+            response.raise_for_status()  # fail if URL is invalid
+
+            # Step 2: Save to temp file
+            tmp_path = None
+            texts = None
+
+            with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as tmp:
+                tmp.write(response.content)
+                tmp_path = tmp.name
+                pages = convert_from_path(
+                    tmp_path, dpi=300, poppler_path=SETTINGS.POPPLER_PATH
+                )
+                texts = [
+                    pytesseract.image_to_string(enhance_image(img)) for img in pages
+                ]
+                return texts
+        pages = convert_from_path(path, dpi=300, poppler_path=SETTINGS.POPPLER_PATH)
+        texts = [pytesseract.image_to_string(enhance_image(img)) for img in pages]
+        return texts
+
+    def structured_pdf_parser(path: str):
+        try:
+            response = requests.get(path)
+            response.raise_for_status()
+            tmp_path = None
+            texts = None
+            with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as tmp:
+                tmp.write(response.content)
+                tmp_path = tmp.name
+                # os.remove(tmp_path)
+                chunks = pymupdf4llm.to_markdown(tmp_path, page_chunks=True)
+                # os.remove(tmp_path)
+                texts = [c["text"] for c in chunks if c.get("text", "").strip()]
+            if texts:
+                return texts
+        except Exception as e:
+            print(f"Structured parser failed: {e}")
+            return None
+
+    match (ext):
+        case ".pdf":
+            return structured_pdf_parser(file_path) or fallback_ocr(file_path)
+        case _:
+            try:
+                img = Image.open(file_path)
+                text = pytesseract.image_to_string(img)
+                return text.strip()
+            except Exception as e:
+                return f"OCR failed: {e}"
